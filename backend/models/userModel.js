@@ -1,57 +1,78 @@
-import mongoose from "mongoose";
+import { Model, DataTypes } from "sequelize";
 import bcrypt from "bcryptjs";
+import sequelize from "../config/db.js";
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  isAdmin: {
-    type: Boolean,
-    required: true,
-    default: true,
-  },
-  isBlocked: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  lastLogin: {
-    type: Date,
-  },
-});
-
-// password hash compare
-userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
-
-userSchema.pre("save", async function (next) {
-  if (this.isNew || this.isModified("email")) {
-    const userExists = await User.findOne({ email: this.email });
-    if (userExists && userExists.isBlocked) {
-      throw new Error("This email is blocked.");
-    }
+class User extends Model {
+  async matchPassword(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
   }
+}
 
-  if (!this.isModified("password")) {
-    // if the password key is not modified
-    next();
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      field: "is_admin", // Snake case for PostgreSQL
+    },
+    isBlocked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: "is_blocked",
+    },
+    lastLogin: {
+      type: DataTypes.DATE,
+      field: "last_login",
+    },
+  },
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "users", // Explicit table name
+    timestamps: true,
+    underscored: true, // Convert camelCase to snake_case
+    hooks: {
+      beforeSave: async (user) => {
+        if (user.changed("email")) {
+          const existingUser = await User.findOne({
+            where: { email: user.email },
+            paranoid: false, // Include soft-deleted records if using
+          });
+          if (existingUser && existingUser.isBlocked) {
+            throw new Error("This email is blocked.");
+          }
+        }
+
+        if (user.changed("password")) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+      },
+    },
   }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-const User = mongoose.model("User", userSchema);
+);
 
 export default User;
