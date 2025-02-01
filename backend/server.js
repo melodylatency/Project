@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
@@ -9,8 +8,6 @@ import path from "path";
 dotenv.config();
 
 const port = process.env.PORT || 5000;
-
-connectDB();
 
 const __dirname = path.resolve();
 

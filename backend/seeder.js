@@ -27,11 +27,11 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await User.destroy({ where: {} });
-    console.log("All data destroyed!".green.inverse);
+    console.log(colors.green.inverse("All data destroyed!"));
     process.exit();
   } catch (error) {
-    console.log("Destroy aborted".purple.inverse);
-    console.log(`${error}`.red.inverse);
+    console.log(colors.yellow.inverse("Destroy aborted"));
+    console.log(colors.red.inverse(`${error}`));
     process.exit(1);
   }
 };

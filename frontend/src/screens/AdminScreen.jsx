@@ -228,7 +228,7 @@ const AdminScreen = () => {
             </thead>
             <tbody>
               {sortedUsers.map((user) => (
-                <tr key={user._id}>
+                <tr key={user.id}>
                   <td>
                     <input
                       type="checkbox"
