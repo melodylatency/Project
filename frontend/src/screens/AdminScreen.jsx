@@ -51,18 +51,11 @@ const AdminScreen = () => {
   }, [logoutApiCall, dispatch, navigate]);
 
   useEffect(() => {
-    if (error?.status === 401) {
-      console.log(JSON.stringify(error), error.status);
-      if (
-        error?.data?.message === "User does not exist. Please log in again."
-      ) {
-        toast.error("Your account no longer exists. Redirecting to login...");
-        logoutHandler();
-      } else {
-        toast.error("Unauthorized. Please log in again.");
-        console.log(error);
+    if (error) {
+      if (error.data?.message === "Account blocked.") {
         logoutHandler();
       }
+      toast.error(error.data?.message || "An error occurred.");
     }
   }, [error, logoutHandler]);
 
@@ -132,12 +125,7 @@ const AdminScreen = () => {
         setSelectedUsers([]); // Reset selection after action
         refetch();
       } catch (err) {
-        if (err?.status === 403) {
-          toast.error("Your account is blocked. Redirecting to login.");
-          logoutHandler();
-        } else {
-          toast.error(err?.data?.message || err.error);
-        }
+        toast.error("Action failed.");
       }
     }
   };
