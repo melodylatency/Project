@@ -12,25 +12,25 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ where: { email } });
 
   if (user && (await user.matchPassword(password))) {
-    if (user.isBlocked) {
+    if (user.is_blocked) {
       res.status(403);
       throw new Error("Your account is blocked");
     }
 
     // Update last login
-    user.lastLogin = new Date();
+    user.last_login = new Date();
     await user.save();
 
-    // Use id instead of _id
+    // Use id instead of id
     generateToken(res, user.id);
 
     res.status(200).json({
-      id: user.id, // Changed from _id
+      id: user.id, // Changed from id
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
-      isBlocked: user.isBlocked,
-      lastLogin: user.lastLogin,
+      is_admin: user.is_admin,
+      is_blocked: user.is_blocked,
+      last_login: user.last_login,
     });
   } else {
     res.status(401);
@@ -56,18 +56,18 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password, // Will be hashed by model hook
-    lastLogin: new Date(),
+    last_login: new Date(),
   });
 
-  generateToken(res, user.id); // Use id instead of _id
+  generateToken(res, user.id); // Use id instead of id
 
   res.status(201).json({
-    id: user.id, // Changed from _id
+    id: user.id, // Changed from id
     name: user.name,
     email: user.email,
-    isAdmin: user.isAdmin,
-    isBlocked: user.isBlocked,
-    lastLogin: user.lastLogin,
+    is_admin: user.is_admin,
+    is_blocked: user.is_blocked,
+    last_login: user.last_login,
   });
 });
 
@@ -119,7 +119,7 @@ const blockUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  user.isBlocked = true;
+  user.is_blocked = true;
   await user.save();
   res.status(200).json({ message: "User blocked successfully" });
 });
@@ -132,7 +132,7 @@ const unblockUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  user.isBlocked = false;
+  user.is_blocked = false;
   await user.save();
   res.status(200).json({ message: "User unblocked successfully" });
 });
@@ -149,7 +149,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 
   if (req.user.id === user.id) {
-    // Use id instead of _id
+    // Use id instead of id
     res.status(400);
     throw new Error("Cannot delete yourself");
   }
@@ -167,7 +167,7 @@ const updateUser = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email; // Fixed typo (was req.body.name)
-    user.isAdmin = Boolean(req.body.isAdmin);
+    user.is_admin = Boolean(req.body.is_admin);
 
     const updatedUser = await user.save();
 
@@ -175,7 +175,7 @@ const updateUser = asyncHandler(async (req, res) => {
       id: updatedUser.id,
       name: updatedUser.name,
       email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
+      is_admin: updatedUser.is_admin,
     });
   } else {
     res.status(404);

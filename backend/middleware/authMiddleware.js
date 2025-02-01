@@ -14,7 +14,10 @@ const protect = asyncHandler(async (req, res, next) => {
 
       if (!user) {
         res.status(401);
-        throw new Error("User does not exist. Please log in again.");
+        throw new Error("User does not exist.");
+      } else if (user.is_blocked === true) {
+        res.status(401);
+        throw new Error("User is blocked.");
       }
 
       req.user = user;

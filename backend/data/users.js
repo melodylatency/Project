@@ -5,22 +5,22 @@ const users = [
     name: "Admin user",
     email: "admin@mail.com",
     password: bcrypt.hashSync("123456789", 10),
-    isAdmin: true,
-    isBlocked: false,
+    is_admin: true,
+    is_blocked: false,
   },
   {
     name: "John Genji user",
     email: "johngenji@mail.com",
     password: bcrypt.hashSync("123456789", 10),
-    isAdmin: false,
-    isBlocked: false,
+    is_admin: false,
+    is_blocked: false,
   },
   {
     name: "Ching Chang",
     email: "chingchang@mail.com",
     password: bcrypt.hashSync("123456789", 10),
-    isAdmin: false,
-    isBlocked: false,
+    is_admin: false,
+    is_blocked: false,
   },
 ];
 

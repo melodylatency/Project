@@ -29,12 +29,3 @@ code {
   font-weight: 600;
   padding-left: 0.5rem;
 }
-
-.product-title {
-  height: 1rem;
-}
-
-.text-stroke {
-  -webkit-text-stroke: 2px black; /* Stroke width and color */
-  color: white; /* Set text color */
-}

@@ -50,10 +50,9 @@ const AdminScreen = () => {
     }
   }, [logoutApiCall, dispatch, navigate]);
 
-  // Check for user deletion or authorization error
-  // Check for user deletion or 401 error
   useEffect(() => {
     if (error?.status === 401) {
+      console.log(JSON.stringify(error), error.status);
       if (
         error?.data?.message === "User does not exist. Please log in again."
       ) {
@@ -61,6 +60,7 @@ const AdminScreen = () => {
         logoutHandler();
       } else {
         toast.error("Unauthorized. Please log in again.");
+        console.log(error);
         logoutHandler();
       }
     }
@@ -78,7 +78,7 @@ const AdminScreen = () => {
     if (selectedUsers.length === users.length) {
       setSelectedUsers([]); // Deselect all if all are selected
     } else {
-      setSelectedUsers(users.map((user) => user._id)); // Select all users
+      setSelectedUsers(users.map((user) => user.id)); // Select all users
     }
   };
 
@@ -92,14 +92,14 @@ const AdminScreen = () => {
       let actionCount = 0;
 
       try {
-        // Rearrange selectedUsers to process userInfo._id last
+        // Rearrange selectedUsers to process userInfo.id last
         const reorderedUsers = [
-          ...selectedUsers.filter((id) => id !== userInfo._id), // Other users
-          ...selectedUsers.filter((id) => id === userInfo._id), // Current user
+          ...selectedUsers.filter((id) => id !== userInfo.id), // Other users
+          ...selectedUsers.filter((id) => id === userInfo.id), // Current user
         ];
 
         for (const userId of reorderedUsers) {
-          const user = users.find((user) => user._id === userId);
+          const user = users.find((user) => user.id === userId);
 
           switch (action) {
             case "delete":
@@ -107,12 +107,12 @@ const AdminScreen = () => {
               actionCount++;
               break;
             case "block":
-              if (user.isBlocked === true) continue;
+              if (user.is_blocked === true) continue;
               await blockUser(userId).unwrap();
               actionCount++;
               break;
             case "unblock":
-              if (user.isBlocked === false) continue;
+              if (user.is_blocked === false) continue;
               await unblockUser(userId).unwrap();
               actionCount++;
               break;
@@ -144,8 +144,8 @@ const AdminScreen = () => {
 
   // Sort users by last login
   const sortedUsers = [...users].sort((a, b) => {
-    const dateA = moment(a.lastLogin);
-    const dateB = moment(b.lastLogin);
+    const dateA = moment(a.last_login);
+    const dateB = moment(b.last_login);
     return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
   });
 
@@ -156,8 +156,8 @@ const AdminScreen = () => {
 
   return (
     <>
-      <h1 className="flex justify-center text-7xl text-stroke py-5 text-pink-600">
-        User List
+      <h1 className="flex justify-center text-7xl text-stroke py-5">
+        Admin Panel
       </h1>
       {loadingDelete && <Loader />}
       {loadingBlock && <Loader />}
@@ -183,22 +183,22 @@ const AdminScreen = () => {
                   className="scale-125"
                 />
                 <Button
-                  className="d-flex align-items-center gap-2 text-black border-2 border-black"
-                  variant="danger"
+                  className="d-flex align-items-center gap-2"
+                  variant="primary"
                   onClick={() => handleAction("delete")}
                 >
                   <FaTrash /> Delete
                 </Button>
                 <Button
-                  className="d-flex align-items-center gap-2 border-2 border-black"
-                  variant="warning"
+                  className="d-flex align-items-center gap-2"
+                  variant="primary"
                   onClick={() => handleAction("block")}
                 >
                   <FaLock /> Block
                 </Button>
                 <Button
-                  className="d-flex align-items-center gap-2 border-2 border-black"
-                  variant="success"
+                  className="d-flex align-items-center gap-2"
+                  variant="primary"
                   onClick={() => handleAction("unblock")}
                 >
                   <FaLockOpen /> Unblock
@@ -208,7 +208,7 @@ const AdminScreen = () => {
               {/* Right section */}
               <Col xs={12} sm="auto" className="text-sm-end">
                 <Button
-                  className="d-flex align-items-center border-2 border-black"
+                  className="d-flex align-items-center"
                   onClick={handleSort}
                 >
                   <FaSort /> Sort by Last Login
@@ -232,8 +232,8 @@ const AdminScreen = () => {
                   <td>
                     <input
                       type="checkbox"
-                      checked={selectedUsers.includes(user._id)}
-                      onChange={() => handleSelectUser(user._id)}
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={() => handleSelectUser(user.id)}
                     />
                   </td>
                   <td>{user.name}</td>
@@ -245,20 +245,14 @@ const AdminScreen = () => {
                       {user.email}
                     </a>
                   </td>
-                  <td>
-                    {user.isBlocked ? (
-                      <FaCheck style={{ color: "green" }} />
-                    ) : (
-                      <FaTimes style={{ color: "red" }} />
-                    )}
-                  </td>
+                  <td>{user.is_blocked ? <FaCheck /> : <FaTimes />}</td>
                   <td
                     className="font-thin overflow-hidden text-ellipsis whitespace-nowrap"
                     style={{
                       maxWidth: "200px", // Adjust this value as needed
                     }}
                   >
-                    {moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a")}
+                    {moment(user.last_login).format("MMMM Do YYYY, h:mm:ss a")}
                   </td>
                 </tr>
               ))}

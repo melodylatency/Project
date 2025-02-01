@@ -9,7 +9,7 @@ const App = () => {
   return (
     <>
       <Header />
-      <main className="h-screen bg-gradient-to-t from-blue-300 via-green-200 to-green-300 gap-5">
+      <main className="h-screen bg-gradient-to-t from-teal-400 via-cyan-300 to-teal-400 gap-5">
         <Container>
           <Outlet />
         </Container>

@@ -31,19 +31,19 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    isAdmin: {
+    is_admin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
       field: "is_admin", // Snake case for PostgreSQL
     },
-    isBlocked: {
+    is_blocked: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
       field: "is_blocked",
     },
-    lastLogin: {
+    last_login: {
       type: DataTypes.DATE,
       field: "last_login",
     },
@@ -61,7 +61,7 @@ User.init(
             where: { email: user.email },
             paranoid: false, // Include soft-deleted records if using
           });
-          if (existingUser && existingUser.isBlocked) {
+          if (existingUser && existingUser.is_blocked) {
             throw new Error("This email is blocked.");
           }
         }
