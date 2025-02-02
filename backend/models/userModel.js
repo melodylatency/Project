@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import bcrypt from "bcryptjs";
-import sequelize from "../config/db.js";
+import sequelize from "../config/config.js";
 
 class User extends Model {
   async matchPassword(enteredPassword) {
@@ -34,7 +34,7 @@ User.init(
     is_admin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: false,
       field: "is_admin", // Snake case for PostgreSQL
     },
     is_blocked: {
@@ -74,5 +74,9 @@ User.init(
     },
   }
 );
+
+User.associations = (models) => {
+  User.hasMany(models.Template, { foreignKey: "created_by", as: "templates" });
+};
 
 export default User;

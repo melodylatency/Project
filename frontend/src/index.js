@@ -16,11 +16,13 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import AdminScreen from "./screens/AdminScreen";
 import VideoScreen from "./screens/VideoScreen";
+import HomeScreen from "./screens/HomeScreen";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route path="/" index={true} element={<LoginScreen />} />
+      <Route path="/" index={true} element={<HomeScreen />} />
+      <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/admin" element={<AdminScreen />} />
       <Route path="/video" element={<VideoScreen />} />

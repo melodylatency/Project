@@ -5,7 +5,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 
 const HomeScreen = () => {
-  const { data: products, isLoading, error } = useGetProductsQuery();
+  const { data: templates, isLoading, error } = useGetProductsQuery();
 
   return (
     <>
@@ -19,9 +19,9 @@ const HomeScreen = () => {
         <>
           <h1 className="text-lg">Latest Products</h1>
           <Row>
-            {products.map((product) => (
-              <Col key={product.id} sm={12} md={6} lg={4} xl={3}>
-                <Product product={product} />
+            {templates.map((template) => (
+              <Col key={template.id} sm={12} md={6} lg={4} xl={3}>
+                <Product template={template} />
               </Col>
             ))}
           </Row>

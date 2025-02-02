@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import colors from "colors/safe.js"; // Updated import
 import users from "./data/users.js";
-import sequelize from "./config/db.js";
-import User from "./models/userModel.js";
+import templates from "./data/templates.js";
+import sequelize from "./config/config.js";
+import { User, Template } from "./models/index.js";
 
 dotenv.config();
 
@@ -15,6 +16,11 @@ const importData = async () => {
 
     const adminUser = createdUsers[0].id;
 
+    const sampleTemplates = templates.map((template) => ({
+      ...template,
+      created_by: adminUser, // Assign the admin user or modify as needed
+    }));
+    await Template.bulkCreate(sampleTemplates);
     console.log(colors.green.inverse("All data imported!"));
     process.exit();
   } catch (error) {
@@ -27,6 +33,7 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await User.destroy({ where: {} });
+    await Template.destroy({ where: {} });
     console.log(colors.green.inverse("All data destroyed!"));
     process.exit();
   } catch (error) {
