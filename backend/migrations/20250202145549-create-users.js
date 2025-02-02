@@ -32,6 +32,7 @@ export default {
       },
       last_login: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
       },
       created_at: {
         allowNull: false,

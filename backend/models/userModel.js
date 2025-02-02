@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import bcrypt from "bcryptjs";
-import sequelize from "../config/config.js";
+import sequelize from "../config/db.js";
 
 class User extends Model {
   async matchPassword(enteredPassword) {
@@ -35,17 +35,14 @@ User.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: "is_admin", // Snake case for PostgreSQL
     },
     is_blocked: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: "is_blocked",
     },
     last_login: {
       type: DataTypes.DATE,
-      field: "last_login",
     },
   },
   {
@@ -53,7 +50,7 @@ User.init(
     modelName: "User",
     tableName: "users", // Explicit table name
     timestamps: true,
-    underscored: true, // Convert camelCase to snake_case
+    underscored: true,
     hooks: {
       beforeSave: async (user) => {
         if (user.changed("email")) {

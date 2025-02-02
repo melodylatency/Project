@@ -8,7 +8,8 @@ export default {
       users.map(async (user) => ({
         ...user,
         id: Sequelize.literal("uuid_generate_v4()"),
-        password: await bcrypt.hash(user.password, 10),
+        password: user.password,
+        last_login: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
       }))
