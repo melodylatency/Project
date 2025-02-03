@@ -15,6 +15,10 @@ const Header = () => {
 
   const [logoutApiCall] = useLogoutMutation();
 
+  const adminHandler = () => {
+    navigate("/admin");
+  };
+
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
@@ -41,12 +45,18 @@ const Header = () => {
                 id="username"
                 align="end"
               >
+                <NavDropdown.Item
+                  onClick={adminHandler}
+                  hidden={!userInfo.isAdmin}
+                >
+                  Admin Panel
+                </NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler}>
                   Logout
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <LinkContainer to="/">
+              <LinkContainer to="/login">
                 <Nav.Link className="d-flex align-items-center gap-2">
                   <FaUser /> Login
                 </Nav.Link>

@@ -8,7 +8,7 @@ const Template = ({ template }) => {
     <Card className="my-3 p-3 rounded">
       <Link to={`/template/${template.id}`}>
         <Card.Img
-          className="h-[270px] object-cover"
+          className="h-[350px] object-cover"
           src={template.image}
           variant="top"
           alt={template.title}
@@ -21,9 +21,12 @@ const Template = ({ template }) => {
           </Card.Title>
         </Link>
         <Card.Text className="pb-1" as="div">
-          <Rating value={4.7} text="no comments" />
+          <Rating value={4.7} />
         </Card.Text>
-        <Card.Text as="h3">{template.topic}</Card.Text>
+        <Card.Text as="h3">views: {template.views}</Card.Text>
+        <Link to={`/${template.topic}`} className="underline">
+          {template.topic}
+        </Link>
       </Card.Body>
     </Card>
   );
