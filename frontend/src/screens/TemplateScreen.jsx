@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Row,
   Col,
@@ -15,25 +15,15 @@ import { useGetTemplateDetailsQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useState } from "react";
-import { addToCart } from "../redux/slices/cartSlice";
-import { useDispatch } from "react-redux";
 
 const TemplateScreen = () => {
   const [qty, setQty] = useState(1);
   const { id: templateId } = useParams();
   const {
-    data: product,
+    data: template,
     isLoading,
     error,
   } = useGetTemplateDetailsQuery(templateId);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
-    navigate("/cart");
-  };
 
   return (
     <>
@@ -51,21 +41,21 @@ const TemplateScreen = () => {
         <>
           <Row>
             <Col md={5}>
-              <Image src={product.image} fluid />
+              <Image src={template.image} fluid />
             </Col>
             <Col md={4}>
               <ListGroup variant="flush">
                 <ListGroupItem>
-                  <h3 className="text-xl font-sans">{product.name}</h3>
+                  <h3 className="text-xl font-sans">{template.name}</h3>
                 </ListGroupItem>
                 <ListGroupItem>
                   <Rating
-                    value={product.rating}
-                    text={`${product.numReviews} reviews`}
+                    value={template.rating}
+                    text={`${template.numReviews} reviews`}
                   />
                 </ListGroupItem>
                 <ListGroupItem>
-                  <p>Description: ${product.description}</p>
+                  <p>Description: ${template.description}</p>
                 </ListGroupItem>
               </ListGroup>
             </Col>
@@ -77,8 +67,8 @@ const TemplateScreen = () => {
                       <Col>Status:</Col>
                       <Col>
                         <strong>
-                          {product.countInStock > 0
-                            ? `In Stock: ${product.countInStock}`
+                          {template.countInStock > 0
+                            ? `In Stock: ${template.countInStock}`
                             : "Out of Stock"}
                         </strong>
                       </Col>
@@ -88,11 +78,11 @@ const TemplateScreen = () => {
                     <Row>
                       <Col>Price:</Col>
                       <Col>
-                        <strong>${product.price}</strong>
+                        <strong>${template.price}</strong>
                       </Col>
                     </Row>
                   </ListGroupItem>
-                  {product.countInStock > 0 && (
+                  {template.countInStock > 0 && (
                     <ListGroupItem>
                       <Row>
                         <Col>Qty:</Col>
@@ -102,7 +92,7 @@ const TemplateScreen = () => {
                             value={qty}
                             onChange={(e) => setQty(Number(e.target.value))}
                           >
-                            {[...Array(product.countInStock).keys()].map(
+                            {[...Array(template.countInStock).keys()].map(
                               (x) => (
                                 <option key={x + 1} value={x + 1}>
                                   {x + 1}
@@ -119,8 +109,8 @@ const TemplateScreen = () => {
                       className="btn-block"
                       variant="success"
                       type="button"
-                      disabled={product.countInStock === 0}
-                      onClick={addToCartHandler}
+                      disabled={template.countInStock === 0}
+                      onClick={() => {}}
                     >
                       Add to Cart
                     </Button>
