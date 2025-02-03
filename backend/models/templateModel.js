@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/config";
+import sequelize from "../config/db.js";
 
 const Template = sequelize.define(
   "Template",
@@ -54,6 +54,7 @@ const Template = sequelize.define(
     sequelize,
     modelName: "Template",
     tableName: "templates",
+    underscored: true,
   }
 );
 

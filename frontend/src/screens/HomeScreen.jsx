@@ -1,11 +1,11 @@
 import { Row, Col } from "react-bootstrap";
 import Template from "../components/Template";
-import { useGetProductsQuery } from "../redux/slices/productsApiSlice";
+import { useGetTemplatesQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 
 const HomeScreen = () => {
-  const { data: templates, isLoading, error } = useGetProductsQuery();
+  const { data: templates, isLoading, error } = useGetTemplatesQuery();
 
   return (
     <>
@@ -17,7 +17,7 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
-          <h1 className="text-lg">Latest Products</h1>
+          <h1 className="text-lg">Latest Templates</h1>
           <Row>
             {templates.map((template) => (
               <Col key={template.id} sm={12} md={6} lg={4} xl={3}>

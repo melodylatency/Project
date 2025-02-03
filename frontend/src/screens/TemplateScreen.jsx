@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import Rating from "../components/Rating";
 import { Link } from "react-router-dom";
-import { useGetProductDetailsQuery } from "../redux/slices/productsApiSlice";
+import { useGetTemplateDetailsQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useState } from "react";
@@ -20,12 +20,12 @@ import { useDispatch } from "react-redux";
 
 const TemplateScreen = () => {
   const [qty, setQty] = useState(1);
-  const { id: productId } = useParams();
+  const { id: templateId } = useParams();
   const {
     data: product,
     isLoading,
     error,
-  } = useGetProductDetailsQuery(productId);
+  } = useGetTemplateDetailsQuery(templateId);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
