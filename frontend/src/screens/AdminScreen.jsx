@@ -100,12 +100,12 @@ const AdminScreen = () => {
               actionCount++;
               break;
             case "block":
-              if (user.is_blocked === true) continue;
+              if (user.isBlocked === true) continue;
               await blockUser(userId).unwrap();
               actionCount++;
               break;
             case "unblock":
-              if (user.is_blocked === false) continue;
+              if (user.isBlocked === false) continue;
               await unblockUser(userId).unwrap();
               actionCount++;
               break;
@@ -132,8 +132,8 @@ const AdminScreen = () => {
 
   // Sort users by last login
   const sortedUsers = [...users].sort((a, b) => {
-    const dateA = moment(a.last_login);
-    const dateB = moment(b.last_login);
+    const dateA = moment(a.lastLogin);
+    const dateB = moment(b.lastLogin);
     return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
   });
 
@@ -233,14 +233,14 @@ const AdminScreen = () => {
                       {user.email}
                     </a>
                   </td>
-                  <td>{user.is_blocked ? <FaCheck /> : <FaTimes />}</td>
+                  <td>{user.isBlocked ? <FaCheck /> : <FaTimes />}</td>
                   <td
                     className="font-thin overflow-hidden text-ellipsis whitespace-nowrap"
                     style={{
                       maxWidth: "200px", // Adjust this value as needed
                     }}
                   >
-                    {moment(user.last_login).format("MMMM Do YYYY, h:mm:ss a")}
+                    {moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a")}
                   </td>
                 </tr>
               ))}

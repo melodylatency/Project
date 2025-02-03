@@ -32,7 +32,7 @@ export default {
         allowNull: false,
         defaultValue: "public",
       },
-      created_by: {
+      createdBy: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
@@ -41,16 +41,6 @@ export default {
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
-      },
-      created_at: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("NOW()"),
-      },
-      updated_at: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("NOW()"),
       },
     });
     await queryInterface.sequelize.query(`

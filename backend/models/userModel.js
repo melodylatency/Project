@@ -31,17 +31,17 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    is_admin: {
+    isAdmin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    is_blocked: {
+    isBlocked: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    last_login: {
+    lastLogin: {
       type: DataTypes.DATE,
     },
   },
@@ -50,7 +50,6 @@ User.init(
     modelName: "User",
     tableName: "users", // Explicit table name
     timestamps: true,
-    underscored: true,
     hooks: {
       beforeSave: async (user) => {
         if (user.changed("email")) {
@@ -58,7 +57,7 @@ User.init(
             where: { email: user.email },
             paranoid: false, // Include soft-deleted records if using
           });
-          if (existingUser && existingUser.is_blocked) {
+          if (existingUser && existingUser.isBlocked) {
             throw new Error("This email is blocked.");
           }
         }
@@ -73,7 +72,7 @@ User.init(
 );
 
 User.associations = (models) => {
-  User.hasMany(models.Template, { foreignKey: "created_by", as: "templates" });
+  User.hasMany(models.Template, { foreignKey: "createdBy", as: "templates" });
   User.hasMany(models.Form, { foreignKey: "user_id" });
   User.hasMany(models.Comment, { foreignKey: "user_id" });
   User.hasMany(models.Like, { foreignKey: "user_id" });

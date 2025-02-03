@@ -33,7 +33,7 @@ const Template = sequelize.define(
       allowNull: false,
       defaultValue: "public",
     },
-    created_by: {
+    createdBy: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -41,25 +41,16 @@ const Template = sequelize.define(
         key: "id",
       },
     },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
   },
   {
     sequelize,
     modelName: "Template",
     tableName: "templates",
-    underscored: true,
   }
 );
 
 Template.associations = (models) => {
-  Template.belongsTo(models.User, { foreignKey: "created_by", as: "creator" });
+  Template.belongsTo(models.User, { foreignKey: "createdBy", as: "creator" });
   Template.hasMany(models.Question, { foreignKey: "template_id" });
   Template.hasMany(models.Form, { foreignKey: "template_id" });
   Template.hasMany(models.Comment, { foreignKey: "template_id" });

@@ -20,7 +20,6 @@ Answer.init(
     modelName: "Answer",
     tableName: "answers",
     timestamps: true,
-    underscored: true,
   }
 );
 

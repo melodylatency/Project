@@ -20,7 +20,6 @@ Comment.init(
     modelName: "Comment",
     tableName: "comments",
     timestamps: true,
-    underscored: true,
   }
 );
 

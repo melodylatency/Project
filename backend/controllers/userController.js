@@ -12,13 +12,13 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ where: { email } });
 
   if (user && (await user.matchPassword(password))) {
-    if (user.is_blocked) {
+    if (user.isBlocked) {
       res.status(403);
       throw new Error("Your account is blocked");
     }
 
     // Update last login
-    user.last_login = new Date();
+    user.lastLogin = new Date();
     await user.save();
 
     // Use id instead of id
@@ -28,9 +28,9 @@ const authUser = asyncHandler(async (req, res) => {
       id: user.id, // Changed from id
       name: user.name,
       email: user.email,
-      is_admin: user.is_admin,
-      is_blocked: user.is_blocked,
-      last_login: user.last_login,
+      isAdmin: user.isAdmin,
+      isBlocked: user.isBlocked,
+      lastLogin: user.lastLogin,
     });
   } else {
     res.status(401);
@@ -56,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password, // Will be hashed by model hook
-    last_login: new Date(),
+    lastLogin: new Date(),
   });
 
   generateToken(res, user.id); // Use id instead of id
@@ -65,9 +65,9 @@ const registerUser = asyncHandler(async (req, res) => {
     id: user.id, // Changed from id
     name: user.name,
     email: user.email,
-    is_admin: user.is_admin,
-    is_blocked: user.is_blocked,
-    last_login: user.last_login,
+    isAdmin: user.isAdmin,
+    isBlocked: user.isBlocked,
+    lastLogin: user.lastLogin,
   });
 });
 
@@ -119,7 +119,7 @@ const blockUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  user.is_blocked = true;
+  user.isBlocked = true;
   await user.save();
   res.status(200).json({ message: "User blocked successfully" });
 });
@@ -132,7 +132,7 @@ const unblockUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  user.is_blocked = false;
+  user.isBlocked = false;
   await user.save();
   res.status(200).json({ message: "User unblocked successfully" });
 });
@@ -178,7 +178,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       id: updatedUser.id,
       name: updatedUser.name,
       email: updatedUser.email,
-      is_admin: updatedUser.is_admin,
+      isAdmin: updatedUser.isAdmin,
     });
   } else {
     res.status(404);
@@ -197,7 +197,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      is_admin: user.is_admin,
+      isAdmin: user.isAdmin,
     });
   } else {
     res.status(404);
@@ -214,7 +214,7 @@ const updateUser = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email; // Fixed typo (was req.body.name)
-    user.is_admin = Boolean(req.body.is_admin);
+    user.isAdmin = Boolean(req.body.isAdmin);
 
     const updatedUser = await user.save();
 
@@ -222,7 +222,7 @@ const updateUser = asyncHandler(async (req, res) => {
       id: updatedUser.id,
       name: updatedUser.name,
       email: updatedUser.email,
-      is_admin: updatedUser.is_admin,
+      isAdmin: updatedUser.isAdmin,
     });
   } else {
     res.status(404);

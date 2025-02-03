@@ -16,7 +16,6 @@ Like.init(
     modelName: "Like",
     tableName: "likes",
     timestamps: true,
-    underscored: true,
     indexes: [
       {
         unique: true,

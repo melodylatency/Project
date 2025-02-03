@@ -20,27 +20,17 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      is_admin: {
+      isAdmin: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false,
       },
-      is_blocked: {
+      isBlocked: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false,
       },
-      last_login: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("NOW()"),
-      },
-      created_at: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("NOW()"),
-      },
-      updated_at: {
-        allowNull: false,
+      lastLogin: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("NOW()"),
       },

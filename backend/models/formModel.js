@@ -16,7 +16,6 @@ Form.init(
     modelName: "Form",
     tableName: "forms",
     timestamps: true,
-    underscored: true,
   }
 );
 

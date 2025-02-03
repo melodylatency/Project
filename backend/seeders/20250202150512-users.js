@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize";
 import users from "../data/users.js";
-import bcrypt from "bcryptjs";
 
 export default {
   up: async (queryInterface) => {
@@ -9,9 +8,7 @@ export default {
         ...user,
         id: Sequelize.literal("uuid_generate_v4()"),
         password: user.password,
-        last_login: new Date(),
-        created_at: new Date(),
-        updated_at: new Date(),
+        lastLogin: new Date(),
       }))
     );
 

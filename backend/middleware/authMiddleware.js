@@ -24,7 +24,7 @@ const protect = asyncHandler(async (req, res, next) => {
       throw error;
     }
 
-    if (user.is_blocked) {
+    if (user.isBlocked) {
       const error = new Error("Account blocked.");
       error.statusCode = 403;
       throw error;
@@ -39,7 +39,7 @@ const protect = asyncHandler(async (req, res, next) => {
 });
 
 const admin = (req, res, next) => {
-  if (req.user && req.user.is_admin) {
+  if (req.user && req.user.isAdmin) {
     next();
   } else {
     const error = new Error("Not authorized as admin.");
