@@ -1,6 +1,8 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Rating from "./Rating";
+
 // import Rating from "./Rating";
 
 const Template = ({ template }) => {
@@ -16,14 +18,11 @@ const Template = ({ template }) => {
           </Card.Title>
         </Link>
 
-        {/* <Card.Text className="pb-1" as="div">
-          <Rating
-            value={template.rating}
-            text={`${template.numReviews} reviews`}
-          />
-        </Card.Text> */}
+        <Card.Text className="pb-1" as="div">
+          <Rating value={4.7} text={`no comments`} />
+        </Card.Text>
 
-        <Card.Text as="h3">${template.topic}</Card.Text>
+        <Card.Text as="h3">{template.topic}</Card.Text>
       </Card.Body>
     </Card>
   );
