@@ -42,6 +42,16 @@ export default {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
+      },
     });
     await queryInterface.sequelize.query(`
       CREATE INDEX templates_search_idx ON templates USING GIN(search_vector);
