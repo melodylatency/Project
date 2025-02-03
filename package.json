@@ -9,9 +9,7 @@
     "server": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "import": "node backend/seeder.js",
-    "destroy": "node backend/seeder.js -d",
-    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+    "import": "node backend/seeder.js"
   },
   "author": "Daniel Saynov",
   "license": "MIT",

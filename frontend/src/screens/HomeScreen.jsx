@@ -1,5 +1,5 @@
 import { Row, Col } from "react-bootstrap";
-import Product from "../components/Product";
+import Template from "../components/Template";
 import { useGetProductsQuery } from "../redux/slices/productsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -21,7 +21,7 @@ const HomeScreen = () => {
           <Row>
             {templates.map((template) => (
               <Col key={template.id} sm={12} md={6} lg={4} xl={3}>
-                <Product template={template} />
+                <Template template={template} />
               </Col>
             ))}
           </Row>

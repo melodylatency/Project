@@ -1,32 +1,32 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Rating from "./Rating";
+// import Rating from "./Rating";
 
-const Product = ({ product }) => {
+const Template = ({ template }) => {
   return (
     <Card className="my-3 p-3 rounded">
-      <Link to={`/product/${product.id}`}>
-        <Card.Img src={product.image} variant="top" />
+      <Link to={`/template/${template.id}`}>
+        <Card.Img src={template.image} variant="top" />
       </Link>
       <Card.Body>
-        <Link to={`/product/${product.id}`}>
-          <Card.Title className="product-title pb-4" as="div">
-            <h1 className="text-ellipsis truncate text-lg">{product.name}</h1>
+        <Link to={`/template/${template.id}`}>
+          <Card.Title className="template-title pb-4" as="div">
+            <h1 className="text-ellipsis truncate text-lg">{template.title}</h1>
           </Card.Title>
         </Link>
 
-        <Card.Text className="pb-1" as="div">
+        {/* <Card.Text className="pb-1" as="div">
           <Rating
-            value={product.rating}
-            text={`${product.numReviews} reviews`}
+            value={template.rating}
+            text={`${template.numReviews} reviews`}
           />
-        </Card.Text>
+        </Card.Text> */}
 
-        <Card.Text as="h3">${product.price}</Card.Text>
+        <Card.Text as="h3">${template.topic}</Card.Text>
       </Card.Body>
     </Card>
   );
 };
 
-export default Product;
+export default Template;
