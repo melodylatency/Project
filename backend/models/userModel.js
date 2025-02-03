@@ -74,6 +74,14 @@ User.init(
 
 User.associations = (models) => {
   User.hasMany(models.Template, { foreignKey: "created_by", as: "templates" });
+  User.hasMany(models.Form, { foreignKey: "user_id" });
+  User.hasMany(models.Comment, { foreignKey: "user_id" });
+  User.hasMany(models.Like, { foreignKey: "user_id" });
+  User.belongsToMany(models.Template, {
+    through: "template_access",
+    foreignKey: "user_id",
+  });
+  User.hasOne(models.UserPreference, { foreignKey: "user_id" });
 };
 
 export default User;

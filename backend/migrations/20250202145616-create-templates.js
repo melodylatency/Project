@@ -23,6 +23,10 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      search_vector: {
+        type: Sequelize.TSVECTOR,
+        allowNull: true,
+      },
       access: {
         type: Sequelize.ENUM("public", "restricted"),
         allowNull: false,
@@ -49,9 +53,32 @@ export default {
         defaultValue: Sequelize.literal("NOW()"),
       },
     });
+    await queryInterface.sequelize.query(`
+      CREATE INDEX templates_search_idx ON templates USING GIN(search_vector);
+      
+      CREATE OR REPLACE FUNCTION templates_search_vector_trigger() RETURNS trigger AS $$
+      BEGIN
+        NEW.search_vector :=
+          setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
+          setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B');
+        RETURN NEW;
+      END
+      $$ LANGUAGE plpgsql;
+
+      CREATE TRIGGER templates_search_vector_update
+      BEFORE INSERT OR UPDATE OF title, description ON templates
+      FOR EACH ROW EXECUTE PROCEDURE templates_search_vector_trigger();
+
+      -- Initial population of search vectors for existing data
+      UPDATE templates SET search_vector = NULL;
+    `);
   },
 
   down: async (queryInterface) => {
+    await queryInterface.sequelize.query(`
+      DROP TRIGGER IF EXISTS templates_search_vector_update ON templates;
+      DROP FUNCTION IF EXISTS templates_search_vector_trigger;
+    `);
     await queryInterface.dropTable("templates");
   },
 };
