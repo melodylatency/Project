@@ -23,6 +23,10 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      views: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       search_vector: {
         type: Sequelize.TSVECTOR,
         allowNull: true,

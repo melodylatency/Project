@@ -28,6 +28,11 @@ const Template = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    views: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
     access: {
       type: DataTypes.ENUM("public", "restricted"),
       allowNull: false,
