@@ -162,7 +162,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 // @route   PUT /api/users/profile
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findByPk(req.body.id);
 
   if (user) {
     user.name = req.body.name || user.name;
@@ -190,7 +190,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @route   GET /api/users/profile
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+  const user = await User.findByPk(req.body.id);
 
   if (user) {
     res.status(200).json({

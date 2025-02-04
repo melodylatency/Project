@@ -3,6 +3,13 @@ import { apiSlice } from "./apiSlice";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => ({
+        url: USERS_URL,
+      }),
+      providesTags: ["Users"],
+      keepUnusedDataFor: 5,
+    }),
     login: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth`,
@@ -23,12 +30,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
-    getUsers: builder.query({
-      query: () => ({
-        url: USERS_URL,
+    profile: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/profile`,
+        method: "PUT",
+        body: data,
       }),
-      providesTags: ["Users"],
-      keepUnusedDataFor: 5,
     }),
     deleteUser: builder.mutation({
       query: (userId) => ({
@@ -52,11 +59,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetUsersQuery,
   useLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
-  useGetUsersQuery,
   useDeleteUserMutation,
   useBlockUserMutation,
   useUnblockUserMutation,
+  useProfileMutation,
 } = usersApiSlice; // custom hook that calls the code block above

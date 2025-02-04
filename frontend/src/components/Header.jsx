@@ -19,6 +19,10 @@ const Header = () => {
     navigate("/admin");
   };
 
+  const profileHandler = () => {
+    navigate("/profile");
+  };
+
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
@@ -50,6 +54,9 @@ const Header = () => {
                   hidden={!userInfo.isAdmin}
                 >
                   Admin Panel
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={profileHandler}>
+                  Profile
                 </NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler}>
                   Logout
