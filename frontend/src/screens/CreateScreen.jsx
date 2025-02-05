@@ -1,4 +1,3 @@
-// CreateScreen.jsx
 import React, { useState } from "react";
 import {
   Form,
@@ -176,7 +175,7 @@ const CreateScreen = () => {
           <Card.Header className="bg-light">Add New Question</Card.Header>
           <Card.Body>
             <Row className="g-3 align-items-center">
-              <Col md={4}>
+              <Col md={6}>
                 <Form.Control
                   type="text"
                   placeholder="Question title"
@@ -186,20 +185,7 @@ const CreateScreen = () => {
                   }
                 />
               </Col>
-              <Col md={4}>
-                <Form.Control
-                  type="text"
-                  placeholder="Optional description"
-                  value={newQuestion.description}
-                  onChange={(e) =>
-                    setNewQuestion({
-                      ...newQuestion,
-                      description: e.target.value,
-                    })
-                  }
-                />
-              </Col>
-              <Col md={2}>
+              <Col md={3}>
                 <Form.Select
                   value={newQuestion.type}
                   onChange={(e) =>
@@ -212,7 +198,7 @@ const CreateScreen = () => {
                   <option value="checkbox">Checkbox</option>
                 </Form.Select>
               </Col>
-              <Col md={1}>
+              <Col md={2}>
                 <Form.Check
                   type="checkbox"
                   label="Display"
@@ -229,6 +215,21 @@ const CreateScreen = () => {
                 <Button variant="primary" onClick={addQuestion}>
                   +
                 </Button>
+              </Col>
+            </Row>
+            <Row className="my-3">
+              <Col md={12}>
+                <Form.Control
+                  as={"textarea"}
+                  placeholder="Optional description"
+                  value={newQuestion.description}
+                  onChange={(e) =>
+                    setNewQuestion({
+                      ...newQuestion,
+                      description: e.target.value,
+                    })
+                  }
+                />
               </Col>
             </Row>
             <Form.Text className="text-muted">
