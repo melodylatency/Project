@@ -18,6 +18,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import QuestionCard from "../components/QuestionCard";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 // Sortable Item component
 const SortableItem = ({ id, children, index }) => {
@@ -33,7 +34,7 @@ const SortableItem = ({ id, children, index }) => {
     <div ref={setNodeRef} style={style} {...attributes}>
       {React.cloneElement(children, {
         dragHandleProps: listeners,
-        index: index,
+        index,
       })}
     </div>
   );
@@ -60,6 +61,10 @@ const CreateScreen = () => {
     const countOfType = questions.filter(
       (q) => q.type === newQuestion.type
     ).length;
+    if (newQuestion.description.trim().length > 1500) {
+      toast.error("Description too large.");
+      return;
+    }
     if (countOfType >= 4) {
       alert(
         `You can add a maximum of 4 questions of type "${newQuestion.type}"`
