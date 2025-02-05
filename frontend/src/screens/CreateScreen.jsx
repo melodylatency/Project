@@ -9,66 +9,53 @@ import {
   Alert,
 } from "react-bootstrap";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-// A simple component for rendering a question preview card
-const QuestionCard = ({ question, index, onDelete, provided }) => {
-  return (
-    <Card
-      className="mb-3 shadow-sm"
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-    >
-      <Card.Body>
-        <Row className="align-items-center">
-          <Col>
-            <h5 className="mb-1">
-              {index + 1}. {question.title}
-            </h5>
-            {question.description && (
-              <p className="mb-1 text-muted">{question.description}</p>
-            )}
-            <small className="text-secondary">Type: {question.type}</small>
-          </Col>
-          <Col xs="auto">
-            <Button
-              variant="outline-danger"
-              size="sm"
-              onClick={() => onDelete(question.id)}
-            >
-              Delete
-            </Button>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
-  );
-};
+import QuestionCard from "../components/QuestionCard";
 
 const CreateScreen = () => {
   // Template header states
   const [title, setTitle] = useState("Untitled Form");
   const [description, setDescription] = useState("");
 
-  // Questions state (each question includes id, title, description, and type)
+  // Questions state (each question includes id, title, description, type, and displayOnTable)
   const [questions, setQuestions] = useState([]);
 
-  // New question being built in the form below
+  // New question being built in the form below.
+  // Added the "displayOnTable" boolean flag (default false)
   const [newQuestion, setNewQuestion] = useState({
-    type: "text", // default type
+    type: "text", // default type: single-line string
     title: "",
     description: "",
+    displayOnTable: false,
   });
 
   // Success indicator when the template is “saved”
   const [success, setSuccess] = useState(false);
 
-  // Handler to add a new question (only if the title is non-empty)
+  // Handler to add a new question.
+  // Enforces a maximum of 4 questions per type.
   const addQuestion = () => {
     if (newQuestion.title.trim() === "") return;
+
+    // Count the number of questions of the current type
+    const countOfType = questions.filter(
+      (q) => q.type === newQuestion.type
+    ).length;
+    if (countOfType >= 4) {
+      alert(
+        `You can add a maximum of 4 questions of type "${newQuestion.type}"`
+      );
+      return;
+    }
+
     const questionWithId = { ...newQuestion, id: Date.now() };
     setQuestions([...questions, questionWithId]);
-    setNewQuestion({ type: "text", title: "", description: "" });
+    // Reset the new question inputs (keep default type as "text")
+    setNewQuestion({
+      type: "text",
+      title: "",
+      description: "",
+      displayOnTable: false,
+    });
   };
 
   // Handler for drag and drop reordering
@@ -99,7 +86,7 @@ const CreateScreen = () => {
 
     const template = { title, description, questions };
     try {
-      // Replace with your actual API call
+      // Replace with your actual API call logic
       console.log("Form Template Created:", template);
       setSuccess(true);
       // Reset form fields after saving
@@ -176,8 +163,8 @@ const CreateScreen = () => {
         <Card className="mt-4 mb-4 shadow-sm">
           <Card.Header className="bg-light">Add New Question</Card.Header>
           <Card.Body>
-            <Row className="g-3">
-              <Col md={5}>
+            <Row className="g-3 align-items-center">
+              <Col md={4}>
                 <Form.Control
                   type="text"
                   placeholder="Question title"
@@ -207,11 +194,24 @@ const CreateScreen = () => {
                     setNewQuestion({ ...newQuestion, type: e.target.value })
                   }
                 >
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
+                  <option value="text">Single-line</option>
+                  <option value="textarea">Multi-line</option>
+                  <option value="number">Integer</option>
                   <option value="checkbox">Checkbox</option>
-                  <option value="textarea">Paragraph</option>
                 </Form.Select>
+              </Col>
+              <Col md={1}>
+                <Form.Check
+                  type="checkbox"
+                  label="Display"
+                  checked={newQuestion.displayOnTable}
+                  onChange={(e) =>
+                    setNewQuestion({
+                      ...newQuestion,
+                      displayOnTable: e.target.checked,
+                    })
+                  }
+                />
               </Col>
               <Col md={1}>
                 <Button variant="primary" onClick={addQuestion}>
@@ -219,6 +219,9 @@ const CreateScreen = () => {
                 </Button>
               </Col>
             </Row>
+            <Form.Text className="text-muted">
+              Note: You can add up to 4 questions of each type.
+            </Form.Text>
           </Card.Body>
         </Card>
 
