@@ -1,4 +1,3 @@
-// Question Model (questions.js)
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
@@ -12,13 +11,7 @@ Question.init(
       primaryKey: true,
     },
     type: {
-      type: DataTypes.ENUM(
-        "SINGLE_LINE",
-        "MULTI_LINE",
-        "INTEGER",
-        "CHECKBOX",
-        "DROPDOWN"
-      ),
+      type: DataTypes.ENUM("SINGLE_LINE", "MULTI_LINE", "INTEGER", "CHECKBOX"),
       allowNull: false,
     },
     title: {

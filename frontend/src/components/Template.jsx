@@ -1,7 +1,8 @@
 import React from "react";
 import { Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import Rating from "./Rating";
+import { Tag } from "antd";
+import { Link } from "react-router-dom";
 
 const Template = ({ template }) => {
   return (
@@ -16,17 +17,19 @@ const Template = ({ template }) => {
       </Link>
       <Card.Body>
         <Link to={`/template/${template.id}`}>
-          <Card.Title className="template-title pb-4" as="div">
+          <Card.Title className="template-title pb-3" as="div">
             <h1 className="text-ellipsis truncate text-lg">{template.title}</h1>
           </Card.Title>
         </Link>
-        <Card.Text className="pb-1" as="div">
+        <Card.Text as="div">
           <Rating value={4.7} />
         </Card.Text>
-        <Card.Text as="h3">views: {template.views}</Card.Text>
-        <Link to={`/${template.topic}`} className="underline">
-          {template.topic}
-        </Link>
+        <Card.Text as="h3" className="my-2">
+          views: {template.views}
+        </Card.Text>
+        <Tag>
+          <Link to={`/${template.topic}`}>{template.topic}</Link>
+        </Tag>
       </Card.Body>
     </Card>
   );

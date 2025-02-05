@@ -1,8 +1,9 @@
-import { DataTypes } from "sequelize";
+import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-const Template = sequelize.define(
-  "Template",
+class Template extends Model {}
+
+Template.init(
   {
     id: {
       type: DataTypes.UUID,
