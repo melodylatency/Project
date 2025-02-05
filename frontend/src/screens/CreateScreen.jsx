@@ -1,3 +1,4 @@
+// CreateScreen.jsx
 import React, { useState } from "react";
 import {
   Form,
@@ -16,11 +17,10 @@ const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Form");
   const [description, setDescription] = useState("");
 
-  // Questions state (each question includes id, title, description, type, and displayOnTable)
+  // Questions state (each question includes id, title, description, type, etc.)
   const [questions, setQuestions] = useState([]);
 
-  // New question being built in the form below.
-  // Added the "displayOnTable" boolean flag (default false)
+  // New question being built.
   const [newQuestion, setNewQuestion] = useState({
     type: "text", // default type: single-line string
     title: "",
@@ -31,8 +31,7 @@ const CreateScreen = () => {
   // Success indicator when the template is “saved”
   const [success, setSuccess] = useState(false);
 
-  // Handler to add a new question.
-  // Enforces a maximum of 4 questions per type.
+  // Add a new question. If type is "checkbox", initialize an empty options array.
   const addQuestion = () => {
     if (newQuestion.title.trim() === "") return;
 
@@ -47,7 +46,12 @@ const CreateScreen = () => {
       return;
     }
 
-    const questionWithId = { ...newQuestion, id: Date.now() };
+    const questionWithId = {
+      ...newQuestion,
+      id: Date.now(),
+      // Only add options if this question supports them (e.g. checkboxes)
+      options: newQuestion.type === "checkbox" ? [] : undefined,
+    };
     setQuestions([...questions, questionWithId]);
     // Reset the new question inputs (keep default type as "text")
     setNewQuestion({
@@ -58,7 +62,7 @@ const CreateScreen = () => {
     });
   };
 
-  // Handler for drag and drop reordering
+  // Handler for drag and drop reordering of questions
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const reordered = Array.from(questions);
@@ -70,6 +74,13 @@ const CreateScreen = () => {
   // Delete a question by its id
   const deleteQuestion = (id) => {
     setQuestions(questions.filter((q) => q.id !== id));
+  };
+
+  // Update a question (for example, when options are updated)
+  const updateQuestion = (updatedQuestion) => {
+    setQuestions(
+      questions.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q))
+    );
   };
 
   // Handler for final form submission ("Save Form")
@@ -148,6 +159,7 @@ const CreateScreen = () => {
                         question={question}
                         index={index}
                         onDelete={deleteQuestion}
+                        onUpdateQuestion={updateQuestion}
                         provided={provided}
                       />
                     )}
