@@ -24,7 +24,7 @@ const CreateScreen = () => {
     type: "text", // default type: single-line string
     title: "",
     description: "",
-    displayOnTable: false,
+    displayOnTable: true,
   });
 
   // Success indicator when the template is “saved”
@@ -110,7 +110,7 @@ const CreateScreen = () => {
 
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
-      <h1 className="text-center mb-4">Create New Form</h1>
+      <h1 className="text-center mb-4 text-5xl">Create New Form</h1>
       {success && (
         <Alert variant="success" onClose={() => setSuccess(false)} dismissible>
           Form saved successfully!
