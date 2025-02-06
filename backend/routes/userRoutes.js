@@ -37,4 +37,6 @@ router
 router.route("/:id/block").put(protect, admin, blockUser);
 router.route("/:id/unblock").put(protect, admin, unblockUser);
 
+router.route("/create").get(protect);
+
 export default router;
