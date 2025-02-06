@@ -23,4 +23,27 @@ const getTemplateById = asyncHandler(async (req, res) => {
   throw new Error("Template not found");
 });
 
-export { getTemplates, getTemplateById };
+const createTemplate = asyncHandler(async (req, res) => {
+  const { title, description, questions, authorId, access, tags } = req.body;
+
+  const template = await Template.create({
+    title,
+    description,
+    questions,
+    authorId,
+    access,
+    tags,
+  });
+
+  res.status(201).json({
+    id: template.id,
+    title: template.title,
+    description: template.description,
+    questions: template.questions,
+    authorId: template.authorId,
+    access: template.access,
+    tags: template.tags,
+  });
+});
+
+export { getTemplates, getTemplateById, createTemplate };

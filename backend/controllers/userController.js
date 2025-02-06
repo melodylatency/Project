@@ -8,7 +8,6 @@ import User from "../models/userModel.js";
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Sequelize equivalent of findOne
   const user = await User.findOne({ where: { email } });
 
   if (user && (await user.matchPassword(password))) {
@@ -17,15 +16,13 @@ const authUser = asyncHandler(async (req, res) => {
       throw new Error("Your account is blocked");
     }
 
-    // Update last login
     user.lastLogin = new Date();
     await user.save();
 
-    // Use id instead of id
     generateToken(res, user.id);
 
     res.status(200).json({
-      id: user.id, // Changed from id
+      id: user.id,
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
@@ -44,7 +41,6 @@ const authUser = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Sequelize findOne
   const userExists = await User.findOne({ where: { email } });
 
   if (userExists) {
@@ -55,14 +51,14 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
-    password, // Will be hashed by model hook
+    password,
     lastLogin: new Date(),
   });
 
-  generateToken(res, user.id); // Use id instead of id
+  generateToken(res, user.id);
 
   res.status(201).json({
-    id: user.id, // Changed from id
+    id: user.id,
     name: user.name,
     email: user.email,
     isAdmin: user.isAdmin,
@@ -71,7 +67,9 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 });
 
-// Logout controller remains the same (no DB interaction)
+// @desc    Log out user
+// @route   POST /api/users/logout
+// @access  Public
 const logoutUser = asyncHandler(async (req, res) => {
   res.cookie("operation", "", {
     httpOnly: true,
@@ -84,9 +82,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  // Sequelize equivalent of find()
   const users = await User.findAll({
-    attributes: { exclude: ["password"] }, // Exclude sensitive data
+    attributes: { exclude: ["password"] },
   });
   res.status(200).json(users);
 });
@@ -95,7 +92,6 @@ const getUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/:id
 // @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-  // Sequelize findByPk
   const user = await User.findByPk(req.params.id, {
     attributes: { exclude: ["password"] },
   });
@@ -149,12 +145,11 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 
   if (req.user.id === user.id) {
-    // Use id instead of id
     res.status(400);
     throw new Error("Cannot delete yourself");
   }
 
-  await user.destroy(); // Sequelize destroy
+  await user.destroy();
   res.status(200).json({ message: "User deleted successfully" });
 });
 
@@ -213,7 +208,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
   if (user) {
     user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email; // Fixed typo (was req.body.name)
+    user.email = req.body.email || user.email;
     user.isAdmin = Boolean(req.body.isAdmin);
 
     const updatedUser = await user.save();
