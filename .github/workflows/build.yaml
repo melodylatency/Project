@@ -19,7 +19,7 @@ jobs:
       - name: Add VPS to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H 2.57.241.58 >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa 2.57.241.58 >> ~/.ssh/known_hosts
 
       - name: Deploy
         run: |
@@ -31,6 +31,6 @@ jobs:
             npx sequelize-cli db:seed:all &&
             cd frontend &&
             npm install &&
-            NODE_OPTIONS='--max-old-space-size=2048' npm run build &&
+            export NODE_OPTIONS='--max-old-space-size=2048' && npm run build &&
             pm2 restart server &&
             systemctl restart nginx"
