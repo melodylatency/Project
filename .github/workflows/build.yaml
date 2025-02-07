@@ -24,8 +24,6 @@ jobs:
       - name: Deploy
         run: |
           sshpass -p "${{ secrets.KEY }}" ssh -o StrictHostKeyChecking=no root@2.57.241.58 "
-            which npm &&
-            npm --version &&
             cd /var/www/project &&
             git pull origin main &&
             npm install &&
@@ -33,6 +31,6 @@ jobs:
             npx sequelize-cli db:seed:all &&
             cd frontend &&
             npm install &&
-            export NODE_OPTIONS='--max-old-space-size=2048' && npm run build &&
+            NODE_OPTIONS='--max-old-space-size=2048' npm run build &&
             pm2 restart server &&
             systemctl restart nginx"
