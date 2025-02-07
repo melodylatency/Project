@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Container,
-  Card,
-  Alert,
-} from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -23,6 +15,9 @@ import {
 } from "../redux/slices/questionSlice";
 import SortableItem from "../components/SortableItem";
 import { v4 as uuid } from "uuid";
+import { useCreateTemplateMutation } from "../redux/slices/templatesApiSlice";
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Form");
@@ -33,11 +28,14 @@ const CreateScreen = () => {
     description: "",
     displayOnTable: true,
   });
-  const [success, setSuccess] = useState(false);
 
   const { questionList } = useSelector((state) => state.question);
+  const { userInfo } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [createTemplate, { isLoading }] = useCreateTemplateMutation();
 
   const addQuestion = () => {
     const countOfType = questionList.filter(
@@ -105,26 +103,26 @@ const CreateScreen = () => {
       return;
     }
 
-    const template = { title, description, questionList };
     try {
-      console.log("Form Template Created:", template);
-      setSuccess(true);
-      setTitle("Untitled Form");
-      setDescription("");
+      await createTemplate({
+        title,
+        description,
+        topic: "Other",
+        questionList,
+        authorId: userInfo.id,
+      }).unwrap();
+      localStorage.removeItem("templateData");
       dispatch(setQuestionList([]));
-    } catch (error) {
-      console.error("Error saving form:", error);
+      navigate("/");
+      toast.success("Template created successfully!");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
     }
   };
 
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
       <h1 className="text-center mb-4 text-5xl">Create New Form</h1>
-      {success && (
-        <Alert variant="success" onClose={() => setSuccess(false)} dismissible>
-          Form saved successfully!
-        </Alert>
-      )}
       {/* Move DndContext outside the Form */}
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
@@ -242,6 +240,7 @@ const CreateScreen = () => {
               Save Form
             </Button>
           </div>
+          {isLoading && <Loader />}
         </Form>
       </DndContext>
     </Container>

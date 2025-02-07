@@ -28,49 +28,49 @@ const createTemplate = asyncHandler(async (req, res) => {
   const { title, description, topic, image, access, authorId, questionList } =
     req.body;
 
-  if (!title || !topic || !authorId) {
+  if (!title || !authorId || !questionList) {
     res.status(400);
-    throw new Error("Missing required fields: title, topic, or authorId");
+    throw new Error("Missing required fields: title, questions, or authorId");
   }
 
   // Create the Template
   const template = await Template.create({
     title,
     description: description || "",
-    topic,
-    image: image || "",
+    topic: topic || "Other",
+    image:
+      image ||
+      "https://img.freepik.com/free-vector/cerulean-blue-curve-frame-template-vector_53876-136094.jpg",
     access: access || "public",
     authorId,
   });
 
   // Process Questions if provided
-  if (questionList && questionList.length > 0) {
-    const convertType = (type) => {
-      switch (type) {
-        case "text":
-          return "SINGLE_LINE";
-        case "textarea":
-          return "MULTI_LINE";
-        case "number":
-          return "INTEGER";
-        case "checkbox":
-          return "CHECKBOX";
-        default:
-          throw new Error(`Invalid question type: ${type}`);
-      }
-    };
+  const convertType = (type) => {
+    switch (type) {
+      case "text":
+        return "SINGLE_LINE";
+      case "textarea":
+        return "MULTI_LINE";
+      case "number":
+        return "INTEGER";
+      case "checkbox":
+        return "CHECKBOX";
+      default:
+        throw new Error(`Invalid question type: ${type}`);
+    }
+  };
 
-    const questionsData = questionList.map((q, index) => ({
-      type: convertType(q.type),
-      title: q.title,
-      description: q.description || "",
-      order: index, // Use array index as order
-      show_in_results: q.displayOnTable,
-      template_id: template.id,
-    }));
+  const questionsData = questionList.map((q, index) => ({
+    type: convertType(q.type),
+    title: q.title,
+    description: q.description || "",
+    order: index, // Use array index as order
+    show_in_results: q.displayOnTable,
+    template_id: template.id,
+  }));
 
-    await Question.bulkCreate(questionsData);
-  }
+  await Question.bulkCreate(questionsData);
 
   // Fetch the created Questions with their associations
   // const questions = await Question.findAll({

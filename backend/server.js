@@ -21,8 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser middleware
 app.use(cookieParser());
 
-app.use("/api/users", userRoutes); // User express router, we are shortening the url
-app.use("/api/templates", templateRoutes); // User express router, we are shortening the url
+app.use("/api/users", userRoutes);
+app.use("/api/templates", templateRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "frontend/build")));

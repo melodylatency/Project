@@ -27,5 +27,8 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetTemplatesQuery, useGetTemplateByIdQuery } =
-  templatesApiSlice;
+export const {
+  useGetTemplatesQuery,
+  useGetTemplateByIdQuery,
+  useCreateTemplateMutation,
+} = templatesApiSlice;
