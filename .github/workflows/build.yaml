@@ -1,0 +1,36 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Add VPS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 2.57.241.58 >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          sshpass -p "${{ secrets.KEY }}" ssh -o StrictHostKeyChecking=no root@2.57.241.58 "
+            cd /var/www/project &&
+            git pull origin main &&
+            npm install &&
+            npx sequelize-cli db:migrate &&
+            npx sequelize-cli db:seed:all &&
+            cd frontend &&
+            npm install &&
+            npm run build &&
+            pm2 restart server &&
+            systemctl restart nginx"
