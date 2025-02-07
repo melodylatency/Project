@@ -10,7 +10,7 @@ export default {
     const sampleTemplates = templates.map((template) => ({
       ...template,
       id: Sequelize.literal("uuid_generate_v4()"),
-      createdBy: adminUser[0].id,
+      authorId: adminUser[0].id,
     }));
 
     return queryInterface.bulkInsert("templates", sampleTemplates);

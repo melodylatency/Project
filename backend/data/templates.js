@@ -6,7 +6,7 @@ const templates = [
     image: "/images/math.webp",
     views: 10,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174000",
+    authorId: "123e4567-e89b-12d3-a456-426614174000",
   },
   {
     title: "Job Application Form",
@@ -15,7 +15,7 @@ const templates = [
     image: "/images/job.webp",
     views: 3,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174001",
+    authorId: "123e4567-e89b-12d3-a456-426614174001",
   },
   {
     title: "Classroom Poll",
@@ -24,7 +24,7 @@ const templates = [
     image: "/images/poll.webp",
     views: 7,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174002",
+    authorId: "123e4567-e89b-12d3-a456-426614174002",
   },
   {
     title: "Science Education Template",
@@ -34,7 +34,7 @@ const templates = [
     image: "/images/education.webp",
     views: 9,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174003",
+    authorId: "123e4567-e89b-12d3-a456-426614174003",
   },
   {
     title: "General Feedback Form",
@@ -43,7 +43,7 @@ const templates = [
     image: "/images/feedback.webp",
     views: 1,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174004",
+    authorId: "123e4567-e89b-12d3-a456-426614174004",
   },
   {
     title: "Advanced Math Quiz Template",
@@ -52,7 +52,7 @@ const templates = [
     image: "/images/math.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174005",
+    authorId: "123e4567-e89b-12d3-a456-426614174005",
   },
   {
     title: "Internship Application Form",
@@ -61,7 +61,7 @@ const templates = [
     image: "/images/job.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174006",
+    authorId: "123e4567-e89b-12d3-a456-426614174006",
   },
   {
     title: "School Event Poll",
@@ -70,7 +70,7 @@ const templates = [
     image: "/images/poll.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174007",
+    authorId: "123e4567-e89b-12d3-a456-426614174007",
   },
   {
     title: "Biology Education Template",
@@ -80,7 +80,7 @@ const templates = [
     image: "/images/education.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174008",
+    authorId: "123e4567-e89b-12d3-a456-426614174008",
   },
   {
     title: "Product Feedback Form",
@@ -89,7 +89,7 @@ const templates = [
     image: "/images/feedback.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174009",
+    authorId: "123e4567-e89b-12d3-a456-426614174009",
   },
   {
     title: "Geometry Quiz Template",
@@ -98,7 +98,7 @@ const templates = [
     image: "/images/math.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174010",
+    authorId: "123e4567-e89b-12d3-a456-426614174010",
   },
   {
     title: "Freelance Job Application Form",
@@ -107,7 +107,7 @@ const templates = [
     image: "/images/job.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174011",
+    authorId: "123e4567-e89b-12d3-a456-426614174011",
   },
   {
     title: "University Course Poll",
@@ -116,7 +116,7 @@ const templates = [
     image: "/images/poll.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174012",
+    authorId: "123e4567-e89b-12d3-a456-426614174012",
   },
   {
     title: "Physics Education Template",
@@ -126,7 +126,7 @@ const templates = [
     image: "/images/education.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174013",
+    authorId: "123e4567-e89b-12d3-a456-426614174013",
   },
   {
     title: "Service Feedback Form",
@@ -135,7 +135,7 @@ const templates = [
     image: "/images/feedback.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174014",
+    authorId: "123e4567-e89b-12d3-a456-426614174014",
   },
   {
     title: "Algebra Quiz Template",
@@ -144,7 +144,7 @@ const templates = [
     image: "/images/math.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174015",
+    authorId: "123e4567-e89b-12d3-a456-426614174015",
   },
   {
     title: "Volunteer Application Form",
@@ -153,7 +153,7 @@ const templates = [
     image: "/images/job.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174016",
+    authorId: "123e4567-e89b-12d3-a456-426614174016",
   },
   {
     title: "Teacher Feedback Poll",
@@ -162,7 +162,7 @@ const templates = [
     image: "/images/poll.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174017",
+    authorId: "123e4567-e89b-12d3-a456-426614174017",
   },
   {
     title: "Chemistry Education Template",
@@ -172,7 +172,7 @@ const templates = [
     image: "/images/education.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174018",
+    authorId: "123e4567-e89b-12d3-a456-426614174018",
   },
   {
     title: "Event Feedback Form",
@@ -181,7 +181,7 @@ const templates = [
     image: "/images/feedback.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174019",
+    authorId: "123e4567-e89b-12d3-a456-426614174019",
   },
   {
     title: "Calculus Quiz Template",
@@ -190,7 +190,7 @@ const templates = [
     image: "/images/math.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174020",
+    authorId: "123e4567-e89b-12d3-a456-426614174020",
   },
   {
     title: "Part-Time Job Application Form",
@@ -199,7 +199,7 @@ const templates = [
     image: "/images/job.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174021",
+    authorId: "123e4567-e89b-12d3-a456-426614174021",
   },
   {
     title: "Student Satisfaction Poll",
@@ -209,7 +209,7 @@ const templates = [
     image: "/images/poll.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174022",
+    authorId: "123e4567-e89b-12d3-a456-426614174022",
   },
   {
     title: "Astronomy Education Template",
@@ -219,7 +219,7 @@ const templates = [
     image: "/images/education.webp",
     views: 0,
     access: "public",
-    createdBy: "123e4567-e89b-12d3-a456-426614174023",
+    authorId: "123e4567-e89b-12d3-a456-426614174023",
   },
   {
     title: "Workshop Feedback Form",
@@ -228,7 +228,7 @@ const templates = [
     image: "/images/feedback.webp",
     views: 0,
     access: "restricted",
-    createdBy: "123e4567-e89b-12d3-a456-426614174024",
+    authorId: "123e4567-e89b-12d3-a456-426614174024",
   },
 ];
 

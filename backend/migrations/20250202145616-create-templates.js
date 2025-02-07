@@ -36,7 +36,7 @@ export default {
         allowNull: false,
         defaultValue: "public",
       },
-      createdBy: {
+      authorId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {

@@ -39,7 +39,7 @@ Template.init(
       allowNull: false,
       defaultValue: "public",
     },
-    createdBy: {
+    authorId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -56,7 +56,7 @@ Template.init(
 );
 
 Template.associate = (models) => {
-  Template.belongsTo(models.User, { foreignKey: "createdBy", as: "creator" });
+  Template.belongsTo(models.User, { foreignKey: "authorId", as: "creator" });
   Template.hasMany(models.Question, { foreignKey: "template_id" });
   Template.hasMany(models.Form, { foreignKey: "template_id" });
   Template.hasMany(models.Comment, { foreignKey: "template_id" });
