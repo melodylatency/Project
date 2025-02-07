@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import Rating from "../components/Rating";
 import { Link } from "react-router-dom";
-import { useGetTemplateDetailsQuery } from "../redux/slices/templatesApiSlice";
+import { useGetTemplateByIdQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useState } from "react";
@@ -23,7 +23,7 @@ const TemplateScreen = () => {
     data: template,
     isLoading,
     error,
-  } = useGetTemplateDetailsQuery(templateId);
+  } = useGetTemplateByIdQuery(templateId);
 
   return (
     <>

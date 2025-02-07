@@ -17,11 +17,16 @@ import {
 import QuestionCard from "../components/QuestionCard";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import {
+  addToQuestionList,
+  setQuestionList,
+} from "../redux/slices/questionSlice";
+import SortableItem from "../components/SortableItem";
+import { v4 as uuid } from "uuid";
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Form");
   const [description, setDescription] = useState("");
-  const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
     title: "",
@@ -32,8 +37,10 @@ const CreateScreen = () => {
 
   const { questionList } = useSelector((state) => state.question);
 
+  const dispatch = useDispatch();
+
   const addQuestion = () => {
-    const countOfType = questions.filter(
+    const countOfType = questionList.filter(
       (q) => q.type === newQuestion.type
     ).length;
 
@@ -42,20 +49,20 @@ const CreateScreen = () => {
       toast.error("Description too large.");
     } else if (countOfType >= 4) {
       alert(
-        `You can add a maximum of 4 questions of type "${newQuestion.type}"`
+        `You can add a maximum of 4 questionList of type "${newQuestion.type}"`
       );
     } else {
       const questionWithId = {
         ...newQuestion,
-        id: Date.now(),
+        id: uuid(),
         options: newQuestion.type === "checkbox" ? [] : undefined,
       };
-      setQuestions([...questions, questionWithId]);
+      dispatch(addToQuestionList(questionWithId));
       setNewQuestion({
         type: "text",
         title: "",
         description: "",
-        displayOnTable: false,
+        displayOnTable: true,
       });
     }
   };
@@ -63,21 +70,27 @@ const CreateScreen = () => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      setQuestions((questions) => {
-        const oldIndex = questions.findIndex((q) => q.id === active.id);
-        const newIndex = questions.findIndex((q) => q.id === over.id);
-        return arrayMove(questions, oldIndex, newIndex);
-      });
+      dispatch(
+        setQuestionList((questionList) => {
+          const oldIndex = questionList.findIndex((q) => q.id === active.id);
+          const newIndex = questionList.findIndex((q) => q.id === over.id);
+          return arrayMove(questionList, oldIndex, newIndex);
+        })
+      );
     }
   };
 
   const deleteQuestion = (id) => {
-    setQuestions(questions.filter((q) => q.id !== id));
+    dispatch(setQuestionList(questionList.filter((q) => q.id !== id)));
   };
 
   const updateQuestion = (updatedQuestion) => {
-    setQuestions(
-      questions.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q))
+    dispatch(
+      setQuestionList(
+        questionList.map((q) =>
+          q.id === updatedQuestion.id ? updatedQuestion : q
+        )
+      )
     );
   };
 
@@ -87,18 +100,18 @@ const CreateScreen = () => {
       alert("Form title cannot be empty");
       return;
     }
-    if (questions.length === 0) {
+    if (questionList.length === 0) {
       alert("Please add at least one question.");
       return;
     }
 
-    const template = { title, description, questions };
+    const template = { title, description, questionList };
     try {
       console.log("Form Template Created:", template);
       setSuccess(true);
       setTitle("Untitled Form");
       setDescription("");
-      setQuestions([]);
+      dispatch(setQuestionList([]));
     } catch (error) {
       console.error("Error saving form:", error);
     }
@@ -142,10 +155,10 @@ const CreateScreen = () => {
           {/* Questions List */}
           <h4 className="mb-3">Questions</h4>
           <SortableContext
-            items={questions.map((q) => q.id)}
+            items={questionList.map((q) => q.id)}
             strategy={verticalListSortingStrategy}
           >
-            {questions.map((question, index) => (
+            {questionList.map((question, index) => (
               <SortableItem key={question.id} id={question.id} index={index}>
                 <QuestionCard
                   question={question}
@@ -219,7 +232,7 @@ const CreateScreen = () => {
                 </Col>
               </Row>
               <Form.Text className="text-muted">
-                Note: You can add up to 4 questions of each type.
+                Note: You can add up to 4 questionList of each type.
               </Form.Text>
             </Card.Body>
           </Card>
