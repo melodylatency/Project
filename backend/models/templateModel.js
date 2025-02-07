@@ -55,7 +55,7 @@ Template.init(
   }
 );
 
-Template.associations = (models) => {
+Template.associate = (models) => {
   Template.belongsTo(models.User, { foreignKey: "createdBy", as: "creator" });
   Template.hasMany(models.Question, { foreignKey: "template_id" });
   Template.hasMany(models.Form, { foreignKey: "template_id" });

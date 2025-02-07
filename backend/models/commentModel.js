@@ -23,7 +23,7 @@ Comment.init(
   }
 );
 
-Comment.associations = (models) => {
+Comment.associate = (models) => {
   Comment.belongsTo(models.Template, { foreignKey: "template_id" });
   Comment.belongsTo(models.User, { foreignKey: "user_id" });
 };

@@ -21,7 +21,7 @@ UserPreference.init(
   }
 );
 
-UserPreference.associations = (models) => {
+UserPreference.associate = (models) => {
   UserPreference.belongsTo(models.User, { foreignKey: "user_id" });
 };
 

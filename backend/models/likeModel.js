@@ -25,7 +25,7 @@ Like.init(
   }
 );
 
-Like.associations = (models) => {
+Like.associate = (models) => {
   Like.belongsTo(models.Template, { foreignKey: "template_id" });
   Like.belongsTo(models.User, { foreignKey: "user_id" });
 };

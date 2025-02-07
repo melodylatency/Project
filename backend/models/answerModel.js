@@ -23,7 +23,7 @@ Answer.init(
   }
 );
 
-Answer.associations = (models) => {
+Answer.associate = (models) => {
   Answer.belongsTo(models.Form, { foreignKey: "form_id" });
   Answer.belongsTo(models.Question, { foreignKey: "question_id" });
 };

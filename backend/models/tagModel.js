@@ -23,7 +23,7 @@ Tag.init(
   }
 );
 
-Tag.associations = (models) => {
+Tag.associate = (models) => {
   Tag.belongsToMany(models.Template, {
     through: "template_tags",
     foreignKey: "tag_id",
