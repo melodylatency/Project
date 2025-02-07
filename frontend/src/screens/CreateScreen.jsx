@@ -13,32 +13,10 @@ import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
-  useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import QuestionCard from "../components/QuestionCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
-// Sortable Item component
-const SortableItem = ({ id, children, index }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes}>
-      {React.cloneElement(children, {
-        dragHandleProps: listeners,
-        index,
-      })}
-    </div>
-  );
-};
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Form");
@@ -52,38 +30,34 @@ const CreateScreen = () => {
   });
   const [success, setSuccess] = useState(false);
 
-  const { templateData } = useSelector((state) => state.template);
-  const { userInfo } = useSelector((state) => state.auth);
+  const { questionList } = useSelector((state) => state.question);
 
   const addQuestion = () => {
-    if (newQuestion.title.trim() === "") return;
-
     const countOfType = questions.filter(
       (q) => q.type === newQuestion.type
     ).length;
-    if (newQuestion.description.trim().length > 1500) {
+
+    if (newQuestion.title.trim() === "") {
+    } else if (newQuestion.description.trim().length > 1500) {
       toast.error("Description too large.");
-      return;
-    }
-    if (countOfType >= 4) {
+    } else if (countOfType >= 4) {
       alert(
         `You can add a maximum of 4 questions of type "${newQuestion.type}"`
       );
-      return;
+    } else {
+      const questionWithId = {
+        ...newQuestion,
+        id: Date.now(),
+        options: newQuestion.type === "checkbox" ? [] : undefined,
+      };
+      setQuestions([...questions, questionWithId]);
+      setNewQuestion({
+        type: "text",
+        title: "",
+        description: "",
+        displayOnTable: false,
+      });
     }
-
-    const questionWithId = {
-      ...newQuestion,
-      id: Date.now(),
-      options: newQuestion.type === "checkbox" ? [] : undefined,
-    };
-    setQuestions([...questions, questionWithId]);
-    setNewQuestion({
-      type: "text",
-      title: "",
-      description: "",
-      displayOnTable: false,
-    });
   };
 
   const handleDragEnd = (event) => {
