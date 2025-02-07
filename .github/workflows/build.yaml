@@ -28,6 +28,8 @@ jobs:
           ssh root@2.57.241.58 "
             cd /var/www/project &&
             git pull origin main &&
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh 
             npm install &&
             npx sequelize-cli db:migrate &&
             npx sequelize-cli db:seed:all &&
