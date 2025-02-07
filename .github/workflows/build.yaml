@@ -31,6 +31,7 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh 
             npm install &&
+            cd backend
             npx sequelize-cli db:migrate &&
             npx sequelize-cli db:seed:all &&
             cd frontend &&
