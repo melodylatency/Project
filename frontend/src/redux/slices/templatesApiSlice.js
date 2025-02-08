@@ -7,6 +7,7 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: TEMPLATES_URL,
         method: "GET",
+        providesTags: ["Template"],
       }),
       keepUnusedDataFor: 60,
     }),
@@ -22,6 +23,7 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
         url: `${TEMPLATES_URL}/create`,
         method: "POST",
         body: data,
+        invalidatesTags: ["Template"],
       }),
     }),
   }),

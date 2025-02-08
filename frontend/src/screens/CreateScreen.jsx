@@ -15,7 +15,10 @@ import {
 } from "../redux/slices/questionSlice";
 import SortableItem from "../components/SortableItem";
 import { v4 as uuid } from "uuid";
-import { useCreateTemplateMutation } from "../redux/slices/templatesApiSlice";
+import {
+  useCreateTemplateMutation,
+  useGetTemplatesQuery,
+} from "../redux/slices/templatesApiSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
@@ -36,6 +39,7 @@ const CreateScreen = () => {
   const navigate = useNavigate();
 
   const [createTemplate, { isLoading }] = useCreateTemplateMutation();
+  const { refetch } = useGetTemplatesQuery();
 
   const addQuestion = () => {
     const countOfType = questionList.filter(
@@ -113,6 +117,7 @@ const CreateScreen = () => {
       }).unwrap();
       localStorage.removeItem("templateData");
       dispatch(setQuestionList([]));
+      refetch();
       navigate("/");
       toast.success("Template created successfully!");
     } catch (err) {
