@@ -19,7 +19,7 @@ Form.init(
   }
 );
 
-Form.associations = (models) => {
+Form.associate = (models) => {
   Form.belongsTo(models.Template, { foreignKey: "template_id" });
   Form.belongsTo(models.User, { foreignKey: "user_id" });
   Form.hasMany(models.Answer, { foreignKey: "form_id" });

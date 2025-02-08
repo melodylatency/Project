@@ -71,8 +71,8 @@ User.init(
   }
 );
 
-User.associations = (models) => {
-  User.hasMany(models.Template, { foreignKey: "createdBy", as: "templates" });
+User.associate = (models) => {
+  User.hasMany(models.Template, { foreignKey: "authorId", as: "templates" });
   User.hasMany(models.Form, { foreignKey: "user_id" });
   User.hasMany(models.Comment, { foreignKey: "user_id" });
   User.hasMany(models.Like, { foreignKey: "user_id" });

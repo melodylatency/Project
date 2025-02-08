@@ -1,109 +1,98 @@
 import React, { useState } from "react";
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Container,
-  Card,
-  Alert,
-} from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
-  useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import QuestionCard from "../components/QuestionCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
-// Sortable Item component
-const SortableItem = ({ id, children, index }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes}>
-      {React.cloneElement(children, {
-        dragHandleProps: listeners,
-        index,
-      })}
-    </div>
-  );
-};
+import {
+  addToQuestionList,
+  setQuestionList,
+} from "../redux/slices/questionSlice";
+import SortableItem from "../components/SortableItem";
+import { v4 as uuid } from "uuid";
+import {
+  useCreateTemplateMutation,
+  useGetTemplatesQuery,
+} from "../redux/slices/templatesApiSlice";
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Form");
   const [description, setDescription] = useState("");
-  const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
     title: "",
     description: "",
     displayOnTable: true,
   });
-  const [success, setSuccess] = useState(false);
 
-  const { templateData } = useSelector((state) => state.template);
+  const { questionList } = useSelector((state) => state.question);
   const { userInfo } = useSelector((state) => state.auth);
 
-  const addQuestion = () => {
-    if (newQuestion.title.trim() === "") return;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const countOfType = questions.filter(
+  const [createTemplate, { isLoading }] = useCreateTemplateMutation();
+  const { refetch } = useGetTemplatesQuery();
+
+  const addQuestion = () => {
+    const countOfType = questionList.filter(
       (q) => q.type === newQuestion.type
     ).length;
-    if (newQuestion.description.trim().length > 1500) {
-      toast.error("Description too large.");
-      return;
-    }
-    if (countOfType >= 4) {
-      alert(
-        `You can add a maximum of 4 questions of type "${newQuestion.type}"`
-      );
-      return;
-    }
 
-    const questionWithId = {
-      ...newQuestion,
-      id: Date.now(),
-      options: newQuestion.type === "checkbox" ? [] : undefined,
-    };
-    setQuestions([...questions, questionWithId]);
-    setNewQuestion({
-      type: "text",
-      title: "",
-      description: "",
-      displayOnTable: false,
-    });
+    if (newQuestion.title.trim() === "") {
+    } else if (newQuestion.description.trim().length > 1500) {
+      toast.error("Description too large.");
+    } else if (countOfType >= 4) {
+      alert(
+        `You can add a maximum of 4 questionList of type "${newQuestion.type}"`
+      );
+    } else {
+      const questionWithId = {
+        ...newQuestion,
+        id: uuid(),
+        options: newQuestion.type === "checkbox" ? [] : undefined,
+      };
+      dispatch(addToQuestionList(questionWithId));
+      setNewQuestion({
+        type: "text",
+        title: "",
+        description: "",
+        displayOnTable: true,
+      });
+    }
   };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      setQuestions((questions) => {
-        const oldIndex = questions.findIndex((q) => q.id === active.id);
-        const newIndex = questions.findIndex((q) => q.id === over.id);
-        return arrayMove(questions, oldIndex, newIndex);
-      });
+      dispatch(
+        setQuestionList((questionList) => {
+          const oldIndex = questionList.findIndex((q) => q.id === active.id);
+          const newIndex = questionList.findIndex((q) => q.id === over.id);
+          return arrayMove(questionList, oldIndex, newIndex);
+        })
+      );
     }
   };
 
   const deleteQuestion = (id) => {
-    setQuestions(questions.filter((q) => q.id !== id));
+    dispatch(setQuestionList(questionList.filter((q) => q.id !== id)));
   };
 
   const updateQuestion = (updatedQuestion) => {
-    setQuestions(
-      questions.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q))
+    dispatch(
+      setQuestionList(
+        questionList.map((q) =>
+          q.id === updatedQuestion.id ? updatedQuestion : q
+        )
+      )
     );
   };
 
@@ -113,31 +102,32 @@ const CreateScreen = () => {
       alert("Form title cannot be empty");
       return;
     }
-    if (questions.length === 0) {
+    if (questionList.length === 0) {
       alert("Please add at least one question.");
       return;
     }
 
-    const template = { title, description, questions };
     try {
-      console.log("Form Template Created:", template);
-      setSuccess(true);
-      setTitle("Untitled Form");
-      setDescription("");
-      setQuestions([]);
-    } catch (error) {
-      console.error("Error saving form:", error);
+      await createTemplate({
+        title,
+        description,
+        topic: "Other",
+        questionList,
+        authorId: userInfo.id,
+      }).unwrap();
+      localStorage.removeItem("templateData");
+      dispatch(setQuestionList([]));
+      refetch();
+      navigate("/");
+      toast.success("Template created successfully!");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
     }
   };
 
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
       <h1 className="text-center mb-4 text-5xl">Create New Form</h1>
-      {success && (
-        <Alert variant="success" onClose={() => setSuccess(false)} dismissible>
-          Form saved successfully!
-        </Alert>
-      )}
       {/* Move DndContext outside the Form */}
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
@@ -168,10 +158,10 @@ const CreateScreen = () => {
           {/* Questions List */}
           <h4 className="mb-3">Questions</h4>
           <SortableContext
-            items={questions.map((q) => q.id)}
+            items={questionList.map((q) => q.id)}
             strategy={verticalListSortingStrategy}
           >
-            {questions.map((question, index) => (
+            {questionList.map((question, index) => (
               <SortableItem key={question.id} id={question.id} index={index}>
                 <QuestionCard
                   question={question}
@@ -245,7 +235,7 @@ const CreateScreen = () => {
                 </Col>
               </Row>
               <Form.Text className="text-muted">
-                Note: You can add up to 4 questions of each type.
+                Note: You can add up to 4 questionList of each type.
               </Form.Text>
             </Card.Body>
           </Card>
@@ -255,6 +245,7 @@ const CreateScreen = () => {
               Save Form
             </Button>
           </div>
+          {isLoading && <Loader />}
         </Form>
       </DndContext>
     </Container>

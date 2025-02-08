@@ -6,17 +6,31 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
     getTemplates: builder.query({
       query: () => ({
         url: TEMPLATES_URL,
+        method: "GET",
+        providesTags: ["Template"],
       }),
       keepUnusedDataFor: 60,
     }),
-    getTemplateDetails: builder.query({
+    getTemplateById: builder.query({
       query: (templateId) => ({
         url: `${TEMPLATES_URL}/${templateId}`,
+        method: "GET",
       }),
       keepUnusedDataFor: 60,
+    }),
+    createTemplate: builder.mutation({
+      query: (data) => ({
+        url: `${TEMPLATES_URL}/create`,
+        method: "POST",
+        body: data,
+        invalidatesTags: ["Template"],
+      }),
     }),
   }),
 });
 
-export const { useGetTemplatesQuery, useGetTemplateDetailsQuery } =
-  templatesApiSlice;
+export const {
+  useGetTemplatesQuery,
+  useGetTemplateByIdQuery,
+  useCreateTemplateMutation,
+} = templatesApiSlice;

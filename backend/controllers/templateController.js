@@ -1,5 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Template from "../models/templateModel.js";
+import Question from "../models/questionModel.js";
 
 // @desc    Fetch all templates
 // @route   /api/templates
@@ -24,25 +25,61 @@ const getTemplateById = asyncHandler(async (req, res) => {
 });
 
 const createTemplate = asyncHandler(async (req, res) => {
-  const { title, description, questions, authorId, access, tags } = req.body;
+  const { title, description, topic, image, access, authorId, questionList } =
+    req.body;
 
+  if (!title || !authorId || !questionList) {
+    res.status(400);
+    throw new Error("Missing required fields: title, questions, or authorId");
+  }
+
+  // Create the Template
   const template = await Template.create({
     title,
-    description,
-    questions,
+    description: description || "",
+    topic: topic || "Other",
+    image:
+      image ||
+      "https://img.freepik.com/free-vector/cerulean-blue-curve-frame-template-vector_53876-136094.jpg",
+    access: access || "public",
     authorId,
-    access,
-    tags,
   });
 
+  // Process Questions if provided
+  const convertType = (type) => {
+    switch (type) {
+      case "text":
+        return "SINGLE_LINE";
+      case "textarea":
+        return "MULTI_LINE";
+      case "number":
+        return "INTEGER";
+      case "checkbox":
+        return "CHECKBOX";
+      default:
+        throw new Error(`Invalid question type: ${type}`);
+    }
+  };
+
+  const questionsData = questionList.map((q, index) => ({
+    type: convertType(q.type),
+    title: q.title,
+    description: q.description || "",
+    order: index, // Use array index as order
+    show_in_results: q.displayOnTable,
+    template_id: template.id,
+  }));
+
+  await Question.bulkCreate(questionsData);
+
+  // Fetch the created Questions with their associations
+  // const questions = await Question.findAll({
+  //   where: { template_id: template.id },
+  //   order: [["order", "ASC"]],
+  // });
+
   res.status(201).json({
-    id: template.id,
-    title: template.title,
-    description: template.description,
-    questions: template.questions,
-    authorId: template.authorId,
-    access: template.access,
-    tags: template.tags,
+    ...template.toJSON(),
   });
 });
 

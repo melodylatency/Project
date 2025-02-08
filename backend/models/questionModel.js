@@ -27,6 +27,14 @@ Question.init(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    template_id: {
+      type: DataTypes.UUID, // Ensure this matches the type of Template's primary key
+      allowNull: false, // A question must belong to a template
+      references: {
+        model: "templates", // Reference the Template table
+        key: "id", // Reference the primary key of Template
+      },
+    },
   },
   {
     sequelize,
@@ -36,7 +44,7 @@ Question.init(
   }
 );
 
-Question.associations = (models) => {
+Question.associate = (models) => {
   Question.belongsTo(models.Template, { foreignKey: "template_id" });
   Question.hasMany(models.Answer, { foreignKey: "question_id" });
   Question.hasMany(models.QuestionOption, { foreignKey: "question_id" });
