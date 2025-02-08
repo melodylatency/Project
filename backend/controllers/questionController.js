@@ -3,7 +3,7 @@ import Question from "../models/questionModel.js";
 import Template from "../models/templateModel.js"; // Import the Template model
 
 const getQuestionsByTemplateId = asyncHandler(async (req, res) => {
-  const { template_id } = req.params;
+  const template_id = req.params.id;
 
   const questions = await Question.findAll({ where: { template_id } });
 
