@@ -2,19 +2,9 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import Question from "../models/questionModel.js";
 import Template from "../models/templateModel.js"; // Import the Template model
 
-const getQuestionsByTemplateId = asyncHandler(async (req, res) => {
-  const template_id = req.params.id;
-
-  const questions = await Question.findAll({ where: { template_id } });
-
-  if (questions.length === 0) {
-    res.status(404);
-    throw new Error("No questions found for this template");
-  }
-
-  res.status(200).json(questions);
-});
-
+// @desc    Create Question
+// @route   POST /api/questions/:id
+// @access  Public
 const createQuestion = asyncHandler(async (req, res) => {
   const { title, description, type, index, show_in_results, template_id } =
     req.body;
@@ -59,4 +49,4 @@ const deleteQuestion = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Question deleted successfully" });
 });
 
-export { getQuestionsByTemplateId, createQuestion, deleteQuestion };
+export { createQuestion, deleteQuestion };

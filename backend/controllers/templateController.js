@@ -14,14 +14,20 @@ const getTemplates = asyncHandler(async (req, res) => {
 // @route   /api/templates/:id
 // @access  Public
 const getTemplateById = asyncHandler(async (req, res) => {
-  const template = await Template.findByPk(req.params.id);
+  const template_id = req.params.id;
 
-  if (template) {
-    return res.json(template);
+  const template = await Template.findByPk(template_id);
+  const questions = await Question.findAll({ where: { template_id } });
+
+  if (!template) {
+    res.status(404);
+    throw new Error("Template not found");
+  } else if (!questions) {
+    res.status(200).json(template);
+  } else {
+    const templateWithQuestions = { ...template, questionList: questions };
+    res.status(200).json(templateWithQuestions);
   }
-
-  res.status(404);
-  throw new Error("Template not found");
 });
 
 const createTemplate = asyncHandler(async (req, res) => {
