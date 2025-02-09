@@ -72,13 +72,10 @@ const CreateScreen = () => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      dispatch(
-        setQuestionList((questionList) => {
-          const oldIndex = questionList.findIndex((q) => q.id === active.id);
-          const newIndex = questionList.findIndex((q) => q.id === over.id);
-          return arrayMove(questionList, oldIndex, newIndex);
-        })
-      );
+      const oldIndex = questionList.findIndex((q) => q.id === active.id);
+      const newIndex = questionList.findIndex((q) => q.id === over.id);
+      const newQuestionList = arrayMove(questionList, oldIndex, newIndex);
+      dispatch(setQuestionList(newQuestionList));
     }
   };
 
