@@ -33,7 +33,7 @@ const AdminScreen = () => {
   const [unblockUser, { isLoading: loadingUnblock }] = useUnblockUserMutation();
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [sortOrder, setSortOrder] = useState("desc"); // Track the sorting order
+  const [sortOrder, setSortOrder] = useState("desc"); // Track the sorting index
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -137,7 +137,7 @@ const AdminScreen = () => {
     return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
   });
 
-  // Toggle sort order
+  // Toggle sort index
   const handleSort = () => {
     setSortOrder((prevOrder) => (prevOrder === "desc" ? "asc" : "desc"));
   };

@@ -10,6 +10,22 @@ Form.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    template_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "templates",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,

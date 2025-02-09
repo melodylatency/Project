@@ -16,7 +16,7 @@ const getQuestionsByTemplateId = asyncHandler(async (req, res) => {
 });
 
 const createQuestion = asyncHandler(async (req, res) => {
-  const { title, description, type, order, show_in_results, template_id } =
+  const { title, description, type, index, show_in_results, template_id } =
     req.body;
 
   // Validate that the template exists
@@ -31,7 +31,7 @@ const createQuestion = asyncHandler(async (req, res) => {
     title,
     description,
     type,
-    order,
+    index,
     show_in_results,
     template_id, // Associate the question with the template
   });
@@ -41,7 +41,7 @@ const createQuestion = asyncHandler(async (req, res) => {
     title: question.title,
     description: question.description,
     type: question.type,
-    order: question.order,
+    index: question.index,
     show_in_results: question.show_in_results,
     template_id: question.template_id,
   });

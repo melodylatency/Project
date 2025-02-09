@@ -65,7 +65,7 @@ const createTemplate = asyncHandler(async (req, res) => {
     type: convertType(q.type),
     title: q.title,
     description: q.description || "",
-    order: index, // Use array index as order
+    index: index, // Use array index as index
     show_in_results: q.displayOnTable,
     template_id: template.id,
   }));
@@ -75,7 +75,7 @@ const createTemplate = asyncHandler(async (req, res) => {
   // Fetch the created Questions with their associations
   // const questions = await Question.findAll({
   //   where: { template_id: template.id },
-  //   order: [["order", "ASC"]],
+  //   index: [["index", "ASC"]],
   // });
 
   res.status(201).json({

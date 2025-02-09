@@ -24,7 +24,7 @@ export default {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      order: {
+      index: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
         allowNull: false,

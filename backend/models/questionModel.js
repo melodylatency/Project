@@ -19,7 +19,7 @@ Question.init(
       allowNull: false,
     },
     description: DataTypes.TEXT,
-    order: {
+    index: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
