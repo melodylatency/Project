@@ -24,26 +24,25 @@ const FormScreen = () => {
   } = useGetTemplateByIdQuery(templateId);
 
   const [formState, setFormState] = useState({});
+
   // Initialize form state when template loads
   useEffect(() => {
     if (template) {
       const initialState = {};
       template.questionList.forEach((question) => {
-        initialState[question.id] = question.type === "checkbox" ? [] : "";
+        initialState[question.id] = question.type === "CHECKBOX" ? false : "";
       });
       setFormState(initialState);
     }
   }, [template]);
 
   const handleInputChange = (questionId, value, type) => {
-    if (type === "checkbox") {
+    if (type === "CHECKBOX") {
       setFormState((prev) => ({
         ...prev,
-        [questionId]: prev[questionId].includes(value)
-          ? prev[questionId].filter((v) => v !== value)
-          : [...prev[questionId], value],
+        [questionId]: !prev[questionId], // Toggle the boolean value
       }));
-    } else if (type === "number") {
+    } else if (type === "INTEGER") {
       setFormState((prev) => ({
         ...prev,
         [questionId]: value === "" ? "" : Number(value),
@@ -64,7 +63,7 @@ const FormScreen = () => {
     // Reset form after submission
     const initialState = {};
     template.questionList.forEach((question) => {
-      initialState[question.id] = question.type === "checkbox" ? [] : "";
+      initialState[question.id] = question.type === "CHECKBOX" ? false : "";
     });
     setFormState(initialState);
   };
@@ -115,7 +114,7 @@ const FormScreen = () => {
                         </Card.Text>
                       )}
 
-                      {question.type === "text" && (
+                      {question.type === "SINGLE_LINE" && (
                         <Form.Control
                           type="text"
                           value={formState[question.id]}
@@ -123,14 +122,14 @@ const FormScreen = () => {
                             handleInputChange(
                               question.id,
                               e.target.value,
-                              "text"
+                              "SINGLE_LINE"
                             )
                           }
                           placeholder="Enter your answer"
                         />
                       )}
 
-                      {question.type === "textarea" && (
+                      {question.type === "MULTI_LINE" && (
                         <Form.Control
                           as="textarea"
                           rows={3}
@@ -139,14 +138,14 @@ const FormScreen = () => {
                             handleInputChange(
                               question.id,
                               e.target.value,
-                              "textarea"
+                              "MULTI_LINE"
                             )
                           }
                           placeholder="Enter your answer"
                         />
                       )}
 
-                      {question.type === "number" && (
+                      {question.type === "INTEGER" && (
                         <Form.Control
                           type="number"
                           value={formState[question.id]}
@@ -154,32 +153,23 @@ const FormScreen = () => {
                             handleInputChange(
                               question.id,
                               e.target.value,
-                              "number"
+                              "INTEGER"
                             )
                           }
                           placeholder="Enter a number"
                         />
                       )}
 
-                      {question.type === "checkbox" && (
-                        <div>
-                          {question.options.map((option, index) => (
-                            <Form.Check
-                              key={index}
-                              type="checkbox"
-                              id={`${question.id}-${index}`}
-                              label={option}
-                              checked={formState[question.id]?.includes(option)}
-                              onChange={() =>
-                                handleInputChange(
-                                  question.id,
-                                  option,
-                                  "checkbox"
-                                )
-                              }
-                            />
-                          ))}
-                        </div>
+                      {question.type === "CHECKBOX" && (
+                        <Form.Check
+                          type="checkbox"
+                          id={question.id}
+                          label="Check this box"
+                          checked={formState[question.id]}
+                          onChange={() =>
+                            handleInputChange(question.id, null, "CHECKBOX")
+                          }
+                        />
                       )}
                     </Card.Body>
                   </Card>
