@@ -11,7 +11,7 @@ Answer.init(
       primaryKey: true,
     },
     value: {
-      type: DataTypes.ENUM("SINGLE_LINE", "MULTI_LINE", "INTEGER", "CHECKBOX"),
+      type: DataTypes.JSONB,
       allowNull: false,
     },
     form_id: {
