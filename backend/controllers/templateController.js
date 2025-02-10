@@ -16,7 +16,7 @@ const getTemplates = asyncHandler(async (req, res) => {
 const getTemplateById = asyncHandler(async (req, res) => {
   const template_id = req.params.id;
 
-  const template = await Template.findByPk(template_id);
+  const template = (await Template.findByPk(template_id)).toJSON();
   const questions = await Question.findAll({ where: { template_id } });
 
   if (!template) {

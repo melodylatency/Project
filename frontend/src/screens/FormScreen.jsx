@@ -25,7 +25,6 @@ const FormScreen = () => {
 
   const [formState, setFormState] = useState({});
 
-  // Initialize form state when template loads
   useEffect(() => {
     if (template) {
       const initialState = {};
@@ -34,13 +33,14 @@ const FormScreen = () => {
       });
       setFormState(initialState);
     }
+    console.log(template);
   }, [template]);
 
   const handleInputChange = (questionId, value, type) => {
     if (type === "CHECKBOX") {
       setFormState((prev) => ({
         ...prev,
-        [questionId]: !prev[questionId], // Toggle the boolean value
+        [questionId]: !prev[questionId],
       }));
     } else if (type === "INTEGER") {
       setFormState((prev) => ({
@@ -89,11 +89,13 @@ const FormScreen = () => {
             <Col md={8}>
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <h3>{template.title}</h3>
+                  <h3 className="text-3xl">{template.title}</h3>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  <p>{template.description}</p>
-                </ListGroup.Item>
+                {template.description.length > 0 && (
+                  <ListGroup.Item>
+                    <p>Description: {template.description}</p>
+                  </ListGroup.Item>
+                )}
                 <ListGroup.Item>
                   <Rating value={4.7} text={`${5} comments`} />
                 </ListGroup.Item>
@@ -117,7 +119,11 @@ const FormScreen = () => {
                       {question.type === "SINGLE_LINE" && (
                         <Form.Control
                           type="text"
-                          value={formState[question.id]}
+                          value={
+                            formState[question.id] !== undefined
+                              ? formState[question.id]
+                              : ""
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               question.id,
@@ -133,7 +139,11 @@ const FormScreen = () => {
                         <Form.Control
                           as="textarea"
                           rows={3}
-                          value={formState[question.id]}
+                          value={
+                            formState[question.id] !== undefined
+                              ? formState[question.id]
+                              : ""
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               question.id,
@@ -148,7 +158,11 @@ const FormScreen = () => {
                       {question.type === "INTEGER" && (
                         <Form.Control
                           type="number"
-                          value={formState[question.id]}
+                          value={
+                            formState[question.id] !== undefined
+                              ? formState[question.id]
+                              : ""
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               question.id,
@@ -165,7 +179,11 @@ const FormScreen = () => {
                           type="checkbox"
                           id={question.id}
                           label="Check this box"
-                          checked={formState[question.id]}
+                          checked={
+                            formState[question.id] !== undefined
+                              ? formState[question.id]
+                              : false
+                          }
                           onChange={() =>
                             handleInputChange(question.id, null, "CHECKBOX")
                           }
