@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Row,
   Col,
@@ -9,13 +9,17 @@ import {
   Button,
   Form,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { useGetTemplateByIdQuery } from "../redux/slices/templatesApiSlice";
+import { useCreateFormMutation } from "../redux/slices/formsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Rating from "../components/Rating";
-import { updateAnswer } from "../redux/slices/answerSlice";
+import {
+  clearTemplateAnswers,
+  updateAnswer,
+} from "../redux/slices/answerSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const FormScreen = () => {
   const { id: templateId } = useParams();
@@ -25,13 +29,19 @@ const FormScreen = () => {
     error,
   } = useGetTemplateByIdQuery(templateId);
 
+  const [createForm, { isLoading: creatingForm }] = useCreateFormMutation();
+
   const { answerMap } = useSelector((state) => state.answer);
+  const { userInfo } = useSelector((state) => state.auth);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // State for error messages
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleInputChange = (questionId, value, type) => {
+  // Function to handle changes in inputs
+  const handleInputChange = (templateId, questionId, value, type) => {
     let newValue;
 
     switch (type) {
@@ -45,18 +55,35 @@ const FormScreen = () => {
         }
         break;
       case "CHECKBOX":
-        newValue = !answerMap[questionId];
+        // Flip the current checkbox value (defaulting to false)
+        newValue = !(
+          (answerMap[templateId] && answerMap[templateId][questionId]) ||
+          false
+        );
         break;
       default:
         newValue = value;
     }
 
-    dispatch(updateAnswer({ questionId, answer: newValue }));
+    dispatch(updateAnswer({ templateId, questionId, answer: newValue }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form responses:", answerMap);
+    const currentFormAnswers = answerMap[templateId] || {};
+    try {
+      await createForm({
+        title: template.title,
+        user_id: userInfo.id,
+        template_id: templateId,
+        answerMap: currentFormAnswers,
+      }).unwrap();
+      dispatch(clearTemplateAnswers(templateId));
+      navigate("/");
+      toast.success("Form submitted successfully!");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -97,103 +124,102 @@ const FormScreen = () => {
           <Row className="mt-4">
             <Col md={12}>
               <Form onSubmit={handleSubmit}>
-                {template.questionList.map((question) => (
-                  <Card key={question.id} className="mb-3">
-                    <Card.Body>
-                      <Card.Title>{question.title}</Card.Title>
-                      {question.description && (
-                        <Card.Text className="text-muted">
-                          {question.description}
-                        </Card.Text>
-                      )}
+                {template.questionList.map((question) => {
+                  // Retrieve current answers for this template
+                  const currentTemplateAnswers = answerMap[templateId] || {};
+                  return (
+                    <Card key={question.id} className="mb-3">
+                      <Card.Body>
+                        <Card.Title>{question.title}</Card.Title>
+                        {question.description && (
+                          <Card.Text className="text-muted">
+                            {question.description}
+                          </Card.Text>
+                        )}
 
-                      {question.type === "SINGLE_LINE" && (
-                        <Form.Control
-                          type="text"
-                          value={
-                            answerMap[question.id] !== undefined
-                              ? answerMap[question.id]
-                              : ""
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              question.id,
-                              e.target.value,
-                              "SINGLE_LINE"
-                            )
-                          }
-                          placeholder="Enter your answer"
-                        />
-                      )}
-
-                      {question.type === "MULTI_LINE" && (
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          value={
-                            answerMap[question.id] !== undefined
-                              ? answerMap[question.id]
-                              : ""
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              question.id,
-                              e.target.value,
-                              "MULTI_LINE"
-                            )
-                          }
-                          placeholder="Enter your answer"
-                        />
-                      )}
-
-                      {question.type === "INTEGER" && (
-                        <>
+                        {question.type === "SINGLE_LINE" && (
                           <Form.Control
-                            type="number"
-                            value={
-                              answerMap[question.id] !== undefined
-                                ? answerMap[question.id]
-                                : ""
-                            }
+                            type="text"
+                            value={currentTemplateAnswers[question.id] ?? ""}
                             onChange={(e) =>
                               handleInputChange(
+                                templateId,
                                 question.id,
                                 e.target.value,
-                                "INTEGER"
+                                "SINGLE_LINE"
                               )
                             }
-                            placeholder="Enter a positive number"
+                            placeholder="Enter your answer"
                           />
-                          {errorMessage && (
-                            <Message variant="danger">{errorMessage}</Message>
-                          )}
-                        </>
-                      )}
+                        )}
 
-                      {question.type === "CHECKBOX" && (
-                        <Form.Check
-                          type="checkbox"
-                          id={question.id}
-                          label="Check this box"
-                          checked={
-                            answerMap[question.id] !== undefined
-                              ? answerMap[question.id]
-                              : false
-                          }
-                          onChange={() =>
-                            handleInputChange(question.id, null, "CHECKBOX")
-                          }
-                        />
-                      )}
-                    </Card.Body>
-                  </Card>
-                ))}
+                        {question.type === "MULTI_LINE" && (
+                          <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={currentTemplateAnswers[question.id] ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                templateId,
+                                question.id,
+                                e.target.value,
+                                "MULTI_LINE"
+                              )
+                            }
+                            placeholder="Enter your answer"
+                          />
+                        )}
+
+                        {question.type === "INTEGER" && (
+                          <>
+                            <Form.Control
+                              type="number"
+                              value={currentTemplateAnswers[question.id] ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  templateId,
+                                  question.id,
+                                  e.target.value,
+                                  "INTEGER"
+                                )
+                              }
+                              placeholder="Enter a positive number"
+                            />
+                            {errorMessage && (
+                              <Message variant="danger">{errorMessage}</Message>
+                            )}
+                          </>
+                        )}
+
+                        {question.type === "CHECKBOX" && (
+                          <Form.Check
+                            type="checkbox"
+                            id={question.id}
+                            label="Check this box"
+                            checked={
+                              currentTemplateAnswers[question.id] ?? false
+                            }
+                            onChange={() =>
+                              handleInputChange(
+                                templateId,
+                                question.id,
+                                null,
+                                "CHECKBOX"
+                              )
+                            }
+                          />
+                        )}
+                      </Card.Body>
+                    </Card>
+                  );
+                })}
 
                 <div className="flex justify-center">
                   <Button type="submit" variant="primary" size="lg">
                     Submit Form
                   </Button>
                 </div>
+                {(isLoading || creatingForm) && <Loader />}
               </Form>
             </Col>
           </Row>

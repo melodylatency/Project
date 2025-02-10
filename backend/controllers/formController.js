@@ -6,7 +6,7 @@ import Answer from "../models/answerModel.js";
 // @route   POST /api/forms/create
 // @access  Public
 const createForm = asyncHandler(async (req, res) => {
-  const { title, description, user_id, template_id, answerList } = req.body;
+  const { title, user_id, template_id, answerList } = req.body;
 
   if (!title || !user_id || !answerList) {
     res.status(400);
@@ -15,7 +15,6 @@ const createForm = asyncHandler(async (req, res) => {
 
   const form = await Form.create({
     title,
-    description: description || "",
     user_id,
     template_id,
   });

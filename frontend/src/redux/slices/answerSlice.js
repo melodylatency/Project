@@ -11,17 +11,21 @@ const answerSlice = createSlice({
   name: "answer",
   initialState,
   reducers: {
-    setAnswerMap: (state, action) => {
-      state.answerMap = action.payload;
+    updateAnswer: (state, action) => {
+      const { templateId, questionId, answer } = action.payload;
+      if (!state.answerMap[templateId]) {
+        state.answerMap[templateId] = {};
+      }
+      state.answerMap[templateId][questionId] = answer;
       localStorage.setItem("answerMap", JSON.stringify(state.answerMap));
     },
-    updateAnswer: (state, action) => {
-      const { questionId, answer } = action.payload;
-      state.answerMap[questionId] = answer;
+    clearTemplateAnswers: (state, action) => {
+      const templateId = action.payload;
+      delete state.answerMap[templateId]; // Delete the template's entry
       localStorage.setItem("answerMap", JSON.stringify(state.answerMap));
     },
   },
 });
 
-export const { setAnswerMap, updateAnswer } = answerSlice.actions;
+export const { clearTemplateAnswers, updateAnswer } = answerSlice.actions;
 export default answerSlice.reducer;
