@@ -2,6 +2,9 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import Form from "../models/formModel.js";
 import Answer from "../models/answerModel.js";
 
+// @desc    Create Form
+// @route   POST /api/forms/create
+// @access  Public
 const createForm = asyncHandler(async (req, res) => {
   const { title, description, user_id, template_id, answerList } = req.body;
 

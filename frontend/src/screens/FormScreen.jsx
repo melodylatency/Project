@@ -189,7 +189,7 @@ const FormScreen = () => {
                   </Card>
                 ))}
 
-                <div className="d-grid gap-2">
+                <div className="flex justify-center">
                   <Button type="submit" variant="primary" size="lg">
                     Submit Form
                   </Button>

@@ -19,7 +19,7 @@ import {
   useCreateTemplateMutation,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
 const CreateScreen = () => {
@@ -124,11 +124,15 @@ const CreateScreen = () => {
 
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
+      <Link className="btn btn-light my-3" to="/">
+        Go Back
+      </Link>
       <h1 className="text-center mb-4 text-5xl">Create New Form</h1>
       {/* Move DndContext outside the Form */}
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
           {/* Form Title */}
+
           <Form.Group className="mb-3" controlId="formTitle">
             <Form.Label className="fs-4">Form Title</Form.Label>
             <Form.Control
