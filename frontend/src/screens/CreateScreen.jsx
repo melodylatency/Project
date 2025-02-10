@@ -112,7 +112,7 @@ const CreateScreen = () => {
         questionList,
         authorId: userInfo.id,
       }).unwrap();
-      localStorage.removeItem("templateData");
+      localStorage.removeItem("questionList");
       dispatch(setQuestionList([]));
       refetch();
       navigate("/");

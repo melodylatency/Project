@@ -14,7 +14,7 @@ import { useGetTemplateByIdQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Rating from "../components/Rating";
-import { setFormState, addToFormState } from "../redux/slices/formSlice";
+import { updateAnswer } from "../redux/slices/answerSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const FormScreen = () => {
@@ -25,48 +25,38 @@ const FormScreen = () => {
     error,
   } = useGetTemplateByIdQuery(templateId);
 
-  const { formState } = useSelector((state) => state.form);
-
+  const { answerMap } = useSelector((state) => state.answer);
   const dispatch = useDispatch();
 
-  //     template.questionList.forEach((question) => {
-  //       initialState[question.id] = question.type === "CHECKBOX" ? false : "";
-  //     });
-  //     setFormState(initialState);
+  // State for error messages
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (questionId, value, type) => {
+    let newValue;
+
     switch (type) {
       case "INTEGER":
-        dispatch(
-          setFormState((prev) => ({
-            ...prev,
-            [questionId]: value === "" ? "" : Number(value),
-          }))
-        );
+        if (value < 0) {
+          setErrorMessage("Integer values must be positive.");
+          return; // Don't update state if invalid
+        } else {
+          setErrorMessage(""); // Clear error if input is valid
+          newValue = value === "" ? "" : Number(value);
+        }
         break;
       case "CHECKBOX":
-        dispatch(
-          setFormState((prev) => ({
-            ...prev,
-            [questionId]: !prev[questionId],
-          }))
-        );
+        newValue = !answerMap[questionId];
         break;
-
       default:
-        dispatch(
-          setFormState((prev) => ({
-            ...prev,
-            [questionId]: value,
-          }))
-        );
-        break;
+        newValue = value;
     }
+
+    dispatch(updateAnswer({ questionId, answer: newValue }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form responses:", formState);
+    console.log("Form responses:", answerMap);
   };
 
   return (
@@ -121,8 +111,8 @@ const FormScreen = () => {
                         <Form.Control
                           type="text"
                           value={
-                            formState[question.id] !== undefined
-                              ? formState[question.id]
+                            answerMap[question.id] !== undefined
+                              ? answerMap[question.id]
                               : ""
                           }
                           onChange={(e) =>
@@ -141,8 +131,8 @@ const FormScreen = () => {
                           as="textarea"
                           rows={3}
                           value={
-                            formState[question.id] !== undefined
-                              ? formState[question.id]
+                            answerMap[question.id] !== undefined
+                              ? answerMap[question.id]
                               : ""
                           }
                           onChange={(e) =>
@@ -157,22 +147,27 @@ const FormScreen = () => {
                       )}
 
                       {question.type === "INTEGER" && (
-                        <Form.Control
-                          type="number"
-                          value={
-                            formState[question.id] !== undefined
-                              ? formState[question.id]
-                              : ""
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              question.id,
-                              e.target.value,
-                              "INTEGER"
-                            )
-                          }
-                          placeholder="Enter a number"
-                        />
+                        <>
+                          <Form.Control
+                            type="number"
+                            value={
+                              answerMap[question.id] !== undefined
+                                ? answerMap[question.id]
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                question.id,
+                                e.target.value,
+                                "INTEGER"
+                              )
+                            }
+                            placeholder="Enter a positive number"
+                          />
+                          {errorMessage && (
+                            <Message variant="danger">{errorMessage}</Message>
+                          )}
+                        </>
                       )}
 
                       {question.type === "CHECKBOX" && (
@@ -181,8 +176,8 @@ const FormScreen = () => {
                           id={question.id}
                           label="Check this box"
                           checked={
-                            formState[question.id] !== undefined
-                              ? formState[question.id]
+                            answerMap[question.id] !== undefined
+                              ? answerMap[question.id]
                               : false
                           }
                           onChange={() =>
