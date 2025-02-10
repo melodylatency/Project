@@ -71,12 +71,18 @@ const FormScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const currentFormAnswers = answerMap[templateId] || {};
+    const answerArray = Object.entries(currentFormAnswers).map(
+      ([questionId, value]) => ({
+        questionId,
+        value,
+      })
+    );
     try {
       await createForm({
         title: template.title,
         user_id: userInfo.id,
         template_id: templateId,
-        answerMap: currentFormAnswers,
+        answerMap: answerArray,
       }).unwrap();
       dispatch(clearTemplateAnswers(templateId));
       navigate("/");

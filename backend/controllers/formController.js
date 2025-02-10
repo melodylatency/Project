@@ -6,9 +6,9 @@ import Answer from "../models/answerModel.js";
 // @route   POST /api/forms/create
 // @access  Public
 const createForm = asyncHandler(async (req, res) => {
-  const { title, user_id, template_id, answerList } = req.body;
+  const { title, user_id, template_id, answerMap } = req.body;
 
-  if (!title || !user_id || !answerList) {
+  if (!title || !user_id || !answerMap) {
     res.status(400);
     throw new Error("Missing required fields: title, answers, or user_id");
   }
@@ -19,16 +19,31 @@ const createForm = asyncHandler(async (req, res) => {
     template_id,
   });
 
-  const answersData = answerList.map((a) => ({
-    value: a.value,
-    question_id: a.questionId,
-    form_id: form.id,
-  }));
+  const answersData = answerMap.map(({ questionId, value }) => {
+    let processedValue;
 
+    if (typeof value === "boolean") {
+      processedValue = value;
+    } else if (typeof value === "number" && value >= 0) {
+      processedValue = Number(value);
+    } else {
+      processedValue = String(value);
+    }
+
+    return {
+      question_id: questionId,
+      value: processedValue,
+      form_id: form.id,
+    };
+  });
+
+  // Bulk create answers
   await Answer.bulkCreate(answersData);
 
   res.status(201).json({
-    ...form.toJSON(),
+    id: form.id,
+    title: form.title,
+    createdAt: form.createdAt,
   });
 });
 

@@ -21,8 +21,10 @@ const answerSlice = createSlice({
     },
     clearTemplateAnswers: (state, action) => {
       const templateId = action.payload;
-      delete state.answerMap[templateId]; // Delete the template's entry
-      localStorage.setItem("answerMap", JSON.stringify(state.answerMap));
+      if (state.answerMap[templateId]) {
+        delete state.answerMap[templateId];
+        localStorage.setItem("answerMap", JSON.stringify(state.answerMap));
+      }
     },
   },
 });
