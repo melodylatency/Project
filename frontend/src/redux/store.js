@@ -3,6 +3,7 @@ import { apiSlice } from "./slices/apiSlice";
 import authSliceReducer from "./slices/authSlice";
 import templateSliceReducer from "./slices/templateSlice";
 import questionSliceReducer from "./slices/questionSlice";
+import formSliceReducer from "./slices/formSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     auth: authSliceReducer,
     template: templateSliceReducer,
     question: questionSliceReducer,
+    form: formSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),

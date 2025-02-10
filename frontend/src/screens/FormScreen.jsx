@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Row,
@@ -14,6 +14,8 @@ import { useGetTemplateByIdQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Rating from "../components/Rating";
+import { setFormState, addToFormState } from "../redux/slices/formSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const FormScreen = () => {
   const { id: templateId } = useParams();
@@ -23,49 +25,48 @@ const FormScreen = () => {
     error,
   } = useGetTemplateByIdQuery(templateId);
 
-  const [formState, setFormState] = useState({});
+  const { formState } = useSelector((state) => state.form);
 
-  useEffect(() => {
-    if (template) {
-      const initialState = {};
-      template.questionList.forEach((question) => {
-        initialState[question.id] = question.type === "CHECKBOX" ? false : "";
-      });
-      setFormState(initialState);
-    }
-    console.log(template);
-  }, [template]);
+  const dispatch = useDispatch();
+
+  //     template.questionList.forEach((question) => {
+  //       initialState[question.id] = question.type === "CHECKBOX" ? false : "";
+  //     });
+  //     setFormState(initialState);
 
   const handleInputChange = (questionId, value, type) => {
-    if (type === "CHECKBOX") {
-      setFormState((prev) => ({
-        ...prev,
-        [questionId]: !prev[questionId],
-      }));
-    } else if (type === "INTEGER") {
-      setFormState((prev) => ({
-        ...prev,
-        [questionId]: value === "" ? "" : Number(value),
-      }));
-    } else {
-      setFormState((prev) => ({
-        ...prev,
-        [questionId]: value,
-      }));
+    switch (type) {
+      case "INTEGER":
+        dispatch(
+          setFormState((prev) => ({
+            ...prev,
+            [questionId]: value === "" ? "" : Number(value),
+          }))
+        );
+        break;
+      case "CHECKBOX":
+        dispatch(
+          setFormState((prev) => ({
+            ...prev,
+            [questionId]: !prev[questionId],
+          }))
+        );
+        break;
+
+      default:
+        dispatch(
+          setFormState((prev) => ({
+            ...prev,
+            [questionId]: value,
+          }))
+        );
+        break;
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically submit the form data to your backend
     console.log("Form responses:", formState);
-    alert("Form submitted successfully!");
-    // Reset form after submission
-    const initialState = {};
-    template.questionList.forEach((question) => {
-      initialState[question.id] = question.type === "CHECKBOX" ? false : "";
-    });
-    setFormState(initialState);
   };
 
   return (
