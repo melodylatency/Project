@@ -20,6 +20,8 @@ import {
 } from "../redux/slices/answerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import ReactMarkdown from "react-markdown";
+import "github-markdown-css/github-markdown-light.css";
 
 const FormScreen = () => {
   const { id: templateId } = useParams();
@@ -117,7 +119,9 @@ const FormScreen = () => {
                 </ListGroup.Item>
                 {template.description.length > 0 && (
                   <ListGroup.Item>
-                    <p>Description: {template.description}</p>
+                    <div className="markdown-body">
+                      <ReactMarkdown>{template.description}</ReactMarkdown>
+                    </div>
                   </ListGroup.Item>
                 )}
                 <ListGroup.Item>

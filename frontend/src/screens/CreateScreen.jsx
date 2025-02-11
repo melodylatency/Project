@@ -21,6 +21,8 @@ import {
 } from "../redux/slices/templatesApiSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
+import ReactMarkdown from "react-markdown";
+import "github-markdown-css/github-markdown-light.css";
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Form");
@@ -144,17 +146,29 @@ const CreateScreen = () => {
             />
           </Form.Group>
 
-          {/* Form Description */}
+          {/* Form Description with Markdown Support */}
           <Form.Group className="mb-4" controlId="formDescription">
-            <Form.Label className="fs-5">Form Description</Form.Label>
+            <Form.Label className="fs-5">
+              Form Description (supports Markdown)
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Enter a description (optional)"
+              placeholder="Enter a description (optional, Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </Form.Group>
+
+          {/* Markdown Preview */}
+          <Card className="mb-4">
+            <Card.Header>Markdown Preview</Card.Header>
+            <Card.Body>
+              <div className="markdown-body">
+                <ReactMarkdown>{description}</ReactMarkdown>
+              </div>
+            </Card.Body>
+          </Card>
 
           {/* Questions List */}
           <h4 className="mb-3">Questions</h4>
