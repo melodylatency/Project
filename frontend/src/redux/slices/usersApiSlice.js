@@ -43,6 +43,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    adminUser: builder.mutation({
+      query: (userId) => ({
+        url: `${USERS_URL}/${userId}/admin`,
+        method: "PUT",
+      }),
+    }),
     blockUser: builder.mutation({
       query: (userId) => ({
         url: `${USERS_URL}/${userId}/block`,
@@ -64,6 +70,7 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useDeleteUserMutation,
+  useAdminUserMutation,
   useBlockUserMutation,
   useUnblockUserMutation,
   useProfileMutation,

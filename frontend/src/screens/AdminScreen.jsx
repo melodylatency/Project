@@ -12,6 +12,7 @@ import Loader from "../components/Loader";
 import {
   useGetUsersQuery,
   useDeleteUserMutation,
+  useAdminUserMutation,
   useBlockUserMutation,
   useUnblockUserMutation,
 } from "../redux/slices/usersApiSlice";
@@ -29,6 +30,7 @@ const AdminScreen = () => {
   const { data: users = [], refetch, isLoading, error } = useGetUsersQuery(); // Default users to an empty array if undefined
 
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
+  const [adminUser, { isLoading: loadingAdmin }] = useAdminUserMutation();
   const [blockUser, { isLoading: loadingBlock }] = useBlockUserMutation();
   const [unblockUser, { isLoading: loadingUnblock }] = useUnblockUserMutation();
 
@@ -99,6 +101,10 @@ const AdminScreen = () => {
               await deleteUser(userId).unwrap(); // `unwrap` to throw errors
               actionCount++;
               break;
+            case "admin":
+              await adminUser(userId).unwrap();
+              actionCount++;
+              break;
             case "block":
               if (user.isBlocked === true) continue;
               await blockUser(userId).unwrap();
@@ -147,9 +153,10 @@ const AdminScreen = () => {
       <h1 className="flex justify-center text-7xl text-stroke py-5">
         Admin Panel
       </h1>
-      {loadingDelete && <Loader />}
-      {loadingBlock && <Loader />}
-      {loadingUnblock && <Loader />}
+      {loadingDelete ||
+        loadingAdmin ||
+        loadingBlock ||
+        (loadingUnblock && <Loader />)}
       {isLoading ? (
         <Loader />
       ) : error ? (
@@ -176,6 +183,13 @@ const AdminScreen = () => {
                   onClick={() => handleAction("delete")}
                 >
                   <FaTrash /> Delete
+                </Button>
+                <Button
+                  className="d-flex align-items-center gap-2"
+                  variant="primary"
+                  onClick={() => handleAction("admin")}
+                >
+                  <FaLock /> Admin
                 </Button>
                 <Button
                   className="d-flex align-items-center gap-2"
@@ -210,6 +224,7 @@ const AdminScreen = () => {
                 <th>Select</th>
                 <th>NAME</th>
                 <th>EMAIL</th>
+                <th>ADMIN</th>
                 <th>BLOCKED</th>
                 <th>LAST LOGIN</th>
               </tr>
@@ -233,6 +248,7 @@ const AdminScreen = () => {
                       {user.email}
                     </a>
                   </td>
+                  <td>{user.isAdmin ? <FaCheck /> : <FaTimes />}</td>
                   <td>{user.isBlocked ? <FaCheck /> : <FaTimes />}</td>
                   <td
                     className="font-thin overflow-hidden text-ellipsis whitespace-nowrap"
