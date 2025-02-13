@@ -23,7 +23,7 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      views: {
+      likes: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },

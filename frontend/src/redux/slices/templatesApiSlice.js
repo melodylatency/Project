@@ -26,6 +26,14 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
         invalidatesTags: ["Template"],
       }),
     }),
+    createTemplateReview: builder.mutation({
+      query: (data) => ({
+        url: `${TEMPLATES_URL}/${data.templateId}/reviews`,
+        method: "POST",
+        body: data,
+        invalidatesTags: ["Template"],
+      }),
+    }),
   }),
 });
 
@@ -33,4 +41,5 @@ export const {
   useGetTemplatesQuery,
   useGetTemplateByIdQuery,
   useCreateTemplateMutation,
+  useCreateTemplateReviewMutation,
 } = templatesApiSlice;

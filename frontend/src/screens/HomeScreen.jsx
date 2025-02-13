@@ -15,8 +15,8 @@ const HomeScreen = () => {
   const top5 = useMemo(() => {
     if (!Array.isArray(templates) || templates.length === 0) return [];
     return [...templates]
-      .filter((template) => template?.views != null)
-      .sort((a, b) => b.views - a.views)
+      .filter((template) => template?.likes != null)
+      .sort((a, b) => b.likes - a.likes)
       .slice(0, 5);
   }, [templates]);
 

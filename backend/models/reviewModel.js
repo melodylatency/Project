@@ -1,9 +1,9 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-class Like extends Model {}
+class Review extends Model {}
 
-Like.init(
+Review.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -37,8 +37,8 @@ Like.init(
   },
   {
     sequelize,
-    modelName: "Like",
-    tableName: "likes",
+    modelName: "Review",
+    tableName: "reviews",
     timestamps: true,
     indexes: [
       {
@@ -49,9 +49,9 @@ Like.init(
   }
 );
 
-Like.associate = (models) => {
-  Like.belongsTo(models.Template, { foreignKey: "template_id" });
-  Like.belongsTo(models.User, { foreignKey: "user_id" });
+Review.associate = (models) => {
+  Review.belongsTo(models.Template, { foreignKey: "template_id" });
+  Review.belongsTo(models.User, { foreignKey: "user_id" });
 };
 
-export default Like;
+export default Review;

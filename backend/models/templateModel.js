@@ -29,7 +29,7 @@ Template.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    views: {
+    likes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
       allowNull: false,

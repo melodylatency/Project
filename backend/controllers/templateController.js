@@ -1,6 +1,7 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Template from "../models/templateModel.js";
 import Question from "../models/questionModel.js";
+import Review from "../models/reviewModel.js";
 
 // @desc    Fetch all templates
 // @route   /api/templates
@@ -18,15 +19,14 @@ const getTemplateById = asyncHandler(async (req, res) => {
 
   const template = (await Template.findByPk(template_id)).toJSON();
   const questions = await Question.findAll({ where: { template_id } });
+  const reviews = await Review.findAll({ where: { template_id } });
 
   if (!template) {
     res.status(404);
     throw new Error("Template not found");
-  } else if (!questions) {
-    res.status(200).json(template);
   } else {
-    const templateWithQuestions = { ...template, questionList: questions };
-    res.status(200).json(templateWithQuestions);
+    const collectedTemplate = { ...template, questionList: questions, reviews };
+    res.status(200).json(collectedTemplate);
   }
 });
 
@@ -96,23 +96,36 @@ const createTemplate = asyncHandler(async (req, res) => {
 // @route   POST /api/templates/:id/reviews
 // @access  Private
 const createTemplateReview = asyncHandler(async (req, res) => {
-  const { like, comment } = req.body;
+  const { isLiked, comment } = req.body;
 
   const template_id = req.params.id;
 
   const template = (await Template.findByPk(template_id)).toJSON();
 
   if (template) {
-    const template = await Template.create({
-      name: req.user.name,
-      isLiked: Boolean(like),
-      comment,
-      userId: req.user.id,
+    const alreadyReviewed = await Review.findOne({
+      where: { user_id: req.user.id },
     });
+
+    if (alreadyReviewed) {
+      res.status(400);
+      throw new Error("Template already reviewed.");
+    }
+
+    const review = await Review.create({
+      name: req.user.name,
+      isLiked,
+      comment,
+      user_id: req.user.id,
+      template_id,
+    });
+
+    template.likes = template.likes + isLiked ? 1 : 0;
+    await template.save();
   } else {
     res.status(404);
-    throw new Error("Template not found");
+    throw new Error("Resource not found");
   }
 });
 
-export { getTemplates, getTemplateById, createTemplate };
+export { getTemplates, getTemplateById, createTemplate, createTemplateReview };

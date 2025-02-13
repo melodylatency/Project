@@ -25,7 +25,7 @@ const Template = ({ template }) => {
           <Rating value={4.7} />
         </Card.Text>
         <Card.Text as="h3" className="my-2">
-          views: {template.views}
+          likes: {template.likes}
         </Card.Text>
         <Tag>
           <Link to={`/${template.topic}`}>{template.topic}</Link>
