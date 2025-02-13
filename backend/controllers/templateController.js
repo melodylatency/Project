@@ -30,6 +30,9 @@ const getTemplateById = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Create template
+// @route   POST /api/templates/create
+// @access  Private
 const createTemplate = asyncHandler(async (req, res) => {
   const { title, description, topic, image, access, authorId, questionList } =
     req.body;
@@ -87,6 +90,29 @@ const createTemplate = asyncHandler(async (req, res) => {
   res.status(201).json({
     ...template.toJSON(),
   });
+});
+
+// @desc    Create template review
+// @route   POST /api/templates/:id/reviews
+// @access  Private
+const createTemplateReview = asyncHandler(async (req, res) => {
+  const { like, comment } = req.body;
+
+  const template_id = req.params.id;
+
+  const template = (await Template.findByPk(template_id)).toJSON();
+
+  if (template) {
+    const template = await Template.create({
+      name: req.user.name,
+      isLiked: Boolean(like),
+      comment,
+      userId: req.user.id,
+    });
+  } else {
+    res.status(404);
+    throw new Error("Template not found");
+  }
 });
 
 export { getTemplates, getTemplateById, createTemplate };

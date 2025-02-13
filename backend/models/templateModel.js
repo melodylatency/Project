@@ -59,8 +59,7 @@ Template.associate = (models) => {
   Template.belongsTo(models.User, { foreignKey: "authorId" });
   Template.hasMany(models.Question, { foreignKey: "template_id" });
   Template.hasMany(models.Form, { foreignKey: "template_id" });
-  Template.hasMany(models.Comment, { foreignKey: "template_id" });
-  Template.hasMany(models.Like, { foreignKey: "template_id" });
+  Template.hasMany(models.Review, { foreignKey: "template_id" });
   Template.belongsToMany(models.User, {
     through: "template_access",
     foreignKey: "template_id",

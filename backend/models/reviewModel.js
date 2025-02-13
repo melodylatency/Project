@@ -10,6 +10,30 @@ Like.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    isLiked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    template_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "templates",
+        key: "id",
+      },
+    },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
