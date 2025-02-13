@@ -1,25 +1,25 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   Row,
   Col,
   Image,
   ListGroup,
-  Card,
   Button,
   Form,
   ListGroupItem,
 } from "react-bootstrap";
 import {
-  useCreateTemplateMutation,
+  useCreateTemplateReviewMutation,
   useGetTemplateByIdQuery,
+  useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Rating from "../components/Rating";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const FormScreen = () => {
@@ -27,6 +27,7 @@ const FormScreen = () => {
   const [comment, setComment] = useState("");
 
   const { id: templateId } = useParams();
+
   const {
     data: template,
     isLoading,
@@ -34,14 +35,34 @@ const FormScreen = () => {
     error,
   } = useGetTemplateByIdQuery(templateId);
 
+  const { refetch: refetchTemplates } = useGetTemplatesQuery();
+
   const [createReview, { isLoading: loadingReview }] =
-    useCreateTemplateMutation();
+    useCreateTemplateReviewMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  const dispatch = useDispatch();
+  const submitHandler = async (e) => {
+    e.preventDefault();
 
-  console.log(template);
+    if (comment.length < 1) {
+      toast.error("The comment can't be empty");
+      return;
+    }
+    try {
+      await createReview({
+        templateId,
+        user_id: userInfo.id,
+        isLiked,
+        comment,
+      }).unwrap();
+      refetch();
+      refetchTemplates();
+      toast.success("Review submitted");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   return (
     <>
@@ -76,20 +97,67 @@ const FormScreen = () => {
                 <ListGroup.Item>
                   <Rating value={4.7} text={`${5} comments`} />
                 </ListGroup.Item>
+                <h2 className="text-3xl my-3">Reviews</h2>
+                {template.reviews.length === 0 && <Message>No Reviews</Message>}
+                {template.reviews.map((review) => (
+                  <ListGroupItem key={review.id}>
+                    <strong>{review.name}</strong>
+                    {review.isLiked && (
+                      <p className="text-muted font-light">User left a 👍</p>
+                    )}
+                    <p>{review.createdAt.substring(0, 10)}</p>
+                    <p className="mt-4">{review.comment}</p>
+                  </ListGroupItem>
+                ))}
               </ListGroup>
             </Col>
           </Row>
 
-          <Row className="review mt-4">
+          <Row className="mt-4">
             <Col md={6}>
-              <h2 className="text-3xl">Reviews</h2>
-              {template.reviews.length === 0 && <Message>No Reviews</Message>}
               <ListGroup variant="flush">
-                {template.reviews.map((review) => (
-                  <ListGroupItem key={review.id}>
-                    <strong>{review.name}</strong>
-                  </ListGroupItem>
-                ))}
+                <ListGroupItem className="bg-transparent">
+                  <h2 className="text-3xl">Leave a review</h2>
+
+                  {loadingReview && <Loader />}
+
+                  {userInfo ? (
+                    <Form onSubmit={submitHandler}>
+                      <Form.Group controlId="like" className="my-2">
+                        <Form.Check
+                          type="checkbox"
+                          checked={isLiked}
+                          label="Like"
+                          onChange={(e) => setLiked(e.target.checked)}
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="comment" className="my-2">
+                        <Form.Label>Comment</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                        />
+                      </Form.Group>
+                      <Button
+                        className="my-2"
+                        disabled={loadingReview}
+                        type="submit"
+                        variant="primary"
+                      >
+                        Submit
+                      </Button>
+                    </Form>
+                  ) : (
+                    <Message>
+                      <Link className="text-blue-500 underline" to={"/login"}>
+                        Sign in
+                      </Link>{" "}
+                      to submit a review
+                    </Message>
+                  )}
+                </ListGroupItem>
               </ListGroup>
             </Col>
           </Row>

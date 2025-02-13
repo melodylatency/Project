@@ -27,10 +27,10 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     createTemplateReview: builder.mutation({
-      query: (data) => ({
-        url: `${TEMPLATES_URL}/${data.templateId}/reviews`,
+      query: ({ templateId, ...body }) => ({
+        url: `${TEMPLATES_URL}/${templateId}/reviews`,
         method: "POST",
-        body: data,
+        body: { ...body, template_id: templateId },
         invalidatesTags: ["Template"],
       }),
     }),

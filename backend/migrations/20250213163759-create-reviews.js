@@ -7,6 +7,10 @@ export default {
         primaryKey: true,
         allowNull: false,
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       isLiked: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

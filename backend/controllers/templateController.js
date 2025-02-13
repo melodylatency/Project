@@ -97,14 +97,16 @@ const createTemplate = asyncHandler(async (req, res) => {
 // @access  Private
 const createTemplateReview = asyncHandler(async (req, res) => {
   const { isLiked, comment } = req.body;
-
   const template_id = req.params.id;
 
-  const template = (await Template.findByPk(template_id)).toJSON();
+  const template = await Template.findByPk(template_id);
 
   if (template) {
     const alreadyReviewed = await Review.findOne({
-      where: { user_id: req.user.id },
+      where: {
+        user_id: req.user.id,
+        template_id: template_id,
+      },
     });
 
     if (alreadyReviewed) {
@@ -120,8 +122,11 @@ const createTemplateReview = asyncHandler(async (req, res) => {
       template_id,
     });
 
-    template.likes = template.likes + isLiked ? 1 : 0;
+    template.likes = template.likes + (isLiked ? 1 : 0);
+
     await template.save();
+
+    res.status(201).json(review);
   } else {
     res.status(404);
     throw new Error("Resource not found");

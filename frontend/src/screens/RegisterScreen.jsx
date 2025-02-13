@@ -22,7 +22,7 @@ const RegisterScreen = () => {
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const redirect = sp.get("redirect") || "/";
+  const redirect = sp.get("redirect");
 
   useEffect(() => {
     if (userInfo) {
@@ -111,7 +111,7 @@ const RegisterScreen = () => {
           <h1 className="font-serif text-black">
             Already have an account?{" "}
             <Link
-              to={redirect ? `/?redirect=${redirect}` : "/"}
+              to={redirect ? `/?redirect=${redirect}` : "/login"}
               className="underline text-blue-900"
             >
               Sign in
