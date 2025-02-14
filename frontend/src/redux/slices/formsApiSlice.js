@@ -7,6 +7,7 @@ export const formsApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: FORMS_URL,
         method: "GET",
+        providesTags: ["Form"],
       }),
       keepUnusedDataFor: 60,
     }),

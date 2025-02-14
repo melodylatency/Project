@@ -24,15 +24,15 @@ const ProfileScreen = () => {
     data: forms,
     isLoading: loadingForms,
     error: errorForm,
+    refetch: refetchForms,
   } = useGetUsersFormsQuery();
 
   const {
     data: templates,
     isLoading: loadingTemplates,
     error: errorTemplate,
+    refetch: refetchTemplates,
   } = useGetUsersTemplatesQuery();
-
-  console.log(forms);
 
   const [updateProfile, { isLoading }] = useProfileMutation();
   const { userInfo } = useSelector((state) => state.auth);
@@ -44,7 +44,10 @@ const ProfileScreen = () => {
       setName(userInfo.name);
       setEmail(userInfo.email);
     }
-  }, [userInfo]);
+
+    refetchForms();
+    refetchTemplates();
+  }, [userInfo, refetchForms, refetchTemplates]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
