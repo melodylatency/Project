@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useProfileMutation } from "../redux/slices/usersApiSlice";
 import { useGetUsersFormsQuery } from "../redux/slices/formsApiSlice";
 import { useGetUsersTemplatesQuery } from "../redux/slices/templatesApiSlice";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { setCredentials } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import moment from "moment";
@@ -16,6 +17,8 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [sortOrderForms, setSortOrderForms] = useState("desc");
+  const [sortOrderTemplates, setSortOrderTemplates] = useState("desc");
 
   const {
     data: forms,
@@ -124,28 +127,53 @@ const ProfileScreen = () => {
                   <tr>
                     <th>TITLE</th>
                     <th>FORM ID</th>
-                    <th>DATE</th>
+                    <th
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setSortOrderForms((prev) =>
+                          prev === "asc" ? "desc" : "asc"
+                        )
+                      }
+                    >
+                      <div className="d-flex align-items-center gap-1">
+                        DATE FILLED
+                        {sortOrderForms === "asc" ? (
+                          <FaChevronUp className="text-muted" />
+                        ) : (
+                          <FaChevronDown className="text-muted" />
+                        )}
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {forms.map((form) => (
-                    <tr key={form.id}>
-                      <td>{form.title}</td>
-                      <td>
-                        <Link
-                          to={`/form/${form.id}`}
-                          className="text-blue-500 underline"
-                        >
-                          {form.id}
-                        </Link>
-                      </td>
-                      <td>
-                        {moment(form.createdAt).format(
-                          "MMMM Do YYYY, h:mm:ss a"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {forms
+                    .slice()
+                    .sort((a, b) => {
+                      const dateA = new Date(a.createdAt);
+                      const dateB = new Date(b.createdAt);
+                      return sortOrderForms === "asc"
+                        ? dateA - dateB
+                        : dateB - dateA;
+                    })
+                    .map((form) => (
+                      <tr key={form.id}>
+                        <td>{form.title}</td>
+                        <td>
+                          <Link
+                            to={`/form/${form.id}`}
+                            className="text-blue-500 underline"
+                          >
+                            {form.id}
+                          </Link>
+                        </td>
+                        <td>
+                          {moment(form.createdAt).format(
+                            "MMMM Do YYYY, h:mm:ss a"
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </Table>
             )}
@@ -162,29 +190,52 @@ const ProfileScreen = () => {
                 <thead>
                   <tr>
                     <th>TITLE</th>
-                    <th>FORM ID</th>
-                    <th>DATE</th>
+                    <th>TOPIC</th>
+                    <th>TEMPLATE ID</th>
+                    <th
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setSortOrderTemplates((prev) =>
+                          prev === "asc" ? "desc" : "asc"
+                        )
+                      }
+                    >
+                      <div className="d-flex align-items-center gap-1">
+                        CREATED
+                        {sortOrderTemplates === "asc" ? (
+                          <FaChevronUp className="text-muted" />
+                        ) : (
+                          <FaChevronDown className="text-muted" />
+                        )}
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {templates.map((template) => (
-                    <tr key={template.id}>
-                      <td>{template.title}</td>
-                      <td>
-                        <Link
-                          to={`/template/${template.id}`}
-                          className="text-blue-500 underline"
-                        >
-                          {template.id}
-                        </Link>
-                      </td>
-                      <td>
-                        {moment(template.createdAt).templateat(
-                          "MMMM Do YYYY, h:mm:ss a"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {templates
+                    .slice()
+                    .sort((a, b) => {
+                      const dateA = new Date(a.createdAt);
+                      const dateB = new Date(b.createdAt);
+                      return sortOrderTemplates === "asc"
+                        ? dateA - dateB
+                        : dateB - dateA;
+                    })
+                    .map((template) => (
+                      <tr key={template.id}>
+                        <td>{template.title}</td>
+                        <td>{template.topic}</td>
+                        <td>
+                          <Link
+                            to={`/template/${template.id}`}
+                            className="text-blue-500 underline"
+                          >
+                            {template.id}
+                          </Link>
+                        </td>
+                        <td>{template.createdAt.substring(0, 10)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </Table>
             )}

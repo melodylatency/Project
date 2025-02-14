@@ -34,13 +34,13 @@ const getTemplateById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Fetch template by author ID
-// @route   GET /api/templates/user
+// @route   GET /api/templates/author
 // @access  Public
 const getTemplatesByAuthorId = asyncHandler(async (req, res) => {
   const templates = await Template.findAll({
     where: { authorId: req.user.id },
   });
-  res.status(200).json(templates.toJSON());
+  res.status(200).json(templates);
 });
 
 // @desc    Create template
