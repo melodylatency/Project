@@ -17,7 +17,6 @@ import RegisterScreen from "./screens/RegisterScreen";
 import AdminScreen from "./screens/AdminScreen";
 import VideoScreen from "./screens/VideoScreen";
 import HomeScreen from "./screens/HomeScreen";
-import FormScreen from "./screens/FormScreen";
 import TemplateScreen from "./screens/TemplateScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import CreateScreen from "./screens/CreateScreen";
