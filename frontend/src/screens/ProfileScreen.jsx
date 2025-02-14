@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form, Button, Row, Col } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { Table, Form, Button, Row, Col, Tabs, Tab } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import Message from "../components/Message";
 import Loader from "../components/Loader";
+import Message from "../components/Message";
 import { toast } from "react-toastify";
 import { useProfileMutation } from "../redux/slices/usersApiSlice";
+import { useGetUsersFormsQuery } from "../redux/slices/formsApiSlice";
+import { useGetUsersTemplatesQuery } from "../redux/slices/templatesApiSlice";
 import { setCredentials } from "../redux/slices/authSlice";
+import { Link } from "react-router-dom";
+import moment from "moment";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -14,11 +17,24 @@ const ProfileScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const dispatch = useDispatch();
+  const {
+    data: forms,
+    isLoading: loadingForms,
+    error: errorForm,
+  } = useGetUsersFormsQuery();
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const {
+    data: templates,
+    isLoading: loadingTemplates,
+    error: errorTemplate,
+  } = useGetUsersTemplatesQuery();
+
+  console.log(forms);
 
   const [updateProfile, { isLoading }] = useProfileMutation();
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (userInfo) {
@@ -95,7 +111,86 @@ const ProfileScreen = () => {
           {isLoading && <Loader />}
         </Form>
       </Col>
-      <Col md={9}>Column</Col>
+      <Col md={9}>
+        <Tabs defaultActiveKey="forms" id="dashboard" className="pt-5">
+          <Tab eventKey="forms" title="Forms">
+            {loadingForms ? (
+              <Loader />
+            ) : errorForm ? (
+              <Message>{errorForm?.data?.message || errorForm.error}</Message>
+            ) : (
+              <Table striped hover responsive className="table-sm">
+                <thead>
+                  <tr>
+                    <th>TITLE</th>
+                    <th>FORM ID</th>
+                    <th>DATE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {forms.map((form) => (
+                    <tr key={form.id}>
+                      <td>{form.title}</td>
+                      <td>
+                        <Link
+                          to={`/form/${form.id}`}
+                          className="text-blue-500 underline"
+                        >
+                          {form.id}
+                        </Link>
+                      </td>
+                      <td>
+                        {moment(form.createdAt).format(
+                          "MMMM Do YYYY, h:mm:ss a"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </Tab>
+          <Tab eventKey="templates" title="Templates">
+            {loadingTemplates ? (
+              <Loader />
+            ) : errorTemplate ? (
+              <Message>
+                {errorTemplate?.data?.message || errorTemplate.error}
+              </Message>
+            ) : (
+              <Table striped hover responsive className="table-sm">
+                <thead>
+                  <tr>
+                    <th>TITLE</th>
+                    <th>FORM ID</th>
+                    <th>DATE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {templates.map((template) => (
+                    <tr key={template.id}>
+                      <td>{template.title}</td>
+                      <td>
+                        <Link
+                          to={`/template/${template.id}`}
+                          className="text-blue-500 underline"
+                        >
+                          {template.id}
+                        </Link>
+                      </td>
+                      <td>
+                        {moment(template.createdAt).templateat(
+                          "MMMM Do YYYY, h:mm:ss a"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </Tab>
+        </Tabs>
+      </Col>
     </Row>
   );
 };

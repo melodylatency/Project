@@ -8,7 +8,7 @@ import Review from "../models/reviewModel.js";
 // @access  Public
 const getTemplates = asyncHandler(async (req, res) => {
   const templates = await Template.findAll({});
-  res.json(templates);
+  res.status(200).json(templates);
 });
 
 // @desc    Fetch template by template ID
@@ -17,17 +17,30 @@ const getTemplates = asyncHandler(async (req, res) => {
 const getTemplateById = asyncHandler(async (req, res) => {
   const template_id = req.params.id;
 
-  const template = (await Template.findByPk(template_id)).toJSON();
-  const questions = await Question.findAll({ where: { template_id } });
-  const reviews = await Review.findAll({ where: { template_id } });
-
+  const template = await Template.findByPk(template_id);
   if (!template) {
     res.status(404);
     throw new Error("Template not found");
-  } else {
-    const collectedTemplate = { ...template, questionList: questions, reviews };
-    res.status(200).json(collectedTemplate);
   }
+  const questions = await Question.findAll({ where: { template_id } });
+  const reviews = await Review.findAll({ where: { template_id } });
+
+  const collectedTemplate = {
+    ...template.toJSON(),
+    questionList: questions,
+    reviews,
+  };
+  res.status(200).json(collectedTemplate);
+});
+
+// @desc    Fetch template by author ID
+// @route   GET /api/templates/user
+// @access  Public
+const getTemplatesByAuthorId = asyncHandler(async (req, res) => {
+  const templates = await Template.findAll({
+    where: { authorId: req.user.id },
+  });
+  res.status(200).json(templates.toJSON());
 });
 
 // @desc    Create template
@@ -133,4 +146,10 @@ const createTemplateReview = asyncHandler(async (req, res) => {
   }
 });
 
-export { getTemplates, getTemplateById, createTemplate, createTemplateReview };
+export {
+  getTemplates,
+  getTemplateById,
+  getTemplatesByAuthorId,
+  createTemplate,
+  createTemplateReview,
+};

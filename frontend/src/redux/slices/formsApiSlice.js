@@ -3,7 +3,7 @@ import { apiSlice } from "./apiSlice";
 
 export const formsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getForms: builder.query({
+    getUsersForms: builder.query({
       query: () => ({
         url: FORMS_URL,
         method: "GET",
@@ -27,5 +27,8 @@ export const formsApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetFormsQuery, useGetFormByIdQuery, useCreateFormMutation } =
-  formsApiSlice;
+export const {
+  useGetUsersFormsQuery,
+  useGetFormByIdQuery,
+  useCreateFormMutation,
+} = formsApiSlice;
