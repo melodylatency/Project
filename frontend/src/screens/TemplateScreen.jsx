@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { BiLike } from "react-icons/bi";
 import {
   Row,
   Col,
@@ -94,8 +95,9 @@ const FormScreen = () => {
                     </div>
                   </ListGroup.Item>
                 )}
-                <ListGroup.Item>
-                  <Rating value={4.7} text={`${5} comments`} />
+                <ListGroup.Item className="d-flex align-items-center gap-1">
+                  <p>{template.likes}</p>
+                  <BiLike />
                 </ListGroup.Item>
                 <h2 className="text-3xl my-3">Reviews</h2>
                 {template.reviews.length === 0 && <Message>No Reviews</Message>}
@@ -117,7 +119,7 @@ const FormScreen = () => {
             <Col md={6}>
               <ListGroup variant="flush">
                 <ListGroupItem className="bg-transparent">
-                  <h2 className="text-3xl">Leave a review</h2>
+                  <h2 className="text-3xl mb-3">Leave a review</h2>
 
                   {loadingReview && <Loader />}
 
