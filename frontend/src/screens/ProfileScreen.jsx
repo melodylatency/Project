@@ -8,6 +8,7 @@ import { useProfileMutation } from "../redux/slices/usersApiSlice";
 import { useGetUsersFormsQuery } from "../redux/slices/formsApiSlice";
 import { useGetUsersTemplatesQuery } from "../redux/slices/templatesApiSlice";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { MdOutlineEdit } from "react-icons/md";
 import { setCredentials } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import moment from "moment";
@@ -162,13 +163,14 @@ const ProfileScreen = () => {
                     .map((form) => (
                       <tr key={form.id}>
                         <td>{form.title}</td>
-                        <td>
+                        <td className="d-flex align-items-center gap-1">
                           <Link
                             to={`/form/${form.id}`}
                             className="text-blue-500 underline"
                           >
                             {form.id}
                           </Link>
+                          <MdOutlineEdit className="text-blue-500" />
                         </td>
                         <td>
                           {moment(form.createdAt).format(
@@ -228,13 +230,14 @@ const ProfileScreen = () => {
                       <tr key={template.id}>
                         <td>{template.title}</td>
                         <td>{template.topic}</td>
-                        <td>
+                        <td className="d-flex align-items-center gap-1">
                           <Link
                             to={`/template/${template.id}`}
                             className="text-blue-500 underline"
                           >
                             {template.id}
                           </Link>
+                          <MdOutlineEdit className="text-blue-500" />
                         </td>
                         <td>{template.createdAt.substring(0, 10)}</td>
                       </tr>

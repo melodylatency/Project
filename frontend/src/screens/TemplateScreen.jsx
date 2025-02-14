@@ -17,7 +17,6 @@ import {
 } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import Rating from "../components/Rating";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 import { useSelector } from "react-redux";
