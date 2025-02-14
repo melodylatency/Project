@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { BiLike } from "react-icons/bi";
 import {
   Row,
@@ -9,22 +9,29 @@ import {
   Button,
   Form,
   ListGroupItem,
+  Card,
 } from "react-bootstrap";
 import {
   useCreateTemplateReviewMutation,
   useGetTemplateByIdQuery,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
+import {
+  clearTemplateAnswers,
+  updateAnswer,
+} from "../redux/slices/answerSlice";
+import { useCreateFormMutation } from "../redux/slices/formsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const FormScreen = () => {
   const [isLiked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { id: templateId } = useParams();
 
@@ -35,12 +42,17 @@ const FormScreen = () => {
     error,
   } = useGetTemplateByIdQuery(templateId);
 
-  const { refetch: refetchTemplates } = useGetTemplatesQuery();
-
+  const [createForm, { isLoading: creatingForm }] = useCreateFormMutation();
   const [createReview, { isLoading: loadingReview }] =
     useCreateTemplateReviewMutation();
 
+  const { refetch: refetchTemplates } = useGetTemplatesQuery();
+
+  const { answerMap } = useSelector((state) => state.answer);
   const { userInfo } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -59,6 +71,57 @@ const FormScreen = () => {
       refetch();
       refetchTemplates();
       toast.success("Review submitted");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const handleInputChange = (templateId, questionId, value, type) => {
+    let newValue;
+
+    switch (type) {
+      case "INTEGER":
+        if (value < 0) {
+          setErrorMessage("Integer values must be positive.");
+          return; // Don't update state if invalid
+        } else {
+          setErrorMessage(""); // Clear error if input is valid
+          newValue = value === "" ? "" : Number(value);
+        }
+        break;
+      case "CHECKBOX":
+        // Flip the current checkbox value (defaulting to false)
+        newValue = !(
+          (answerMap[templateId] && answerMap[templateId][questionId]) ||
+          false
+        );
+        break;
+      default:
+        newValue = value;
+    }
+
+    dispatch(updateAnswer({ templateId, questionId, answer: newValue }));
+  };
+
+  const handleSubmittingForm = async (e) => {
+    e.preventDefault();
+    const currentFormAnswers = answerMap[templateId] || {};
+    const answerArray = Object.entries(currentFormAnswers).map(
+      ([questionId, value]) => ({
+        questionId,
+        value,
+      })
+    );
+    try {
+      await createForm({
+        title: template.title,
+        user_id: userInfo.id,
+        template_id: templateId,
+        answerMap: answerArray,
+      }).unwrap();
+      dispatch(clearTemplateAnswers(templateId));
+      navigate("/");
+      toast.success("Form submitted successfully!");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -160,6 +223,108 @@ const FormScreen = () => {
                   )}
                 </ListGroupItem>
               </ListGroup>
+            </Col>
+          </Row>
+          <Row className="mt-4">
+            <Col md={12}>
+              <Form onSubmit={handleSubmittingForm}>
+                {template.questionList.map((question) => {
+                  // Retrieve current answers for this template
+                  const currentTemplateAnswers = answerMap[templateId] || {};
+                  return (
+                    <Card key={question.id} className="mb-3">
+                      <Card.Body>
+                        <Card.Title>{question.title}</Card.Title>
+                        {question.description && (
+                          <Card.Text className="text-muted">
+                            {question.description}
+                          </Card.Text>
+                        )}
+
+                        {question.type === "SINGLE_LINE" && (
+                          <Form.Control
+                            type="text"
+                            value={currentTemplateAnswers[question.id] ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                templateId,
+                                question.id,
+                                e.target.value,
+                                "SINGLE_LINE"
+                              )
+                            }
+                            placeholder="Enter your answer"
+                          />
+                        )}
+
+                        {question.type === "MULTI_LINE" && (
+                          <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={currentTemplateAnswers[question.id] ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                templateId,
+                                question.id,
+                                e.target.value,
+                                "MULTI_LINE"
+                              )
+                            }
+                            placeholder="Enter your answer"
+                          />
+                        )}
+
+                        {question.type === "INTEGER" && (
+                          <>
+                            <Form.Control
+                              type="number"
+                              value={currentTemplateAnswers[question.id] ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  templateId,
+                                  question.id,
+                                  e.target.value,
+                                  "INTEGER"
+                                )
+                              }
+                              placeholder="Enter a positive number"
+                            />
+                            {errorMessage && (
+                              <Message variant="danger">{errorMessage}</Message>
+                            )}
+                          </>
+                        )}
+
+                        {question.type === "CHECKBOX" && (
+                          <Form.Check
+                            type="checkbox"
+                            id={question.id}
+                            label="Check this box"
+                            checked={
+                              currentTemplateAnswers[question.id] ?? false
+                            }
+                            onChange={() =>
+                              handleInputChange(
+                                templateId,
+                                question.id,
+                                null,
+                                "CHECKBOX"
+                              )
+                            }
+                          />
+                        )}
+                      </Card.Body>
+                    </Card>
+                  );
+                })}
+
+                <div className="flex justify-center">
+                  <Button type="submit" variant="primary" size="lg">
+                    Submit Form
+                  </Button>
+                </div>
+                {(isLoading || creatingForm) && <Loader />}
+              </Form>
             </Col>
           </Row>
         </>
