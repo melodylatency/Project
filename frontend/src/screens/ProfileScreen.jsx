@@ -231,17 +231,17 @@ const ProfileScreen = () => {
                 <thead>
                   <tr>
                     <th></th>
-                    <th>TITLE</th>
-                    <th>FORM ID</th>
+                    <th className="text-nowrap">TITLE</th>
+                    <th className="text-nowrap">FORM ID</th>
                     <th
-                      style={{ cursor: "pointer" }}
+                      className="min-w-[120px] cursor-pointer"
                       onClick={() =>
                         setSortOrderForms((prev) =>
                           prev === "asc" ? "desc" : "asc"
                         )
                       }
                     >
-                      <div className="d-flex align-items-center gap-1">
+                      <div className="d-flex align-items-center gap-1 text-nowrap">
                         DATE FILLED
                         {sortOrderForms === "asc" ? (
                           <FaChevronUp className="text-muted" />
@@ -272,16 +272,18 @@ const ProfileScreen = () => {
                           />
                         </td>
                         <td>{form.title}</td>
-                        <td className="d-flex align-items-center gap-1">
-                          <Link
-                            to={`/form/${form.id}`}
-                            className="text-blue-500 underline"
-                          >
-                            {form.id}
-                          </Link>
-                          <MdOutlineEdit className="text-blue-500" />
-                        </td>
                         <td>
+                          <div className="d-flex align-items-center gap-1">
+                            <Link
+                              to={`/form/${form.id}`}
+                              className="text-blue-500 underline"
+                            >
+                              {form.id}
+                            </Link>
+                            <MdOutlineEdit className="text-blue-500 flex-shrink-0" />
+                          </div>
+                        </td>
+                        <td className="text-nowrap">
                           {moment(form.createdAt).format(
                             "MMMM Do YYYY, h:mm:ss a"
                           )}
@@ -388,19 +390,28 @@ const ProfileScreen = () => {
               </Table>
             )}
             <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
-              <input
-                type="checkbox"
-                checked={selectedTemplates.length === templates?.length}
-                onChange={handleSelectAllTemplates}
-                className="scale-125"
-              />
-              <Button
-                className="d-flex align-items-center gap-2"
-                variant="primary"
-                onClick={() => handleAction("deleteTemplate")}
-              >
-                <FaTrash /> Delete
-              </Button>
+              <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
+                <input
+                  type="checkbox"
+                  checked={selectedTemplates.length === templates?.length}
+                  onChange={handleSelectAllTemplates}
+                  className="scale-125"
+                />
+                <Button
+                  className="d-flex align-items-center gap-2"
+                  variant="primary"
+                  onClick={() => handleAction("deleteTemplate")}
+                >
+                  <FaTrash /> Delete
+                </Button>
+              </Col>
+              <Col xs={12} sm="auto" className="ms-sm-auto">
+                {" "}
+                {/* Added ms-sm-auto */}
+                <Button className="d-flex align-items-center">
+                  <FaChevronUp /> Create
+                </Button>
+              </Col>
             </Row>
           </Tab>
         </Tabs>
