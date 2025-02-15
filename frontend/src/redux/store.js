@@ -1,18 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./slices/apiSlice";
 import authSliceReducer from "./slices/authSlice";
-import templateSliceReducer from "./slices/templateSlice";
 import questionSliceReducer from "./slices/questionSlice";
-import formSliceReducer from "./slices/formSlice";
 import answerSliceReducer from "./slices/answerSlice";
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authSliceReducer,
-    template: templateSliceReducer,
     question: questionSliceReducer,
-    form: formSliceReducer,
     answer: answerSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>

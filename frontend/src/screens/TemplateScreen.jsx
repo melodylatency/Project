@@ -70,6 +70,8 @@ const FormScreen = () => {
       }).unwrap();
       refetch();
       refetchTemplates();
+      setLiked(false);
+      setComment("");
       toast.success("Review submitted");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
@@ -215,7 +217,10 @@ const FormScreen = () => {
                     </Form>
                   ) : (
                     <Message>
-                      <Link className="text-blue-500 underline" to={"/login"}>
+                      <Link
+                        className="text-blue-500 underline"
+                        to={`/login?redirect=/template/${templateId}`}
+                      >
                         Sign in
                       </Link>{" "}
                       to submit a review
