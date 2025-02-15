@@ -226,96 +226,99 @@ const ProfileScreen = () => {
               <Loader />
             ) : errorForm ? (
               <Message>{errorForm?.data?.message || errorForm.error}</Message>
+            ) : forms.length === 0 ? (
+              <Message>No forms found.</Message>
             ) : (
-              <Table striped hover responsive className="table-sm">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th className="text-nowrap">TITLE</th>
-                    <th className="text-nowrap">FORM ID</th>
-                    <th
-                      className="min-w-[120px] cursor-pointer"
-                      onClick={() =>
-                        setSortOrderForms((prev) =>
-                          prev === "asc" ? "desc" : "asc"
-                        )
-                      }
-                    >
-                      <div className="d-flex align-items-center gap-1 text-nowrap">
-                        DATE FILLED
-                        {sortOrderForms === "asc" ? (
-                          <FaChevronUp className="text-muted" />
-                        ) : (
-                          <FaChevronDown className="text-muted" />
-                        )}
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {forms
-                    .slice()
-                    .sort((a, b) => {
-                      const dateA = new Date(a.createdAt);
-                      const dateB = new Date(b.createdAt);
-                      return sortOrderForms === "asc"
-                        ? dateA - dateB
-                        : dateB - dateA;
-                    })
-                    .map((form) => (
-                      <tr key={form.id}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={selectedForms.includes(form.id)}
-                            onChange={() => handleSelectForm(form.id)}
-                          />
-                        </td>
-                        <td>{form.title}</td>
-                        <td>
-                          <div className="d-flex align-items-center gap-1">
-                            <Link
-                              to={`/form/${form.id}`}
-                              className="text-blue-500 underline"
-                            >
-                              {form.id}
-                            </Link>
-                            <MdOutlineEdit className="text-blue-500 flex-shrink-0" />
-                          </div>
-                        </td>
-                        <td className="text-nowrap">
-                          {moment(form.createdAt).format(
-                            "MMMM Do YYYY, h:mm:ss a"
+              <>
+                <Table striped hover responsive className="table-sm">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th className="text-nowrap">TITLE</th>
+                      <th className="text-nowrap">FORM ID</th>
+                      <th
+                        className="min-w-[120px] cursor-pointer"
+                        onClick={() =>
+                          setSortOrderForms((prev) =>
+                            prev === "asc" ? "desc" : "asc"
+                          )
+                        }
+                      >
+                        <div className="d-flex align-items-center gap-1 text-nowrap">
+                          DATE FILLED
+                          {sortOrderForms === "asc" ? (
+                            <FaChevronUp className="text-muted" />
+                          ) : (
+                            <FaChevronDown className="text-muted" />
                           )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {forms
+                      .slice()
+                      .sort((a, b) => {
+                        const dateA = new Date(a.createdAt);
+                        const dateB = new Date(b.createdAt);
+                        return sortOrderForms === "asc"
+                          ? dateA - dateB
+                          : dateB - dateA;
+                      })
+                      .map((form) => (
+                        <tr key={form.id}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedForms.includes(form.id)}
+                              onChange={() => handleSelectForm(form.id)}
+                            />
+                          </td>
+                          <td>{form.title}</td>
+                          <td>
+                            <div className="d-flex align-items-center gap-1">
+                              <Link
+                                to={`/form/${form.id}`}
+                                className="text-blue-500 underline"
+                              >
+                                {form.id}
+                              </Link>
+                              <MdOutlineEdit className="text-blue-500 flex-shrink-0" />
+                            </div>
+                          </td>
+                          <td className="text-nowrap">
+                            {moment(form.createdAt).format(
+                              "MMMM Do YYYY, h:mm:ss a"
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </Table>
+                <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
+                  <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedForms.length === forms?.length}
+                      onChange={handleSelectAllForms}
+                      className="scale-125"
+                    />
+                    <Button
+                      className="d-flex align-items-center gap-2"
+                      variant="primary"
+                      onClick={() => handleAction("deleteForm")}
+                    >
+                      <FaTrash /> Delete
+                    </Button>
+                  </Col>
+                  <Col xs={12} sm="auto" className="ms-sm-auto">
+                    {" "}
+                    {/* Added ms-sm-auto */}
+                    <Button>Create</Button>
+                  </Col>
+                </Row>
+              </>
             )}
-
-            <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
-              <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
-                <input
-                  type="checkbox"
-                  checked={selectedForms.length === forms?.length}
-                  onChange={handleSelectAllForms}
-                  className="scale-125"
-                />
-                <Button
-                  className="d-flex align-items-center gap-2"
-                  variant="primary"
-                  onClick={() => handleAction("deleteForm")}
-                >
-                  <FaTrash /> Delete
-                </Button>
-              </Col>
-              <Col xs={12} sm="auto" className="ms-sm-auto">
-                {" "}
-                {/* Added ms-sm-auto */}
-                <Button>Create</Button>
-              </Col>
-            </Row>
           </Tab>
           <Tab eventKey="templates" title="Templates">
             {loadingTemplates || loadingDeleteTemplate ? (
@@ -324,93 +327,97 @@ const ProfileScreen = () => {
               <Message>
                 {errorTemplate?.data?.message || errorTemplate.error}
               </Message>
+            ) : templates.length === 0 ? (
+              <Message>No templates found.</Message>
             ) : (
-              <Table striped hover responsive className="table-sm">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>TITLE</th>
-                    <th>TOPIC</th>
-                    <th>TEMPLATE ID</th>
-                    <th
-                      style={{ cursor: "pointer" }}
-                      onClick={() =>
-                        setSortOrderTemplates((prev) =>
-                          prev === "asc" ? "desc" : "asc"
-                        )
-                      }
+              <>
+                <Table striped hover responsive className="table-sm">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>TITLE</th>
+                      <th>TOPIC</th>
+                      <th>TEMPLATE ID</th>
+                      <th
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          setSortOrderTemplates((prev) =>
+                            prev === "asc" ? "desc" : "asc"
+                          )
+                        }
+                      >
+                        <div className="d-flex align-items-center gap-1">
+                          CREATED
+                          {sortOrderTemplates === "asc" ? (
+                            <FaChevronUp className="text-muted" />
+                          ) : (
+                            <FaChevronDown className="text-muted" />
+                          )}
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {templates
+                      .slice()
+                      .sort((a, b) => {
+                        const dateA = new Date(a.createdAt);
+                        const dateB = new Date(b.createdAt);
+                        return sortOrderTemplates === "asc"
+                          ? dateA - dateB
+                          : dateB - dateA;
+                      })
+                      .map((template) => (
+                        <tr key={template.id}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedTemplates.includes(template.id)}
+                              onChange={() => handleSelectTemplate(template.id)}
+                            />
+                          </td>
+                          <td>{template.title}</td>
+                          <td>{template.topic}</td>
+                          <td className="d-flex align-items-center gap-1">
+                            <Link
+                              to={`/template/${template.id}`}
+                              className="text-blue-500 underline"
+                            >
+                              {template.id}
+                            </Link>
+                            <MdOutlineEdit className="text-blue-500" />
+                          </td>
+                          <td>{template.createdAt.substring(0, 10)}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </Table>
+                <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
+                  <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedTemplates.length === templates?.length}
+                      onChange={handleSelectAllTemplates}
+                      className="scale-125"
+                    />
+                    <Button
+                      className="d-flex align-items-center gap-2"
+                      variant="primary"
+                      onClick={() => handleAction("deleteTemplate")}
                     >
-                      <div className="d-flex align-items-center gap-1">
-                        CREATED
-                        {sortOrderTemplates === "asc" ? (
-                          <FaChevronUp className="text-muted" />
-                        ) : (
-                          <FaChevronDown className="text-muted" />
-                        )}
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {templates
-                    .slice()
-                    .sort((a, b) => {
-                      const dateA = new Date(a.createdAt);
-                      const dateB = new Date(b.createdAt);
-                      return sortOrderTemplates === "asc"
-                        ? dateA - dateB
-                        : dateB - dateA;
-                    })
-                    .map((template) => (
-                      <tr key={template.id}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={selectedTemplates.includes(template.id)}
-                            onChange={() => handleSelectTemplate(template.id)}
-                          />
-                        </td>
-                        <td>{template.title}</td>
-                        <td>{template.topic}</td>
-                        <td className="d-flex align-items-center gap-1">
-                          <Link
-                            to={`/template/${template.id}`}
-                            className="text-blue-500 underline"
-                          >
-                            {template.id}
-                          </Link>
-                          <MdOutlineEdit className="text-blue-500" />
-                        </td>
-                        <td>{template.createdAt.substring(0, 10)}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
+                      <FaTrash /> Delete
+                    </Button>
+                  </Col>
+                  <Col xs={12} sm="auto" className="ms-sm-auto">
+                    {" "}
+                    {/* Added ms-sm-auto */}
+                    <Link to={"/create"}>
+                      <Button>Create</Button>
+                    </Link>
+                  </Col>
+                </Row>
+              </>
             )}
-            <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
-              <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
-                <input
-                  type="checkbox"
-                  checked={selectedTemplates.length === templates?.length}
-                  onChange={handleSelectAllTemplates}
-                  className="scale-125"
-                />
-                <Button
-                  className="d-flex align-items-center gap-2"
-                  variant="primary"
-                  onClick={() => handleAction("deleteTemplate")}
-                >
-                  <FaTrash /> Delete
-                </Button>
-              </Col>
-              <Col xs={12} sm="auto" className="ms-sm-auto">
-                {" "}
-                {/* Added ms-sm-auto */}
-                <Link to={"/create"}>
-                  <Button>Create</Button>
-                </Link>
-              </Col>
-            </Row>
           </Tab>
         </Tabs>
       </Col>

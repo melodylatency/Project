@@ -245,6 +245,7 @@ const FormScreen = () => {
                           <Form.Control
                             type="text"
                             value={currentTemplateAnswers[question.id] ?? ""}
+                            disabled={!userInfo}
                             onChange={(e) =>
                               handleInputChange(
                                 templateId,
@@ -262,6 +263,7 @@ const FormScreen = () => {
                             as="textarea"
                             rows={3}
                             value={currentTemplateAnswers[question.id] ?? ""}
+                            disabled={!userInfo}
                             onChange={(e) =>
                               handleInputChange(
                                 templateId,
@@ -279,6 +281,7 @@ const FormScreen = () => {
                             <Form.Control
                               type="number"
                               value={currentTemplateAnswers[question.id] ?? ""}
+                              disabled={!userInfo}
                               onChange={(e) =>
                                 handleInputChange(
                                   templateId,
@@ -300,6 +303,7 @@ const FormScreen = () => {
                             type="checkbox"
                             id={question.id}
                             label="Check this box"
+                            disabled={!userInfo}
                             checked={
                               currentTemplateAnswers[question.id] ?? false
                             }
@@ -319,7 +323,12 @@ const FormScreen = () => {
                 })}
 
                 <div className="flex justify-center">
-                  <Button type="submit" variant="primary" size="lg">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    disabled={!userInfo}
+                  >
                     Submit Form
                   </Button>
                 </div>
