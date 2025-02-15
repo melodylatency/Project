@@ -126,7 +126,7 @@ const CreateScreen = () => {
 
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
-      <Link className="btn btn-light my-3" to="/">
+      <Link className="btn btn-light my-3" to="/profile">
         Go Back
       </Link>
       <h1 className="text-center mb-4 text-5xl">Create New Form</h1>

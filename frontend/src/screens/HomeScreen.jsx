@@ -1,16 +1,12 @@
 import { useMemo } from "react";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import Template from "../components/Template";
 import { useGetTemplatesQuery } from "../redux/slices/templatesApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
   const { data: templates, isLoading, error } = useGetTemplatesQuery();
-
-  const { userInfo } = useSelector((state) => state.auth);
 
   const top5 = useMemo(() => {
     if (!Array.isArray(templates) || templates.length === 0) return [];
@@ -54,15 +50,6 @@ const HomeScreen = () => {
 
           <h1 className="text-center text-6xl py-5">All other Templates</h1>
 
-          <Link to={"/create"} className="flex flex-row justify-end">
-            <Button
-              className="flex justify-center"
-              hidden={!userInfo}
-              size="lg"
-            >
-              Create
-            </Button>
-          </Link>
           {templates.length > 5 ? (
             <Row>
               {restTemplates.map((template) => (

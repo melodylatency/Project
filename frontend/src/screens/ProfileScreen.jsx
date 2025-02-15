@@ -222,7 +222,7 @@ const ProfileScreen = () => {
       <Col md={9}>
         <Tabs defaultActiveKey="forms" id="dashboard" className="pt-5">
           <Tab eventKey="forms" title="Forms">
-            {loadingForms ? (
+            {loadingForms || loadingDeleteForm ? (
               <Loader />
             ) : errorForm ? (
               <Message>{errorForm?.data?.message || errorForm.error}</Message>
@@ -313,14 +313,12 @@ const ProfileScreen = () => {
               <Col xs={12} sm="auto" className="ms-sm-auto">
                 {" "}
                 {/* Added ms-sm-auto */}
-                <Button className="d-flex align-items-center">
-                  <FaChevronUp /> Create
-                </Button>
+                <Button>Create</Button>
               </Col>
             </Row>
           </Tab>
           <Tab eventKey="templates" title="Templates">
-            {loadingTemplates ? (
+            {loadingTemplates || loadingDeleteTemplate ? (
               <Loader />
             ) : errorTemplate ? (
               <Message>
@@ -408,9 +406,9 @@ const ProfileScreen = () => {
               <Col xs={12} sm="auto" className="ms-sm-auto">
                 {" "}
                 {/* Added ms-sm-auto */}
-                <Button className="d-flex align-items-center">
-                  <FaChevronUp /> Create
-                </Button>
+                <Link to={"/create"}>
+                  <Button>Create</Button>
+                </Link>
               </Col>
             </Row>
           </Tab>
