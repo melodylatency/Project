@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { BiLike } from "react-icons/bi";
+import { RegExpMatcher, englishDataset } from "obscenity";
 import {
   Row,
   Col,
@@ -53,6 +54,7 @@ const FormScreen = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const matcher = useMemo(() => new RegExpMatcher(englishDataset.build()), []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -61,6 +63,13 @@ const FormScreen = () => {
       toast.error("The comment can't be empty");
       return;
     }
+
+    const matches = matcher.getAllMatches(comment);
+    if (matches.length > 0) {
+      toast.error("Please remove inappropriate language from your comment");
+      return;
+    }
+
     try {
       await createReview({
         templateId,
