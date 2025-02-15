@@ -25,7 +25,7 @@ import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 
-const CreateScreen = () => {
+const EditTemplateScreen = () => {
   // const { questionList } = useSelector((state) => state.question);
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -40,6 +40,7 @@ const CreateScreen = () => {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState("");
   const [questionList, setQuestionList] = useState([]);
+  const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
     title: "",
@@ -90,6 +91,7 @@ const CreateScreen = () => {
   };
 
   const handleDragEnd = (event) => {
+    if (editingQuestionId !== null) return;
     const { active, over } = event;
     if (active.id !== over.id) {
       const oldIndex = questionList.findIndex((q) => q.id === active.id);
@@ -104,11 +106,13 @@ const CreateScreen = () => {
   };
 
   const updateQuestion = (updatedQuestion) => {
+    const newQuestion = { ...updatedQuestion };
+    if (newQuestion.type === "checkbox" && !newQuestion.options) {
+      newQuestion.options = [];
+    }
     dispatch(
       setQuestionList(
-        questionList.map((q) =>
-          q.id === updatedQuestion.id ? updatedQuestion : q
-        )
+        questionList.map((q) => (q.id === newQuestion.id ? newQuestion : q))
       )
     );
   };
@@ -198,8 +202,13 @@ const CreateScreen = () => {
               <SortableItem key={question.id} id={question.id} index={index}>
                 <QuestionCard
                   question={question}
+                  index={index}
                   onDelete={deleteQuestion}
-                  onUpdateQuestion={updateQuestion}
+                  onUpdate={() => setEditingQuestionId(question.id)}
+                  isEditing={question.id === editingQuestionId}
+                  onSave={updateQuestion}
+                  onCancelEdit={() => setEditingQuestionId(null)}
+                  dragHandleProps={undefined} // Handled by SortableItem
                 />
               </SortableItem>
             ))}
@@ -285,4 +294,4 @@ const CreateScreen = () => {
   );
 };
 
-export default CreateScreen;
+export default EditTemplateScreen;
