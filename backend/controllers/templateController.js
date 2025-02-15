@@ -105,6 +105,35 @@ const createTemplate = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Edit template
+// @route   PUT /api/template/:id
+// @access  Private
+const editTemplateById = asyncHandler(async (req, res) => {
+  const templateId = req.params.id;
+  const { title, description, topic, image, access } = req.body;
+
+  const template = await Template.findByPk(templateId);
+  if (!template) {
+    res.status(404);
+    throw new Error("Template not found");
+  }
+
+  // Update template fields
+  const updateData = {
+    title: title !== undefined ? title : template.title,
+    description: description !== undefined ? description : template.description,
+    topic: topic !== undefined ? topic : template.topic,
+    image: image !== undefined ? image : template.image,
+    access: access !== undefined ? access : template.access,
+  };
+
+  await template.update(updateData);
+
+  res.status(200).json({
+    ...template.toJSON(),
+  });
+});
+
 // @desc    Create template review
 // @route   POST /api/templates/:id/reviews
 // @access  Private
@@ -166,6 +195,7 @@ export {
   getTemplateById,
   getTemplatesByAuthorId,
   createTemplate,
+  editTemplateById,
   createTemplateReview,
   deleteTemplate,
 };
