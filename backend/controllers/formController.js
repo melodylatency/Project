@@ -82,4 +82,19 @@ const createForm = asyncHandler(async (req, res) => {
   });
 });
 
-export { getUsersForms, getFormById, createForm };
+// @desc    Delete form
+// @route   DELETE /api/forms/:id
+// @access  Private/Admin
+const deleteForm = asyncHandler(async (req, res) => {
+  const form = await Form.findByPk(req.params.id);
+
+  if (!form) {
+    res.status(404);
+    throw new Error("Form not found");
+  }
+
+  await form.destroy();
+  res.status(200).json({ message: "Form deleted successfully" });
+});
+
+export { getUsersForms, getFormById, createForm, deleteForm };

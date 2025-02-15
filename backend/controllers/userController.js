@@ -163,11 +163,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  if (req.user.id === user.id) {
-    res.status(400);
-    throw new Error("Cannot delete yourself");
-  }
-
   await user.destroy();
   res.status(200).json({ message: "User deleted successfully" });
 });

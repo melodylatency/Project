@@ -12,8 +12,8 @@ export const formsApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 60,
     }),
     getFormById: builder.query({
-      query: (templateId) => ({
-        url: `${FORMS_URL}/${templateId}`,
+      query: (formId) => ({
+        url: `${FORMS_URL}/${formId}`,
         method: "GET",
       }),
       keepUnusedDataFor: 60,
@@ -25,6 +25,12 @@ export const formsApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    deleteForm: builder.mutation({
+      query: (formId) => ({
+        url: `${FORMS_URL}/${formId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -32,4 +38,5 @@ export const {
   useGetUsersFormsQuery,
   useGetFormByIdQuery,
   useCreateFormMutation,
+  useDeleteFormMutation,
 } = formsApiSlice;

@@ -146,10 +146,26 @@ const createTemplateReview = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Delete template
+// @route   DELETE /api/templates/:id
+// @access  Private/Admin
+const deleteTemplate = asyncHandler(async (req, res) => {
+  const template = await Template.findByPk(req.params.id);
+
+  if (!template) {
+    res.status(404);
+    throw new Error("Template not found");
+  }
+
+  await template.destroy();
+  res.status(200).json({ message: "Template deleted successfully" });
+});
+
 export {
   getTemplates,
   getTemplateById,
   getTemplatesByAuthorId,
   createTemplate,
   createTemplateReview,
+  deleteTemplate,
 };
