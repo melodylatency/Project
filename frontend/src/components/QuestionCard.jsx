@@ -1,7 +1,13 @@
 import React from "react";
 import { Button, Row, Col, Card } from "react-bootstrap";
 
-const QuestionCard = ({ question, index, onDelete, dragHandleProps }) => {
+const QuestionCard = ({
+  question,
+  index,
+  onDelete,
+  onUpdate,
+  dragHandleProps,
+}) => {
   return (
     <Card className="mb-3 shadow-sm">
       <Card.Body>
@@ -22,7 +28,14 @@ const QuestionCard = ({ question, index, onDelete, dragHandleProps }) => {
             </div>
             <p className="text-muted">{question.description}</p>
           </Col>
-          <Col xs="auto">
+          <Col xs="auto" className="d-flex align-items-center gap-2">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={() => onUpdate(question.id)}
+            >
+              Update
+            </Button>
             <Button
               variant="outline-danger"
               size="sm"

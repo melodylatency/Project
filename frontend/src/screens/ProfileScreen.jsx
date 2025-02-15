@@ -380,7 +380,7 @@ const ProfileScreen = () => {
                           <td>{template.topic}</td>
                           <td className="d-flex align-items-center gap-1">
                             <Link
-                              to={`/template/${template.id}`}
+                              to={`/template/edit/${template.id}`}
                               className="text-blue-500 underline"
                             >
                               {template.id}
