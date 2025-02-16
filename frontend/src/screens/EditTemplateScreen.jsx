@@ -332,7 +332,8 @@ const EditTemplateScreen = () => {
           {(isLoading ||
             isDeleting ||
             isUpdatingQuestion ||
-            isLoadingTemplate) && <Loader />}
+            isLoadingTemplate ||
+            isCreatingQuestion) && <Loader />}
         </Form>
       </DndContext>
     </Container>
