@@ -10,8 +10,8 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.route("/template/:id").get(getTemplateForms);
-router.route("/create").post(createForm);
+router.route("/template/:id").get(protect, getTemplateForms);
+router.route("/create").post(protect, createForm);
 router.route("/:id").get(protect, getFormById).delete(protect, deleteForm);
 router.route("/").get(protect, getUserForms);
 

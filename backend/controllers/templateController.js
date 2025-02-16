@@ -38,12 +38,17 @@ const getTemplateById = asyncHandler(async (req, res) => {
 
 // @desc    Fetch template by author ID
 // @route   GET /api/templates/author
-// @access  Public
+// @access  Private
 const getTemplatesByAuthorId = asyncHandler(async (req, res) => {
-  const templates = await Template.findAll({
-    where: { authorId: req.user.id },
-  });
-  res.status(200).json(templates);
+  if (req.user.isAdmin) {
+    const templates = await Template.findAll({});
+    res.status(200).json(templates);
+  } else {
+    const templates = await Template.findAll({
+      where: { authorId: req.user.id },
+    });
+    res.status(200).json(templates);
+  }
 });
 
 // @desc    Create template

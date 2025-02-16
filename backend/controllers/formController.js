@@ -5,10 +5,15 @@ import Answer from "../models/answerModel.js";
 
 // @desc    Fetch all forms of the user
 // @route   /api/forms
-// @access  Public
+// @access  Private
 const getUserForms = asyncHandler(async (req, res) => {
-  const forms = await Form.findAll({ where: { user_id: req.user.id } });
-  res.status(200).json(forms);
+  if (req.user.isAdmin) {
+    const forms = await Form.findAll({});
+    res.status(200).json(forms);
+  } else {
+    const forms = await Form.findAll({ where: { user_id: req.user.id } });
+    res.status(200).json(forms);
+  }
 });
 
 // @desc    Fetch all forms of the template
