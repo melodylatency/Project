@@ -20,12 +20,16 @@ import {
   useGetTemplateByIdQuery,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
+import {
+  useDeleteQuestionMutation,
+  useEditQuestionMutation,
+} from "../redux/slices/questionsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 
-const CreateScreen = () => {
+const EditTemplateScreen = () => {
   // const { questionList } = useSelector((state) => state.question);
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -34,12 +38,24 @@ const CreateScreen = () => {
   const {
     data: template,
     isLoading: loadingTemplate,
+    refetch: refetchTemplate,
     error,
   } = useGetTemplateByIdQuery(templateId);
+
+  const [
+    editQuestion,
+    { isLoading: isUpdatingQuestion, error: failedUpdatingQuestion },
+  ] = useEditQuestionMutation();
+
+  const [
+    deleteQuestion,
+    { isLoading: isDeleting, error: deleteQuestionFailed },
+  ] = useDeleteQuestionMutation();
 
   const [title, setTitle] = useState();
   const [description, setDescription] = useState("");
   const [questionList, setQuestionList] = useState([]);
+  const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
     title: "",
@@ -90,6 +106,7 @@ const CreateScreen = () => {
   };
 
   const handleDragEnd = (event) => {
+    if (editingQuestionId !== null) return;
     const { active, over } = event;
     if (active.id !== over.id) {
       const oldIndex = questionList.findIndex((q) => q.id === active.id);
@@ -99,8 +116,14 @@ const CreateScreen = () => {
     }
   };
 
-  const deleteQuestion = (id) => {
-    dispatch(setQuestionList(questionList.filter((q) => q.id !== id)));
+  const handleDelete = async (questionId) => {
+    try {
+      await deleteQuestion(questionId).unwrap();
+      refetchTemplate();
+      toast.success("Question deleted successfully");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   const updateQuestion = (updatedQuestion) => {
@@ -198,8 +221,13 @@ const CreateScreen = () => {
               <SortableItem key={question.id} id={question.id} index={index}>
                 <QuestionCard
                   question={question}
-                  onDelete={deleteQuestion}
-                  onUpdateQuestion={updateQuestion}
+                  index={index}
+                  onDelete={() => handleDelete(question.id)}
+                  onUpdate={() => setEditingQuestionId(question.id)}
+                  isEditing={question.id === editingQuestionId}
+                  onSave={updateQuestion}
+                  onCancelEdit={() => setEditingQuestionId(null)}
+                  dragHandleProps={undefined} // Handled by SortableItem
                 />
               </SortableItem>
             ))}
@@ -285,4 +313,4 @@ const CreateScreen = () => {
   );
 };
 
-export default CreateScreen;
+export default EditTemplateScreen;

@@ -28,6 +28,8 @@ export default {
           model: "templates",
           key: "id",
         },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,
