@@ -14,13 +14,13 @@ const templateSlice = createSlice({
       state.templateData = action.payload;
       localStorage.setItem("templateData", JSON.stringify(state.templateData));
     },
-    setTemplateSave: (state, action) => {
+    setTemplateClear: (state, action) => {
       state.templateData = null;
       localStorage.removeItem("templateData");
     },
   },
 });
 
-export const { setTemplateData, setTemplateSave } = templateSlice.actions;
+export const { setTemplateData, setTemplateClear } = templateSlice.actions;
 
 export default templateSlice.reducer;

@@ -111,7 +111,7 @@ const RegisterScreen = () => {
           <h1 className="font-serif text-black">
             Already have an account?{" "}
             <Link
-              to={redirect ? `/?redirect=${redirect}` : "/"}
+              to={redirect ? `/login?redirect=${redirect}` : "/login"}
               className="underline text-blue-900"
             >
               Sign in

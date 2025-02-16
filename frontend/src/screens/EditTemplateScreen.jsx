@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -17,16 +17,29 @@ import SortableItem from "../components/SortableItem";
 import { v4 as uuid } from "uuid";
 import {
   useCreateTemplateMutation,
+  useGetTemplateByIdQuery,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 
 const CreateScreen = () => {
-  const [title, setTitle] = useState("Untitled Form");
+  // const { questionList } = useSelector((state) => state.question);
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const { id: templateId } = useParams();
+
+  const {
+    data: template,
+    isLoading: loadingTemplate,
+    error,
+  } = useGetTemplateByIdQuery(templateId);
+
+  const [title, setTitle] = useState();
   const [description, setDescription] = useState("");
+  const [questionList, setQuestionList] = useState([]);
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
     title: "",
@@ -34,14 +47,19 @@ const CreateScreen = () => {
     displayOnTable: true,
   });
 
-  const { questionList } = useSelector((state) => state.question);
-  const { userInfo } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [createTemplate, { isLoading }] = useCreateTemplateMutation();
   const { refetch } = useGetTemplatesQuery();
+
+  useEffect(() => {
+    if (template) {
+      setTitle(template.title);
+      setDescription(template.description);
+      setQuestionList(template.questionList);
+    }
+  }, [template]);
 
   const addQuestion = () => {
     const countOfType = questionList.filter(
@@ -129,17 +147,17 @@ const CreateScreen = () => {
       <Link className="btn btn-light my-3" to="/profile">
         Go Back
       </Link>
-      <h1 className="text-center mb-4 text-5xl">Create New Form</h1>
+      <h1 className="text-center mb-4 text-5xl">Edit Template</h1>
       {/* Move DndContext outside the Form */}
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
           {/* Form Title */}
 
           <Form.Group className="mb-3" controlId="formTitle">
-            <Form.Label className="fs-4">Form Title</Form.Label>
+            <Form.Label className="fs-4">Template Title</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter form title"
+              placeholder="Enter a title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               size="lg"
@@ -149,11 +167,11 @@ const CreateScreen = () => {
           {/* Form Description with Markdown Support */}
           <Form.Group className="mb-4" controlId="formDescription">
             <Form.Label className="fs-5">
-              Form Description (supports Markdown)
+              Template Description (supports Markdown)
             </Form.Label>
             <Form.Control
               as="textarea"
-              rows={3}
+              rows={10}
               placeholder="Enter a description (optional, Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}

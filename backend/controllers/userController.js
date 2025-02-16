@@ -104,7 +104,23 @@ const getUserById = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Block/unblock user
+// @desc    Admin/unAdmin user
+// @route   PUT /api/users/:id/admin
+// @access  Private/Admin
+const adminUser = asyncHandler(async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  user.isAdmin = !user.isAdmin;
+  await user.save();
+  res.status(200).json({ message: "User privileges updated successfully" });
+});
+
+// @desc    Block/block user
 // @route   PUT /api/users/:id/block
 // @access  Private/Admin
 const blockUser = asyncHandler(async (req, res) => {
@@ -120,6 +136,9 @@ const blockUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User blocked successfully" });
 });
 
+// @desc    Block/unblock user
+// @route   PUT /api/users/:id/unblock
+// @access  Private/Admin
 const unblockUser = asyncHandler(async (req, res) => {
   const user = await User.findByPk(req.params.id);
 
@@ -142,11 +161,6 @@ const deleteUser = asyncHandler(async (req, res) => {
   if (!user) {
     res.status(404);
     throw new Error("User not found");
-  }
-
-  if (req.user.id === user.id) {
-    res.status(400);
-    throw new Error("Cannot delete yourself");
   }
 
   await user.destroy();
@@ -231,6 +245,7 @@ export {
   logoutUser,
   getUsers,
   getUserById,
+  adminUser,
   blockUser,
   unblockUser,
   deleteUser,

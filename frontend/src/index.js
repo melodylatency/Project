@@ -18,6 +18,7 @@ import AdminScreen from "./screens/AdminScreen";
 import VideoScreen from "./screens/VideoScreen";
 import HomeScreen from "./screens/HomeScreen";
 import TemplateScreen from "./screens/TemplateScreen";
+import EditTemplateScreen from "./screens/EditTemplateScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import CreateScreen from "./screens/CreateScreen";
 
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route path="/" index={true} element={<HomeScreen />} />
       <Route path="/template/:id" element={<TemplateScreen />} />
+      <Route path="/template/edit/:id" element={<EditTemplateScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/admin" element={<AdminScreen />} />

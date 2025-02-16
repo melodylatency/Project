@@ -1,44 +1,39 @@
 export default {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("questions", {
+    await queryInterface.createTable("reviews", {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false,
       },
-      type: {
-        type: Sequelize.ENUM(
-          "SINGLE_LINE",
-          "MULTI_LINE",
-          "INTEGER",
-          "CHECKBOX"
-        ),
-        allowNull: false,
-      },
-      title: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      index: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
+      isLiked: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
-      show_in_results: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
+      comment: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       template_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: "templates", // Ensure this matches the Template table name
+          model: "templates",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -56,11 +51,10 @@ export default {
       },
     });
 
-    // Add index for template_id for better query performance
-    await queryInterface.addIndex("questions", ["template_id"]);
+    await queryInterface.addIndex("reviews", ["template_id"]);
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable("questions");
+    await queryInterface.dropTable("reviews");
   },
 };

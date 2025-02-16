@@ -11,8 +11,24 @@ Answer.init(
       primaryKey: true,
     },
     value: {
-      type: DataTypes.TEXT,
+      type: DataTypes.JSONB,
       allowNull: false,
+    },
+    form_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "forms",
+        key: "id",
+      },
+    },
+    question_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "questions",
+        key: "id",
+      },
     },
   },
   {

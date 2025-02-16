@@ -12,6 +12,7 @@ import {
   unblockUser,
   updateUserProfile,
   getUserProfile,
+  adminUser,
 } from "../controllers/userController.js";
 import { admin, protect } from "../middleware/authMiddleware.js";
 
@@ -34,6 +35,7 @@ router
   .delete(protect, deleteUser)
   .put(protect, updateUser);
 
+router.route("/:id/admin").put(protect, admin, adminUser);
 router.route("/:id/block").put(protect, admin, blockUser);
 router.route("/:id/unblock").put(protect, admin, unblockUser);
 

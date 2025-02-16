@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
 import templateRoutes from "./routes/templateRoutes.js";
+import formRoutes from "./routes/formRoutes.js";
+import questionRoutes from "./routes/questionRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -23,6 +25,8 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 app.use("/api/templates", templateRoutes);
+app.use("/api/forms", formRoutes);
+app.use("/api/questions", questionRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "frontend/build")));

@@ -7,7 +7,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: USERS_URL,
       }),
-      providesTags: ["Users"],
+      providesTags: ["User"],
       keepUnusedDataFor: 5,
     }),
     login: builder.mutation({
@@ -15,6 +15,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/auth`,
         method: "POST",
         body: data,
+        invalidatesTags: ["Template", "Form"],
       }),
     }),
     register: builder.mutation({
@@ -43,6 +44,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    adminUser: builder.mutation({
+      query: (userId) => ({
+        url: `${USERS_URL}/${userId}/admin`,
+        method: "PUT",
+      }),
+    }),
     blockUser: builder.mutation({
       query: (userId) => ({
         url: `${USERS_URL}/${userId}/block`,
@@ -64,6 +71,7 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useDeleteUserMutation,
+  useAdminUserMutation,
   useBlockUserMutation,
   useUnblockUserMutation,
   useProfileMutation,
