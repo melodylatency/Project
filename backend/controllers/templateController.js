@@ -70,24 +70,8 @@ const createTemplate = asyncHandler(async (req, res) => {
     authorId,
   });
 
-  // Process Questions if provided
-  const convertType = (type) => {
-    switch (type) {
-      case "text":
-        return "SINGLE_LINE";
-      case "textarea":
-        return "MULTI_LINE";
-      case "number":
-        return "INTEGER";
-      case "checkbox":
-        return "CHECKBOX";
-      default:
-        throw new Error(`Invalid question type: ${type}`);
-    }
-  };
-
   const questionsData = questionList.map((q, index) => ({
-    type: convertType(q.type),
+    type: q.type,
     title: q.title,
     description: q.description || "",
     index: index, // Use array index as index
@@ -97,12 +81,6 @@ const createTemplate = asyncHandler(async (req, res) => {
 
   await Question.bulkCreate(questionsData);
 
-  // Fetch the created Questions with their associations
-  // const questions = await Question.findAll({
-  //   where: { template_id: template.id },
-  //   index: [["index", "ASC"]],
-  // });
-
   res.status(201).json({
     ...template.toJSON(),
   });
@@ -111,7 +89,7 @@ const createTemplate = asyncHandler(async (req, res) => {
 // @desc    Edit template
 // @route   PUT /api/templates
 // @access  Private
-const editTemplateById = asyncHandler(async (req, res) => {
+const updateTemplateById = asyncHandler(async (req, res) => {
   const { title, description, topic, image, access, templateId } = req.body;
 
   const template = await Template.findByPk(templateId);
@@ -204,7 +182,7 @@ export {
   getTemplateById,
   getTemplatesByAuthorId,
   createTemplate,
-  editTemplateById,
+  updateTemplateById,
   createTemplateReview,
   deleteTemplate,
 };

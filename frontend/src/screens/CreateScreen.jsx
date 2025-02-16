@@ -209,10 +209,10 @@ const CreateScreen = () => {
                       setNewQuestion({ ...newQuestion, type: e.target.value })
                     }
                   >
-                    <option value="text">Single-line</option>
-                    <option value="textarea">Multi-line</option>
-                    <option value="number">Integer</option>
-                    <option value="checkbox">Checkbox</option>
+                    <option value="SINGLE_LINE">Single-line</option>
+                    <option value="MULTI_LINE">Multi-line</option>
+                    <option value="INTEGER">Integer</option>
+                    <option value="CHECKBOX">Checkbox</option>
                   </Form.Select>
                 </Col>
                 <Col md={2}>

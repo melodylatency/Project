@@ -81,13 +81,24 @@ const EditTemplateScreen = () => {
       );
     } else {
       try {
-        await createQuestion(newQuestion);
+        console.log({
+          ...newQuestion,
+          index: questionList.length,
+          template_id: templateId,
+        });
+        await createQuestion({
+          ...newQuestion,
+          index: questionList.length,
+          template_id: templateId,
+        }).unwrap();
         setNewQuestion({
-          type: "text",
+          type: "SINGLE_LINE",
           title: "",
           description: "",
           displayOnTable: true,
         });
+        refetchTemplate();
+        toast.success("Question created successfully");
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -134,6 +145,23 @@ const EditTemplateScreen = () => {
   const handleDelete = async (questionId) => {
     try {
       await deleteQuestion(questionId).unwrap();
+
+      const updatedQuestions = questionList.filter((q) => q.id !== questionId);
+
+      const reIndexedQuestions = updatedQuestions.map((q, index) => ({
+        ...q,
+        index,
+      }));
+
+      setQuestionList(reIndexedQuestions);
+
+      for (const question of reIndexedQuestions) {
+        await updateQuestion({
+          id: question.id,
+          index: question.index,
+        }).unwrap();
+      }
+
       refetchTemplate();
       toast.success("Question deleted successfully");
     } catch (err) {
@@ -169,10 +197,11 @@ const EditTemplateScreen = () => {
         title,
         description,
         topic: "Other",
+        templateId,
       }).unwrap();
       refetch();
       navigate("/");
-      toast.success("Template created successfully!");
+      toast.success("Template updated successfully!");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -268,10 +297,10 @@ const EditTemplateScreen = () => {
                       setNewQuestion({ ...newQuestion, type: e.target.value })
                     }
                   >
-                    <option value="text">Single-line</option>
-                    <option value="textarea">Multi-line</option>
-                    <option value="number">Integer</option>
-                    <option value="checkbox">Checkbox</option>
+                    <option value="SINGLE_LINE">Single-line</option>
+                    <option value="MULTI_LINE">Multi-line</option>
+                    <option value="INTEGER">Integer</option>
+                    <option value="CHECKBOX">Checkbox</option>
                   </Form.Select>
                 </Col>
                 <Col md={2}>

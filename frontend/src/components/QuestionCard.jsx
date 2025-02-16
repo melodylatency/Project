@@ -51,8 +51,8 @@ const QuestionCard = ({
                   value={editedQuestion.type}
                   onChange={handleChange}
                 >
-                  <option value="SINGLE-LINE">Single-line</option>
-                  <option value="MULTI-LINE">Multi-line</option>
+                  <option value="SINGLE_LINE">Single-line</option>
+                  <option value="MULTI_LINE">Multi-line</option>
                   <option value="INTEGER">Integer</option>
                   <option value="CHECKBOX">Checkbox</option>
                 </Form.Select>
