@@ -20,6 +20,10 @@ import {
   useGetTemplateByIdQuery,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
+import {
+  useDeleteQuestionMutation,
+  useEditQuestionMutation,
+} from "../redux/slices/questionsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
@@ -34,8 +38,19 @@ const EditTemplateScreen = () => {
   const {
     data: template,
     isLoading: loadingTemplate,
+    refetch: refetchTemplate,
     error,
   } = useGetTemplateByIdQuery(templateId);
+
+  const [
+    editQuestion,
+    { isLoading: isUpdatingQuestion, error: failedUpdatingQuestion },
+  ] = useEditQuestionMutation();
+
+  const [
+    deleteQuestion,
+    { isLoading: isDeleting, error: deleteQuestionFailed },
+  ] = useDeleteQuestionMutation();
 
   const [title, setTitle] = useState();
   const [description, setDescription] = useState("");
@@ -101,18 +116,22 @@ const EditTemplateScreen = () => {
     }
   };
 
-  const deleteQuestion = (id) => {
-    dispatch(setQuestionList(questionList.filter((q) => q.id !== id)));
+  const handleDelete = async (questionId) => {
+    try {
+      await deleteQuestion(questionId).unwrap();
+      refetchTemplate();
+      toast.success("Question deleted successfully");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   const updateQuestion = (updatedQuestion) => {
-    const newQuestion = { ...updatedQuestion };
-    if (newQuestion.type === "checkbox" && !newQuestion.options) {
-      newQuestion.options = [];
-    }
     dispatch(
       setQuestionList(
-        questionList.map((q) => (q.id === newQuestion.id ? newQuestion : q))
+        questionList.map((q) =>
+          q.id === updatedQuestion.id ? updatedQuestion : q
+        )
       )
     );
   };
@@ -203,7 +222,7 @@ const EditTemplateScreen = () => {
                 <QuestionCard
                   question={question}
                   index={index}
-                  onDelete={deleteQuestion}
+                  onDelete={() => handleDelete(question.id)}
                   onUpdate={() => setEditingQuestionId(question.id)}
                   isEditing={question.id === editingQuestionId}
                   onSave={updateQuestion}

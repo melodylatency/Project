@@ -18,7 +18,7 @@ const getQuestionById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create Question
-// @route   POST /api/questions/create
+// @route   POST /api/questions
 // @access  Private
 const createQuestion = asyncHandler(async (req, res) => {
   const { title, description, type, index, show_in_results, template_id } =
@@ -45,12 +45,10 @@ const createQuestion = asyncHandler(async (req, res) => {
 });
 
 // @desc    Edit Question By Id
-// @route   PUT /api/questions/:id
+// @route   PUT /api/questions
 // @access  Private
 const editQuestionById = asyncHandler(async (req, res) => {
-  const questionId = req.params.id;
-
-  const { title, description, type, show_in_results } = req.body;
+  const { title, description, type, show_in_results, questionId } = req.body;
 
   const question = await Question.findByPk(questionId);
   if (!question) {

@@ -121,11 +121,7 @@ const QuestionCard = ({
             >
               Update
             </Button>
-            <Button
-              variant="outline-danger"
-              size="sm"
-              onClick={() => onDelete(question.id)}
-            >
+            <Button variant="outline-danger" size="sm" onClick={onDelete}>
               Delete
             </Button>
           </Col>
