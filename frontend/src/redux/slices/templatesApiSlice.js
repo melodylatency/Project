@@ -33,11 +33,11 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
         invalidatesTags: ["Template"],
       }),
     }),
-    createTemplateReview: builder.mutation({
-      query: ({ templateId, ...body }) => ({
-        url: `${TEMPLATES_URL}/${templateId}/reviews`,
-        method: "POST",
-        body: { ...body, template_id: templateId },
+    updateTemplate: builder.mutation({
+      query: (data) => ({
+        url: `${TEMPLATES_URL}`,
+        method: "PUT",
+        body: data,
         invalidatesTags: ["Template"],
       }),
     }),
@@ -45,6 +45,14 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
       query: (templateId) => ({
         url: `${TEMPLATES_URL}/${templateId}`,
         method: "DELETE",
+      }),
+    }),
+    createTemplateReview: builder.mutation({
+      query: ({ templateId, ...body }) => ({
+        url: `${TEMPLATES_URL}/${templateId}/reviews`,
+        method: "POST",
+        body: { ...body, template_id: templateId },
+        invalidatesTags: ["Template"],
       }),
     }),
   }),
@@ -55,6 +63,7 @@ export const {
   useGetTemplateByIdQuery,
   useGetUsersTemplatesQuery,
   useCreateTemplateMutation,
-  useCreateTemplateReviewMutation,
+  useUpdateTemplateMutation,
   useDeleteTemplateMutation,
+  useCreateTemplateReviewMutation,
 } = templatesApiSlice;

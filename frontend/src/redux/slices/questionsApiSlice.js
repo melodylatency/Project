@@ -17,7 +17,7 @@ export const questionsApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    editQuestion: builder.mutation({
+    updateQuestion: builder.mutation({
       query: (data) => ({
         url: `${QUESTIONS_URL}`,
         method: "PUT",
@@ -36,6 +36,6 @@ export const questionsApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetQuestionByIdQuery,
   useCreateQuestionMutation,
-  useEditQuestionMutation,
+  useUpdateQuestionMutation,
   useDeleteQuestionMutation,
 } = questionsApiSlice;

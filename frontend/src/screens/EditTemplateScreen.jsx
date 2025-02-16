@@ -7,19 +7,17 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import QuestionCard from "../components/QuestionCard";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import SortableItem from "../components/SortableItem";
-import { v4 as uuid } from "uuid";
 import {
-  useCreateTemplateMutation,
+  useUpdateTemplateMutation,
   useGetTemplateByIdQuery,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
 import {
   useCreateQuestionMutation,
   useDeleteQuestionMutation,
-  useEditQuestionMutation,
+  useUpdateQuestionMutation,
 } from "../redux/slices/questionsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
@@ -27,25 +25,24 @@ import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 
 const EditTemplateScreen = () => {
-  const { userInfo } = useSelector((state) => state.auth);
-
   const { id: templateId } = useParams();
 
   const {
     data: template,
     isLoading: isLoadingTemplate,
     refetch: refetchTemplate,
-    error,
   } = useGetTemplateByIdQuery(templateId);
 
   const [createQuestion, { isLoading: isCreatingQuestion }] =
     useCreateQuestionMutation();
 
   const [updateQuestion, { isLoading: isUpdatingQuestion }] =
-    useEditQuestionMutation();
+    useUpdateQuestionMutation();
 
   const [deleteQuestion, { isLoading: isDeleting }] =
     useDeleteQuestionMutation();
+
+  const [updateTemplate, { isLoading }] = useUpdateTemplateMutation();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -58,10 +55,8 @@ const EditTemplateScreen = () => {
     displayOnTable: true,
   });
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [createTemplate, { isLoading }] = useCreateTemplateMutation();
   const { refetch } = useGetTemplatesQuery();
 
   useEffect(() => {
@@ -172,14 +167,11 @@ const EditTemplateScreen = () => {
     }
 
     try {
-      await createTemplate({
+      await updateTemplate({
         title,
         description,
         topic: "Other",
-        questionList,
-        authorId: userInfo.id,
       }).unwrap();
-      localStorage.removeItem("questionList");
       refetch();
       navigate("/");
       toast.success("Template created successfully!");

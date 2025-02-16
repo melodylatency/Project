@@ -22,7 +22,10 @@ const getTemplateById = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Template not found");
   }
-  const questions = await Question.findAll({ where: { template_id } });
+  const questions = await Question.findAll({
+    where: { template_id },
+    order: [["index", "ASC"]],
+  });
   const reviews = await Review.findAll({ where: { template_id } });
 
   const collectedTemplate = {
@@ -106,11 +109,10 @@ const createTemplate = asyncHandler(async (req, res) => {
 });
 
 // @desc    Edit template
-// @route   PUT /api/template/:id
+// @route   PUT /api/templates
 // @access  Private
 const editTemplateById = asyncHandler(async (req, res) => {
-  const templateId = req.params.id;
-  const { title, description, topic, image, access } = req.body;
+  const { title, description, topic, image, access, templateId } = req.body;
 
   const template = await Template.findByPk(templateId);
   if (!template) {

@@ -26,7 +26,7 @@ const QuestionCard = ({
   };
 
   const handleSave = () => {
-    onSave(editedQuestion); // Pass the updated question
+    onSave(editedQuestion);
     onCancelEdit();
   };
 
@@ -101,8 +101,7 @@ const QuestionCard = ({
               <button
                 type="button"
                 {...dragHandleProps}
-                style={{ cursor: "move" }}
-                className="me-2"
+                className="me-2 cursor-move"
               >
                 ≡
               </button>
