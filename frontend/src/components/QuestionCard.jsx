@@ -11,7 +11,7 @@ const QuestionCard = ({
   onSave,
   onCancelEdit,
 }) => {
-  const [editedQuestion, setEditedQuestion] = useState({ ...question });
+  const [editedQuestion, setEditedQuestion] = useState({});
 
   useEffect(() => {
     setEditedQuestion({ ...question });
@@ -26,8 +26,7 @@ const QuestionCard = ({
   };
 
   const handleSave = () => {
-    const updatedQuestion = { ...editedQuestion };
-    onSave(updatedQuestion);
+    onSave(editedQuestion); // Pass the updated question
     onCancelEdit();
   };
 
@@ -117,7 +116,7 @@ const QuestionCard = ({
             <Button
               variant="outline-primary"
               size="sm"
-              onClick={() => onUpdate(question.id)}
+              onClick={() => onUpdate(editedQuestion)}
             >
               Update
             </Button>

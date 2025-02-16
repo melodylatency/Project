@@ -37,20 +37,16 @@ const EditTemplateScreen = () => {
 
   const {
     data: template,
-    isLoading: loadingTemplate,
+    isLoading: isLoadingTemplate,
     refetch: refetchTemplate,
     error,
   } = useGetTemplateByIdQuery(templateId);
 
-  const [
-    editQuestion,
-    { isLoading: isUpdatingQuestion, error: failedUpdatingQuestion },
-  ] = useEditQuestionMutation();
+  const [updateQuestion, { isLoading: isUpdatingQuestion }] =
+    useEditQuestionMutation();
 
-  const [
-    deleteQuestion,
-    { isLoading: isDeleting, error: deleteQuestionFailed },
-  ] = useDeleteQuestionMutation();
+  const [deleteQuestion, { isLoading: isDeleting }] =
+    useDeleteQuestionMutation();
 
   const [title, setTitle] = useState();
   const [description, setDescription] = useState("");
@@ -126,14 +122,17 @@ const EditTemplateScreen = () => {
     }
   };
 
-  const updateQuestion = (updatedQuestion) => {
-    dispatch(
-      setQuestionList(
-        questionList.map((q) =>
-          q.id === updatedQuestion.id ? updatedQuestion : q
-        )
-      )
-    );
+  const handleUpdate = async (editedQuestion) => {
+    console.log(editedQuestion);
+    try {
+      await updateQuestion({
+        ...editedQuestion,
+      }).unwrap();
+      refetchTemplate();
+      toast.success("Question updated successfully");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -225,9 +224,9 @@ const EditTemplateScreen = () => {
                   onDelete={() => handleDelete(question.id)}
                   onUpdate={() => setEditingQuestionId(question.id)}
                   isEditing={question.id === editingQuestionId}
-                  onSave={updateQuestion}
+                  onSave={handleUpdate} // Pass handleUpdate instead of updateQuestion
                   onCancelEdit={() => setEditingQuestionId(null)}
-                  dragHandleProps={undefined} // Handled by SortableItem
+                  dragHandleProps={undefined}
                 />
               </SortableItem>
             ))}
@@ -306,7 +305,10 @@ const EditTemplateScreen = () => {
               Save Form
             </Button>
           </div>
-          {isLoading && <Loader />}
+          {(isLoading ||
+            isDeleting ||
+            isUpdatingQuestion ||
+            isLoadingTemplate) && <Loader />}
         </Form>
       </DndContext>
     </Container>
