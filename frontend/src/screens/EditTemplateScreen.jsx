@@ -125,7 +125,6 @@ const EditTemplateScreen = () => {
         }
 
         await refetchTemplate();
-        toast.success("Question order updated");
       } catch (err) {
         toast.error(err?.data?.message || "Failed to reorder questions");
       }
@@ -240,7 +239,7 @@ const EditTemplateScreen = () => {
                   onDelete={() => handleDelete(question.id)}
                   onUpdate={() => setEditingQuestionId(question.id)}
                   isEditing={question.id === editingQuestionId}
-                  onSave={handleUpdate} // Pass handleUpdate instead of updateQuestion
+                  onSave={handleUpdate}
                   onCancelEdit={() => setEditingQuestionId(null)}
                   dragHandleProps={undefined}
                 />

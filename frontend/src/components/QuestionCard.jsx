@@ -15,6 +15,7 @@ const QuestionCard = ({
 
   useEffect(() => {
     setEditedQuestion({ ...question });
+    console.log(question);
   }, [question]);
 
   const handleChange = (e) => {
@@ -34,7 +35,7 @@ const QuestionCard = ({
     return (
       <Card className="mb-3 shadow-sm">
         <Card.Body>
-          <Form>
+          <div>
             <Row className="g-3 align-items-center">
               <Col md={6}>
                 <Form.Control
@@ -86,7 +87,7 @@ const QuestionCard = ({
                 Cancel
               </Button>
             </div>
-          </Form>
+          </div>
         </Card.Body>
       </Card>
     );
