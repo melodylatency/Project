@@ -52,18 +52,18 @@ const QuestionCard = ({
                   value={editedQuestion.type}
                   onChange={handleChange}
                 >
-                  <option value="text">Single-line</option>
-                  <option value="textarea">Multi-line</option>
-                  <option value="number">Integer</option>
-                  <option value="checkbox">Checkbox</option>
+                  <option value="SINGLE-LINE">Single-line</option>
+                  <option value="MULTI-LINE">Multi-line</option>
+                  <option value="INTEGER">Integer</option>
+                  <option value="CHECKBOX">Checkbox</option>
                 </Form.Select>
               </Col>
               <Col md={2}>
                 <Form.Check
                   type="checkbox"
-                  name="displayOnTable"
+                  name="show_in_results"
                   label="Display"
-                  checked={editedQuestion.displayOnTable}
+                  checked={editedQuestion.show_in_results}
                   onChange={handleChange}
                 />
               </Col>
