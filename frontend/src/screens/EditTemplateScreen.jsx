@@ -142,7 +142,6 @@ const EditTemplateScreen = () => {
   };
 
   const handleUpdate = async (editedQuestion) => {
-    console.log(editedQuestion);
     try {
       await updateQuestion({
         ...editedQuestion,

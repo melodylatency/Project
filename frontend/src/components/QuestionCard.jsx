@@ -15,7 +15,6 @@ const QuestionCard = ({
 
   useEffect(() => {
     setEditedQuestion({ ...question });
-    console.log(question);
   }, [question]);
 
   const handleChange = (e) => {
