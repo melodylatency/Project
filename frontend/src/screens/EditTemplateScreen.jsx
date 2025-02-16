@@ -9,10 +9,6 @@ import {
 import QuestionCard from "../components/QuestionCard";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import {
-  addToQuestionList,
-  setQuestionList,
-} from "../redux/slices/questionSlice";
 import SortableItem from "../components/SortableItem";
 import { v4 as uuid } from "uuid";
 import {
@@ -21,6 +17,7 @@ import {
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
 import {
+  useCreateQuestionMutation,
   useDeleteQuestionMutation,
   useEditQuestionMutation,
 } from "../redux/slices/questionsApiSlice";
@@ -30,7 +27,6 @@ import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 
 const EditTemplateScreen = () => {
-  // const { questionList } = useSelector((state) => state.question);
   const { userInfo } = useSelector((state) => state.auth);
 
   const { id: templateId } = useParams();
@@ -42,13 +38,16 @@ const EditTemplateScreen = () => {
     error,
   } = useGetTemplateByIdQuery(templateId);
 
+  const [createQuestion, { isLoading: isCreatingQuestion }] =
+    useCreateQuestionMutation();
+
   const [updateQuestion, { isLoading: isUpdatingQuestion }] =
     useEditQuestionMutation();
 
   const [deleteQuestion, { isLoading: isDeleting }] =
     useDeleteQuestionMutation();
 
-  const [title, setTitle] = useState();
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [questionList, setQuestionList] = useState([]);
   const [editingQuestionId, setEditingQuestionId] = useState(null);
@@ -73,7 +72,7 @@ const EditTemplateScreen = () => {
     }
   }, [template]);
 
-  const addQuestion = () => {
+  const addQuestion = async () => {
     const countOfType = questionList.filter(
       (q) => q.type === newQuestion.type
     ).length;
@@ -86,29 +85,55 @@ const EditTemplateScreen = () => {
         `You can add a maximum of 4 questionList of type "${newQuestion.type}"`
       );
     } else {
-      const questionWithId = {
-        ...newQuestion,
-        id: uuid(),
-        options: newQuestion.type === "checkbox" ? [] : undefined,
-      };
-      dispatch(addToQuestionList(questionWithId));
-      setNewQuestion({
-        type: "text",
-        title: "",
-        description: "",
-        displayOnTable: true,
-      });
+      try {
+        await createQuestion(newQuestion);
+        setNewQuestion({
+          type: "text",
+          title: "",
+          description: "",
+          displayOnTable: true,
+        });
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
     }
   };
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     if (editingQuestionId !== null) return;
+
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = questionList.findIndex((q) => q.id === active.id);
-      const newIndex = questionList.findIndex((q) => q.id === over.id);
-      const newQuestionList = arrayMove(questionList, oldIndex, newIndex);
-      dispatch(setQuestionList(newQuestionList));
+    if (active.id !== over.id && template?.questionList) {
+      const updatedQuestions = [...template.questionList];
+
+      const oldIndex = updatedQuestions.findIndex((q) => q.id === active.id);
+      const newIndex = updatedQuestions.findIndex((q) => q.id === over.id);
+
+      const reorderedQuestions = arrayMove(
+        updatedQuestions,
+        oldIndex,
+        newIndex
+      );
+
+      const indexedQuestions = reorderedQuestions.map((q, idx) => ({
+        ...q,
+        index: idx,
+      }));
+
+      try {
+        // Update one question at a time
+        for (const question of indexedQuestions) {
+          await updateQuestion({
+            id: question.id,
+            index: question.index,
+          }).unwrap();
+        }
+
+        await refetchTemplate();
+        toast.success("Question order updated");
+      } catch (err) {
+        toast.error(err?.data?.message || "Failed to reorder questions");
+      }
     }
   };
 
@@ -155,7 +180,6 @@ const EditTemplateScreen = () => {
         authorId: userInfo.id,
       }).unwrap();
       localStorage.removeItem("questionList");
-      dispatch(setQuestionList([]));
       refetch();
       navigate("/");
       toast.success("Template created successfully!");

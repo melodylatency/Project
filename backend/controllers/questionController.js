@@ -52,6 +52,7 @@ const editQuestionById = asyncHandler(async (req, res) => {
     title,
     description,
     type,
+    index,
     show_in_results,
     id: questionId,
   } = req.body;
@@ -66,6 +67,7 @@ const editQuestionById = asyncHandler(async (req, res) => {
     title: title !== undefined ? title : question.title,
     description: description !== undefined ? description : question.description,
     type: type !== undefined ? type : question.type,
+    index: index !== undefined ? index : question.index,
     show_in_results:
       show_in_results !== undefined
         ? show_in_results
