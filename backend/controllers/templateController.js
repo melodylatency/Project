@@ -22,7 +22,10 @@ const getTemplateById = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Template not found");
   }
-  const questions = await Question.findAll({ where: { template_id } });
+  const questions = await Question.findAll({
+    where: { template_id },
+    order: [["index", "ASC"]],
+  });
   const reviews = await Review.findAll({ where: { template_id } });
 
   const collectedTemplate = {
@@ -67,24 +70,8 @@ const createTemplate = asyncHandler(async (req, res) => {
     authorId,
   });
 
-  // Process Questions if provided
-  const convertType = (type) => {
-    switch (type) {
-      case "text":
-        return "SINGLE_LINE";
-      case "textarea":
-        return "MULTI_LINE";
-      case "number":
-        return "INTEGER";
-      case "checkbox":
-        return "CHECKBOX";
-      default:
-        throw new Error(`Invalid question type: ${type}`);
-    }
-  };
-
   const questionsData = questionList.map((q, index) => ({
-    type: convertType(q.type),
+    type: q.type,
     title: q.title,
     description: q.description || "",
     index: index, // Use array index as index
@@ -94,23 +81,16 @@ const createTemplate = asyncHandler(async (req, res) => {
 
   await Question.bulkCreate(questionsData);
 
-  // Fetch the created Questions with their associations
-  // const questions = await Question.findAll({
-  //   where: { template_id: template.id },
-  //   index: [["index", "ASC"]],
-  // });
-
   res.status(201).json({
     ...template.toJSON(),
   });
 });
 
 // @desc    Edit template
-// @route   PUT /api/template/:id
+// @route   PUT /api/templates
 // @access  Private
-const editTemplateById = asyncHandler(async (req, res) => {
-  const templateId = req.params.id;
-  const { title, description, topic, image, access } = req.body;
+const updateTemplateById = asyncHandler(async (req, res) => {
+  const { title, description, topic, image, access, templateId } = req.body;
 
   const template = await Template.findByPk(templateId);
   if (!template) {
@@ -202,7 +182,7 @@ export {
   getTemplateById,
   getTemplatesByAuthorId,
   createTemplate,
-  editTemplateById,
+  updateTemplateById,
   createTemplateReview,
   deleteTemplate,
 };

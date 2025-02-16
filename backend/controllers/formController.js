@@ -6,9 +6,18 @@ import Answer from "../models/answerModel.js";
 // @desc    Fetch all forms of the user
 // @route   /api/forms
 // @access  Public
-const getUsersForms = asyncHandler(async (req, res) => {
+const getUserForms = asyncHandler(async (req, res) => {
   const forms = await Form.findAll({ where: { user_id: req.user.id } });
-  res.json(forms);
+  res.status(200).json(forms);
+});
+
+// @desc    Fetch all forms of the template
+// @route   /api/forms
+// @access  Public
+const getTemplateForms = asyncHandler(async (req, res) => {
+  const templateId = req.params.id;
+  const forms = await Form.findAll({ where: { template_id: templateId } });
+  res.status(200).json(forms);
 });
 
 // @desc    Fetch form by form ID
@@ -97,4 +106,4 @@ const deleteForm = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Form deleted successfully" });
 });
 
-export { getUsersForms, getFormById, createForm, deleteForm };
+export { getUserForms, getTemplateForms, getFormById, createForm, deleteForm };

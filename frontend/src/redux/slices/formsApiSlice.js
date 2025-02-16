@@ -11,6 +11,13 @@ export const formsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 60,
     }),
+    getTemplateForms: builder.query({
+      query: (templateId) => ({
+        url: `${FORMS_URL}/template/${templateId}`,
+        method: "GET",
+      }),
+      keepUnusedDataFor: 60,
+    }),
     getFormById: builder.query({
       query: (formId) => ({
         url: `${FORMS_URL}/${formId}`,
@@ -36,6 +43,7 @@ export const formsApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetUsersFormsQuery,
+  useGetTemplateFormsQuery,
   useGetFormByIdQuery,
   useCreateFormMutation,
   useDeleteFormMutation,

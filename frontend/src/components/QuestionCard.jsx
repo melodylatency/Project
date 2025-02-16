@@ -11,7 +11,7 @@ const QuestionCard = ({
   onSave,
   onCancelEdit,
 }) => {
-  const [editedQuestion, setEditedQuestion] = useState({ ...question });
+  const [editedQuestion, setEditedQuestion] = useState({});
 
   useEffect(() => {
     setEditedQuestion({ ...question });
@@ -26,8 +26,7 @@ const QuestionCard = ({
   };
 
   const handleSave = () => {
-    const updatedQuestion = { ...editedQuestion };
-    onSave(updatedQuestion);
+    onSave(editedQuestion);
     onCancelEdit();
   };
 
@@ -35,7 +34,7 @@ const QuestionCard = ({
     return (
       <Card className="mb-3 shadow-sm">
         <Card.Body>
-          <Form>
+          <div>
             <Row className="g-3 align-items-center">
               <Col md={6}>
                 <Form.Control
@@ -52,18 +51,18 @@ const QuestionCard = ({
                   value={editedQuestion.type}
                   onChange={handleChange}
                 >
-                  <option value="text">Single-line</option>
-                  <option value="textarea">Multi-line</option>
-                  <option value="number">Integer</option>
-                  <option value="checkbox">Checkbox</option>
+                  <option value="SINGLE_LINE">Single-line</option>
+                  <option value="MULTI_LINE">Multi-line</option>
+                  <option value="INTEGER">Integer</option>
+                  <option value="CHECKBOX">Checkbox</option>
                 </Form.Select>
               </Col>
               <Col md={2}>
                 <Form.Check
                   type="checkbox"
-                  name="displayOnTable"
+                  name="show_in_results"
                   label="Display"
-                  checked={editedQuestion.displayOnTable}
+                  checked={editedQuestion.show_in_results}
                   onChange={handleChange}
                 />
               </Col>
@@ -87,7 +86,7 @@ const QuestionCard = ({
                 Cancel
               </Button>
             </div>
-          </Form>
+          </div>
         </Card.Body>
       </Card>
     );
@@ -102,8 +101,7 @@ const QuestionCard = ({
               <button
                 type="button"
                 {...dragHandleProps}
-                style={{ cursor: "move" }}
-                className="me-2"
+                className="me-2 cursor-move"
               >
                 ≡
               </button>
@@ -117,7 +115,7 @@ const QuestionCard = ({
             <Button
               variant="outline-primary"
               size="sm"
-              onClick={() => onUpdate(question.id)}
+              onClick={() => onUpdate(editedQuestion)}
             >
               Update
             </Button>

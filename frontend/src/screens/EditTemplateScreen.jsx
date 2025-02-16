@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  Container,
+  Card,
+  Tabs,
+  Tab,
+  Table,
+} from "react-bootstrap";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -7,55 +18,60 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import QuestionCard from "../components/QuestionCard";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import {
-  addToQuestionList,
-  setQuestionList,
-} from "../redux/slices/questionSlice";
 import SortableItem from "../components/SortableItem";
-import { v4 as uuid } from "uuid";
 import {
-  useCreateTemplateMutation,
+  useUpdateTemplateMutation,
   useGetTemplateByIdQuery,
   useGetTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
 import {
+  useCreateQuestionMutation,
   useDeleteQuestionMutation,
-  useEditQuestionMutation,
+  useUpdateQuestionMutation,
 } from "../redux/slices/questionsApiSlice";
+import { useGetTemplateFormsQuery } from "../redux/slices/formsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
+import moment from "moment";
+import Message from "../components/Message";
 
 const EditTemplateScreen = () => {
-  // const { questionList } = useSelector((state) => state.question);
-  const { userInfo } = useSelector((state) => state.auth);
-
   const { id: templateId } = useParams();
 
   const {
     data: template,
-    isLoading: loadingTemplate,
+    isLoading: isLoadingTemplate,
     refetch: refetchTemplate,
-    error,
   } = useGetTemplateByIdQuery(templateId);
 
-  const [
-    editQuestion,
-    { isLoading: isUpdatingQuestion, error: failedUpdatingQuestion },
-  ] = useEditQuestionMutation();
+  const {
+    data: forms,
+    isLoading: loadingForms,
+    error: errorForm,
+  } = useGetTemplateFormsQuery(templateId);
 
-  const [
-    deleteQuestion,
-    { isLoading: isDeleting, error: deleteQuestionFailed },
-  ] = useDeleteQuestionMutation();
+  const [createQuestion, { isLoading: isCreatingQuestion }] =
+    useCreateQuestionMutation();
 
-  const [title, setTitle] = useState();
+  const [updateQuestion, { isLoading: isUpdatingQuestion }] =
+    useUpdateQuestionMutation();
+
+  const [deleteQuestion, { isLoading: isDeleting }] =
+    useDeleteQuestionMutation();
+
+  const [updateTemplate, { isLoading }] = useUpdateTemplateMutation();
+
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [access, setAcess] = useState("public");
+  const [topic, setTopic] = useState("Other");
+  const [topicList] = useState(["Other", "Education", "Poll"]);
   const [questionList, setQuestionList] = useState([]);
   const [editingQuestionId, setEditingQuestionId] = useState(null);
+  const [sortOrderForms, setSortOrderForms] = useState("desc");
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
     title: "",
@@ -63,10 +79,8 @@ const EditTemplateScreen = () => {
     displayOnTable: true,
   });
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [createTemplate, { isLoading }] = useCreateTemplateMutation();
   const { refetch } = useGetTemplatesQuery();
 
   useEffect(() => {
@@ -74,10 +88,12 @@ const EditTemplateScreen = () => {
       setTitle(template.title);
       setDescription(template.description);
       setQuestionList(template.questionList);
+      setAcess(template.access);
+      setTopic(template.topic);
     }
   }, [template]);
 
-  const addQuestion = () => {
+  const addQuestion = async () => {
     const countOfType = questionList.filter(
       (q) => q.type === newQuestion.type
     ).length;
@@ -90,35 +106,88 @@ const EditTemplateScreen = () => {
         `You can add a maximum of 4 questionList of type "${newQuestion.type}"`
       );
     } else {
-      const questionWithId = {
-        ...newQuestion,
-        id: uuid(),
-        options: newQuestion.type === "checkbox" ? [] : undefined,
-      };
-      dispatch(addToQuestionList(questionWithId));
-      setNewQuestion({
-        type: "text",
-        title: "",
-        description: "",
-        displayOnTable: true,
-      });
+      try {
+        console.log({
+          ...newQuestion,
+          index: questionList.length,
+          template_id: templateId,
+        });
+        await createQuestion({
+          ...newQuestion,
+          index: questionList.length,
+          template_id: templateId,
+        }).unwrap();
+        setNewQuestion({
+          type: "SINGLE_LINE",
+          title: "",
+          description: "",
+          displayOnTable: true,
+        });
+        refetchTemplate();
+        toast.success("Question created successfully");
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
     }
   };
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     if (editingQuestionId !== null) return;
+
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = questionList.findIndex((q) => q.id === active.id);
-      const newIndex = questionList.findIndex((q) => q.id === over.id);
-      const newQuestionList = arrayMove(questionList, oldIndex, newIndex);
-      dispatch(setQuestionList(newQuestionList));
+    if (active.id !== over.id && template?.questionList) {
+      const updatedQuestions = [...template.questionList];
+
+      const oldIndex = updatedQuestions.findIndex((q) => q.id === active.id);
+      const newIndex = updatedQuestions.findIndex((q) => q.id === over.id);
+
+      const reorderedQuestions = arrayMove(
+        updatedQuestions,
+        oldIndex,
+        newIndex
+      );
+
+      const indexedQuestions = reorderedQuestions.map((q, idx) => ({
+        ...q,
+        index: idx,
+      }));
+
+      try {
+        // Update one question at a time
+        for (const question of indexedQuestions) {
+          await updateQuestion({
+            id: question.id,
+            index: question.index,
+          }).unwrap();
+        }
+
+        await refetchTemplate();
+      } catch (err) {
+        toast.error(err?.data?.message || "Failed to reorder questions");
+      }
     }
   };
 
   const handleDelete = async (questionId) => {
     try {
       await deleteQuestion(questionId).unwrap();
+
+      const updatedQuestions = questionList.filter((q) => q.id !== questionId);
+
+      const reIndexedQuestions = updatedQuestions.map((q, index) => ({
+        ...q,
+        index,
+      }));
+
+      setQuestionList(reIndexedQuestions);
+
+      for (const question of reIndexedQuestions) {
+        await updateQuestion({
+          id: question.id,
+          index: question.index,
+        }).unwrap();
+      }
+
       refetchTemplate();
       toast.success("Question deleted successfully");
     } catch (err) {
@@ -126,14 +195,16 @@ const EditTemplateScreen = () => {
     }
   };
 
-  const updateQuestion = (updatedQuestion) => {
-    dispatch(
-      setQuestionList(
-        questionList.map((q) =>
-          q.id === updatedQuestion.id ? updatedQuestion : q
-        )
-      )
-    );
+  const handleUpdate = async (editedQuestion) => {
+    try {
+      await updateQuestion({
+        ...editedQuestion,
+      }).unwrap();
+      refetchTemplate();
+      toast.success("Question updated successfully");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -148,18 +219,17 @@ const EditTemplateScreen = () => {
     }
 
     try {
-      await createTemplate({
+      await updateTemplate({
         title,
         description,
-        topic: "Other",
-        questionList,
-        authorId: userInfo.id,
+        access,
+        topic,
+        templateId,
       }).unwrap();
-      localStorage.removeItem("questionList");
-      dispatch(setQuestionList([]));
       refetch();
+      refetchTemplate();
       navigate("/");
-      toast.success("Template created successfully!");
+      toast.success("Template updated successfully!");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -172,143 +242,255 @@ const EditTemplateScreen = () => {
       </Link>
       <h1 className="text-center mb-4 text-5xl">Edit Template</h1>
       {/* Move DndContext outside the Form */}
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <Form onSubmit={handleSubmit}>
-          {/* Form Title */}
+      <Tabs
+        defaultActiveKey="general"
+        id="uncontrolled-tab-example"
+        className="mb-3"
+      >
+        <Tab eventKey="general" title="General Settings">
+          <Form onSubmit={handleSubmit}>
+            {/* Form Title */}
 
-          <Form.Group className="mb-3" controlId="formTitle">
-            <Form.Label className="fs-4">Template Title</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter a title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              size="lg"
-            />
-          </Form.Group>
+            <Form.Group className="mb-3" controlId="formTitle">
+              <Form.Label className="fs-4">Template Title</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter a title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                size="lg"
+              />
+            </Form.Group>
 
-          {/* Form Description with Markdown Support */}
-          <Form.Group className="mb-4" controlId="formDescription">
-            <Form.Label className="fs-5">
-              Template Description (supports Markdown)
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={10}
-              placeholder="Enter a description (optional, Markdown supported)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </Form.Group>
+            {/* Form Description with Markdown Support */}
+            <Form.Group className="mb-4" controlId="formDescription">
+              <Form.Label className="fs-5">
+                Template Description (supports Markdown)
+              </Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={10}
+                placeholder="Enter a description (optional, Markdown supported)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Form.Group>
 
-          {/* Markdown Preview */}
-          <Card className="mb-4">
-            <Card.Header>Markdown Preview</Card.Header>
-            <Card.Body>
-              <div className="markdown-body">
-                <ReactMarkdown>{description}</ReactMarkdown>
-              </div>
-            </Card.Body>
-          </Card>
+            {/* Markdown Preview */}
+            <Card className="mb-4">
+              <Card.Header>Markdown Preview</Card.Header>
+              <Card.Body>
+                <div className="markdown-body">
+                  <ReactMarkdown>{description}</ReactMarkdown>
+                </div>
+              </Card.Body>
+            </Card>
 
-          {/* Questions List */}
-          <h4 className="mb-3">Questions</h4>
-          <SortableContext
-            items={questionList.map((q) => q.id)}
-            strategy={verticalListSortingStrategy}
+            <Form.Group className="flex flex-row justify-between">
+              <Form.Select
+                name="access"
+                value={access}
+                onChange={(e) => setAcess(e.target.value)}
+                className="w-1/3"
+              >
+                <option value="public">Public</option>
+                <option value="restricted">Restricted</option>
+              </Form.Select>
+
+              <Form.Select
+                name="topic"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="w-1/3"
+              >
+                {topicList.map((topic) => (
+                  <option value={topic}>{topic}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <div className="text-center mt-2">
+              <Button variant="primary" type="submit" size="lg">
+                Save Form
+              </Button>
+            </div>
+          </Form>
+        </Tab>
+
+        <Tab eventKey="questions" title="Questions">
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            {questionList.map((question, index) => (
-              <SortableItem key={question.id} id={question.id} index={index}>
-                <QuestionCard
-                  question={question}
-                  index={index}
-                  onDelete={() => handleDelete(question.id)}
-                  onUpdate={() => setEditingQuestionId(question.id)}
-                  isEditing={question.id === editingQuestionId}
-                  onSave={updateQuestion}
-                  onCancelEdit={() => setEditingQuestionId(null)}
-                  dragHandleProps={undefined} // Handled by SortableItem
-                />
-              </SortableItem>
-            ))}
-          </SortableContext>
+            {/* Questions List */}
+            <h4 className="mb-3">Questions</h4>
+            <SortableContext
+              items={questionList.map((q) => q.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {questionList.map((question, index) => (
+                <SortableItem key={question.id} id={question.id} index={index}>
+                  <QuestionCard
+                    question={question}
+                    index={index}
+                    onDelete={() => handleDelete(question.id)}
+                    onUpdate={() => setEditingQuestionId(question.id)}
+                    isEditing={question.id === editingQuestionId}
+                    onSave={handleUpdate}
+                    onCancelEdit={() => setEditingQuestionId(null)}
+                    dragHandleProps={undefined}
+                  />
+                </SortableItem>
+              ))}
+            </SortableContext>
 
-          {/* Add New Question */}
-          <Card className="mt-4 mb-4 shadow-sm">
-            <Card.Header className="bg-light">Add New Question</Card.Header>
-            <Card.Body>
-              <Row className="g-3 align-items-center">
-                <Col md={6}>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter the question"
-                    value={newQuestion.title}
-                    onChange={(e) =>
-                      setNewQuestion({ ...newQuestion, title: e.target.value })
-                    }
-                  />
-                </Col>
-                <Col md={3}>
-                  <Form.Select
-                    value={newQuestion.type}
-                    onChange={(e) =>
-                      setNewQuestion({ ...newQuestion, type: e.target.value })
-                    }
-                  >
-                    <option value="text">Single-line</option>
-                    <option value="textarea">Multi-line</option>
-                    <option value="number">Integer</option>
-                    <option value="checkbox">Checkbox</option>
-                  </Form.Select>
-                </Col>
-                <Col md={2}>
-                  <Form.Check
-                    type="checkbox"
-                    label="Display"
-                    checked={newQuestion.displayOnTable}
-                    onChange={(e) =>
-                      setNewQuestion({
-                        ...newQuestion,
-                        displayOnTable: e.target.checked,
-                      })
-                    }
-                  />
-                </Col>
-                <Col md={1}>
-                  <Button variant="primary" onClick={addQuestion}>
-                    +
-                  </Button>
-                </Col>
-              </Row>
-              <Row className="my-3">
-                <Col md={12}>
-                  <Form.Control
-                    as={"textarea"}
-                    placeholder="Optional description"
-                    value={newQuestion.description}
-                    onChange={(e) =>
-                      setNewQuestion({
-                        ...newQuestion,
-                        description: e.target.value,
-                      })
-                    }
-                  />
-                </Col>
-              </Row>
-              <Form.Text className="text-muted">
-                Note: You can add up to 4 questionList of each type.
-              </Form.Text>
-            </Card.Body>
-          </Card>
+            {/* Add New Question */}
+            <Card className="mt-4 mb-4 shadow-sm">
+              <Card.Header className="bg-light">Add New Question</Card.Header>
+              <Card.Body>
+                <Row className="g-3 align-items-center">
+                  <Col md={6}>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter the question"
+                      value={newQuestion.title}
+                      onChange={(e) =>
+                        setNewQuestion({
+                          ...newQuestion,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                  </Col>
+                  <Col md={3}>
+                    <Form.Select
+                      value={newQuestion.type}
+                      onChange={(e) =>
+                        setNewQuestion({ ...newQuestion, type: e.target.value })
+                      }
+                    >
+                      <option value="SINGLE_LINE">Single-line</option>
+                      <option value="MULTI_LINE">Multi-line</option>
+                      <option value="INTEGER">Integer</option>
+                      <option value="CHECKBOX">Checkbox</option>
+                    </Form.Select>
+                  </Col>
+                  <Col md={2}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Display"
+                      checked={newQuestion.displayOnTable}
+                      onChange={(e) =>
+                        setNewQuestion({
+                          ...newQuestion,
+                          displayOnTable: e.target.checked,
+                        })
+                      }
+                    />
+                  </Col>
+                  <Col md={1}>
+                    <Button variant="primary" onClick={addQuestion}>
+                      +
+                    </Button>
+                  </Col>
+                </Row>
+                <Row className="my-3">
+                  <Col md={12}>
+                    <Form.Control
+                      as={"textarea"}
+                      placeholder="Optional description"
+                      value={newQuestion.description}
+                      onChange={(e) =>
+                        setNewQuestion({
+                          ...newQuestion,
+                          description: e.target.value,
+                        })
+                      }
+                    />
+                  </Col>
+                </Row>
+                <Form.Text className="text-muted">
+                  Note: You can add up to 4 questionList of each type.
+                </Form.Text>
+              </Card.Body>
+            </Card>
+            {(isLoading ||
+              isDeleting ||
+              isUpdatingQuestion ||
+              isLoadingTemplate ||
+              isCreatingQuestion) && <Loader />}
+          </DndContext>
+        </Tab>
 
-          <div className="text-center">
-            <Button variant="primary" type="submit" size="lg">
-              Save Form
-            </Button>
-          </div>
-          {isLoading && <Loader />}
-        </Form>
-      </DndContext>
+        <Tab eventKey="results" title="Results">
+          {loadingForms ? (
+            <Loader />
+          ) : errorForm ? (
+            <Message>{errorForm?.data?.message || errorForm.error}</Message>
+          ) : forms.length === 0 ? (
+            <Message>No forms found.</Message>
+          ) : (
+            <>
+              <Table striped hover responsive className="table-sm">
+                <thead>
+                  <tr>
+                    <th className="text-nowrap">USER ID</th>
+                    <th className="text-nowrap">FORM ID</th>
+                    <th
+                      className="min-w-[120px] cursor-pointer"
+                      onClick={() =>
+                        setSortOrderForms((prev) =>
+                          prev === "asc" ? "desc" : "asc"
+                        )
+                      }
+                    >
+                      <div className="d-flex align-items-center gap-1 text-nowrap">
+                        DATE FILLED
+                        {sortOrderForms === "asc" ? (
+                          <FaChevronUp className="text-muted" />
+                        ) : (
+                          <FaChevronDown className="text-muted" />
+                        )}
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {forms
+                    .slice()
+                    .sort((a, b) => {
+                      const dateA = new Date(a.createdAt);
+                      const dateB = new Date(b.createdAt);
+                      return sortOrderForms === "asc"
+                        ? dateA - dateB
+                        : dateB - dateA;
+                    })
+                    .map((form) => (
+                      <tr key={form.id}>
+                        <td>{form.user_id}</td>
+                        <td>
+                          <Link
+                            to={`/form/${form.id}`}
+                            className="text-blue-500 underline"
+                          >
+                            {form.id}
+                          </Link>
+                        </td>
+                        <td className="text-nowrap">
+                          {moment(form.createdAt).format(
+                            "MMMM Do YYYY, h:mm:ss a"
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </>
+          )}
+        </Tab>
+        <Tab eventKey="aggregation" title="Aggregation">
+          Tab content for aggregation
+        </Tab>
+      </Tabs>
     </Container>
   );
 };
