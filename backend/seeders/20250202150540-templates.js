@@ -9,7 +9,7 @@ export default {
 
     const sampleTemplates = templates.map((template) => ({
       ...template,
-      id: Sequelize.literal("uuid_generate_v4()"),
+      // id: Sequelize.literal("uuid_generate_v4()"),
       authorId: adminUser[0].id,
     }));
 
