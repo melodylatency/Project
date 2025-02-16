@@ -48,7 +48,13 @@ const createQuestion = asyncHandler(async (req, res) => {
 // @route   PUT /api/questions
 // @access  Private
 const editQuestionById = asyncHandler(async (req, res) => {
-  const { title, description, type, show_in_results, questionId } = req.body;
+  const {
+    title,
+    description,
+    type,
+    show_in_results,
+    id: questionId,
+  } = req.body;
 
   const question = await Question.findByPk(questionId);
   if (!question) {
