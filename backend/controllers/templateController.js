@@ -1,6 +1,7 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Template from "../models/templateModel.js";
 import Question from "../models/questionModel.js";
+import Tag from "../models/tagModel.js";
 import Review from "../models/reviewModel.js";
 
 // @desc    Fetch all templates
@@ -55,8 +56,16 @@ const getTemplatesByAuthorId = asyncHandler(async (req, res) => {
 // @route   POST /api/templates/create
 // @access  Private
 const createTemplate = asyncHandler(async (req, res) => {
-  const { title, description, topic, image, access, authorId, questionList } =
-    req.body;
+  const {
+    title,
+    description,
+    topic,
+    image,
+    access,
+    authorId,
+    questionList,
+    tagList,
+  } = req.body;
 
   if (!title || !authorId || !questionList) {
     res.status(400);
@@ -85,6 +94,13 @@ const createTemplate = asyncHandler(async (req, res) => {
   }));
 
   await Question.bulkCreate(questionsData);
+
+  const tagsData = tagList.map((t) => ({
+    name: t.name,
+    template_id: template.id,
+  }));
+
+  await Tag.bulkCreate(tagsData);
 
   res.status(201).json({
     ...template.toJSON(),

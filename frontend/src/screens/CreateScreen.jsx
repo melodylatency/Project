@@ -22,6 +22,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
+import Tags from "../components/Tags";
 import "github-markdown-css/github-markdown-light.css";
 
 const CreateScreen = () => {
@@ -169,6 +170,10 @@ const CreateScreen = () => {
               </div>
             </Card.Body>
           </Card>
+
+          <Form.Group className="my-3">
+            <Tags />
+          </Form.Group>
 
           {/* Questions List */}
           <h4 className="mb-3">Questions</h4>

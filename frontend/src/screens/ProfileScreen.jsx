@@ -295,7 +295,7 @@ const ProfileScreen = () => {
                       ))}
                   </tbody>
                 </Table>
-                <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
+                <Row xs={12} sm="auto" className="d-flex flex-wrap">
                   <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
                     <input
                       type="checkbox"
@@ -310,11 +310,6 @@ const ProfileScreen = () => {
                     >
                       <FaTrash /> Delete
                     </Button>
-                  </Col>
-                  <Col xs={12} sm="auto" className="ms-sm-auto">
-                    {" "}
-                    {/* Added ms-sm-auto */}
-                    <Button>Create</Button>
                   </Col>
                 </Row>
               </>
@@ -392,7 +387,7 @@ const ProfileScreen = () => {
                       ))}
                   </tbody>
                 </Table>
-                <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3 ml-1">
+                <Row xs={12} sm="auto" className="d-flex flex-wrap gap-3">
                   <Col xs={12} sm="auto" className="d-flex flex-wrap gap-3">
                     <input
                       type="checkbox"

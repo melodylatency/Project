@@ -15,6 +15,13 @@ Tag.init(
       unique: true,
       allowNull: false,
     },
+    template_id: {
+      type: DataTypes.UUID,
+      references: {
+        model: "templates",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
