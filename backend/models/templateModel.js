@@ -67,6 +67,7 @@ Template.associate = (models) => {
   Template.belongsToMany(models.Tag, {
     through: "template_tags",
     foreignKey: "template_id",
+    otherKey: "tag_id",
   });
 };
 

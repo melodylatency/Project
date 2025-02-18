@@ -1,14 +1,10 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { ReactTags } from "react-tag-autocomplete";
 import { v4 as uuidv4 } from "uuid"; // Import uuidv4
 import "../css/tagStyles.css";
 import { suggestions } from "./countries";
 
 const Tags = ({ selected, setSelected }) => {
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
-
   const onAdd = useCallback(
     (newTag) => {
       const isDuplicate = selected.some((tag) => tag.label === newTag.label);

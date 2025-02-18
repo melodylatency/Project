@@ -14,13 +14,7 @@ Tag.init(
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-    },
-    template_id: {
-      type: DataTypes.UUID,
-      references: {
-        model: "templates",
-        key: "id",
-      },
+      unique: true,
     },
   },
   {
@@ -34,6 +28,7 @@ Tag.associate = (models) => {
   Tag.belongsToMany(models.Template, {
     through: "template_tags",
     foreignKey: "tag_id",
+    otherKey: "template_id",
   });
 };
 

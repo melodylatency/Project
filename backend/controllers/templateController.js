@@ -18,7 +18,15 @@ const getTemplates = asyncHandler(async (req, res) => {
 const getTemplateById = asyncHandler(async (req, res) => {
   const template_id = req.params.id;
 
-  const template = await Template.findByPk(template_id);
+  const template = await Template.findByPk(template_id, {
+    include: [
+      {
+        model: Tag,
+        attributes: ["id", "name"],
+        through: { attributes: [] }, // this removes join table details
+      },
+    ],
+  });
   if (!template) {
     res.status(404);
     throw new Error("Template not found");
@@ -95,12 +103,19 @@ const createTemplate = asyncHandler(async (req, res) => {
 
   await Question.bulkCreate(questionsData);
 
-  const tagsData = tagList.map((t) => ({
-    name: t.name,
-    template_id: template.id,
-  }));
+  // belongs to many needs different approach
+  const tagInstances = await Promise.all(
+    tagList.map(async (tag) => {
+      const [foundTag] = await Tag.findOrCreate({
+        where: { name: tag.name },
+        defaults: { name: tag.name },
+      });
+      return foundTag;
+    })
+  );
 
-  await Tag.bulkCreate(tagsData);
+  // Associate all found/created tags with the template
+  await template.addTags(tagInstances);
 
   res.status(201).json({
     ...template.toJSON(),
@@ -111,7 +126,8 @@ const createTemplate = asyncHandler(async (req, res) => {
 // @route   PUT /api/templates
 // @access  Private
 const updateTemplateById = asyncHandler(async (req, res) => {
-  const { title, description, topic, image, access, templateId } = req.body;
+  const { title, description, topic, image, access, templateId, tagList } =
+    req.body;
 
   const template = await Template.findByPk(templateId);
   if (!template) {
@@ -127,6 +143,32 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     image: image !== undefined ? image : template.image,
     access: access !== undefined ? access : template.access,
   };
+
+  if (tagList) {
+    const existingTags = template.Tags.map((tag) => tag.name);
+
+    const newTagNames = tagList.map((tag) => tag.name);
+
+    const tagsToRemove = existingTags.filter(
+      (tag) => !newTagNames.includes(tag)
+    );
+
+    if (tagsToRemove.length > 0) {
+      const tagsToRemoveInstances = await Tag.findAll({
+        where: { name: tagsToRemove },
+      });
+      await template.removeTags(tagsToRemoveInstances);
+    }
+
+    const tagInstances = await Promise.all(
+      newTagNames.map(async (tagName) => {
+        const [tag] = await Tag.findOrCreate({ where: { name: tagName } });
+        return tag;
+      })
+    );
+
+    await template.setTags(tagInstances);
+  }
 
   await template.update(updateData);
 

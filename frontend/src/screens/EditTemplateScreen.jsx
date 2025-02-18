@@ -70,6 +70,7 @@ const EditTemplateScreen = () => {
   const [access, setAcess] = useState("public");
   const [topic, setTopic] = useState("Other");
   const [topicList] = useState(["Other", "Education", "Poll"]);
+  const [selected, setSelected] = useState([]);
   const [questionList, setQuestionList] = useState([]);
   const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [sortOrderForms, setSortOrderForms] = useState("desc");
@@ -108,11 +109,6 @@ const EditTemplateScreen = () => {
       );
     } else {
       try {
-        console.log({
-          ...newQuestion,
-          index: questionList.length,
-          template_id: templateId,
-        });
         await createQuestion({
           ...newQuestion,
           index: questionList.length,
@@ -288,7 +284,7 @@ const EditTemplateScreen = () => {
             </Card>
 
             <Form.Group className="my-3">
-              <Tags />
+              <Tags selected={selected} setSelected={setSelected} />
             </Form.Group>
 
             <Form.Group className="flex flex-row justify-between">
