@@ -26,7 +26,7 @@ import Tags from "../components/Tags";
 import "github-markdown-css/github-markdown-light.css";
 
 const CreateScreen = () => {
-  const [title, setTitle] = useState("Untitled Form");
+  const [title, setTitle] = useState("Untitled Template");
   const [description, setDescription] = useState("");
   const [newQuestion, setNewQuestion] = useState({
     type: "text",
@@ -99,7 +99,7 @@ const CreateScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim() === "") {
-      alert("Form title cannot be empty");
+      alert("Template title cannot be empty");
       return;
     }
     if (questionList.length === 0) {
@@ -130,14 +130,14 @@ const CreateScreen = () => {
       <Link className="btn btn-light my-3" to="/profile">
         Go Back
       </Link>
-      <h1 className="text-center mb-4 text-5xl">Create New Form</h1>
-      {/* Move DndContext outside the Form */}
+      <h1 className="text-center mb-4 text-5xl">Create New Template</h1>
+      {/* Move DndContext outside the Template */}
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
           {/* Form Title */}
 
           <Form.Group className="mb-3" controlId="formTitle">
-            <Form.Label className="fs-4">Form Title</Form.Label>
+            <Form.Label className="fs-4">Template Title</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter form title"
@@ -150,7 +150,7 @@ const CreateScreen = () => {
           {/* Form Description with Markdown Support */}
           <Form.Group className="mb-4" controlId="formDescription">
             <Form.Label className="fs-5">
-              Form Description (supports Markdown)
+              Template Description (supports Markdown)
             </Form.Label>
             <Form.Control
               as="textarea"
@@ -262,7 +262,7 @@ const CreateScreen = () => {
 
           <div className="text-center">
             <Button variant="primary" type="submit" size="lg">
-              Save Form
+              Create
             </Button>
           </div>
           {isLoading && <Loader />}

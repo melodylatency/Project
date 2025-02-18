@@ -1,14 +1,23 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ReactTags } from "react-tag-autocomplete";
+import { v4 as uuidv4 } from "uuid"; // Import uuidv4
 import "../css/tagStyles.css";
 import { suggestions } from "./countries";
 
 const Tags = () => {
   const [selected, setSelected] = useState([]);
 
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
+
   const onAdd = useCallback(
     (newTag) => {
-      setSelected([...selected, newTag]);
+      const tagWithUUID = {
+        ...newTag,
+        value: uuidv4(),
+      };
+      setSelected([...selected, tagWithUUID]);
     },
     [selected]
   );
@@ -22,12 +31,13 @@ const Tags = () => {
 
   return (
     <ReactTags
-      labelText="Select countries"
+      labelText="Select tags"
       selected={selected}
       suggestions={suggestions}
       onAdd={onAdd}
       onDelete={onDelete}
-      noOptionsText="No matching countries"
+      allowNew
+      newOptionText="Add new: {label}"
     />
   );
 };
