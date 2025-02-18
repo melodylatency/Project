@@ -1,32 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  tagMap: localStorage.getItem("tagMap")
-    ? JSON.parse(localStorage.getItem("tagMap"))
-    : {},
+  tagList: localStorage.getItem("tagList")
+    ? JSON.parse(localStorage.getItem("tagList"))
+    : [],
 };
 
 const tagSlice = createSlice({
   name: "tag",
   initialState,
   reducers: {
-    updateTag: (state, action) => {
-      const { templateId, tag } = action.payload;
-      if (!state.tagMap[templateId]) {
-        state.tagMap[templateId] = [];
-      }
-      state.tagMap[templateId].push(tag);
-      localStorage.setItem("tagMap", JSON.stringify(state.tagMap));
+    addTag: (state, action) => {
+      const tag = action.payload;
+      state.tagList = [...state.tagList, tag];
+      localStorage.setItem("tagList", JSON.stringify(state.tagList));
+    },
+    removeTag: (state, action) => {
+      const tagIndex = action.payload;
+      state.tagList = state.tagList.filter((_, i) => i !== tagIndex);
+      localStorage.setItem("tagList", JSON.stringify(state.tagList));
     },
     clearTemplateTags: (state, action) => {
-      const templateId = action.payload;
-      if (state.tagMap[templateId]) {
-        delete state.tagMap[templateId];
-        localStorage.setItem("tagMap", JSON.stringify(state.tagMap));
-      }
+      state.tagList = [];
+      localStorage.setItem("tagList", JSON.stringify(state.tagList));
     },
   },
 });
 
-export const { clearTemplateTags, updateTag } = tagSlice.actions;
+export const { addTag, removeTag, clearTemplateTags } = tagSlice.actions;
 export default tagSlice.reducer;

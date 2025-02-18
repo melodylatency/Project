@@ -24,6 +24,7 @@ import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
 import Tags from "../components/Tags";
 import "github-markdown-css/github-markdown-light.css";
+import { clearTemplateTags } from "../redux/slices/tagSlice";
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Template");
@@ -35,6 +36,7 @@ const CreateScreen = () => {
     displayOnTable: true,
   });
 
+  const { tagList } = useSelector((state) => state.tag);
   const { questionList } = useSelector((state) => state.question);
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -113,10 +115,12 @@ const CreateScreen = () => {
         description,
         topic: "Other",
         questionList,
+        tagList,
         authorId: userInfo.id,
       }).unwrap();
       localStorage.removeItem("questionList");
       dispatch(setQuestionList([]));
+      dispatch(clearTemplateTags());
       refetch();
       navigate("/");
       toast.success("Template created successfully!");
