@@ -7,28 +7,16 @@ import questionRoutes from "./routes/questionRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
 import path from "path";
-import Template from "./models/templateModel.js";
-import Tag from "./models/tagModel.js";
-import User from "./models/userModel.js"; // Add this
-import Question from "./models/questionModel.js"; // Add this
-import Form from "./models/formModel.js"; // Add this
-import Review from "./models/reviewModel.js"; // Add this
+import db from "./models/index.js";
 
-dotenv.config();
-
-const models = {
-  User,
-  Tag,
-  Template,
-  Question,
-  Form,
-  Review,
-};
-
-Tag.associate(models);
-Template.associate(models);
+db.sequelize
+  .sync()
+  .then(() => console.log("Database synchronized safely"))
+  .catch((err) => console.error("Database sync failed:", err));
 
 const port = process.env.PORT || 5000;
+
+dotenv.config();
 
 const __dirname = path.resolve();
 

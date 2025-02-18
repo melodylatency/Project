@@ -47,7 +47,6 @@ Question.init(
 Question.associate = (models) => {
   Question.belongsTo(models.Template, { foreignKey: "template_id" });
   Question.hasMany(models.Answer, { foreignKey: "question_id" });
-  Question.hasMany(models.QuestionOption, { foreignKey: "question_id" });
 };
 
 export default Question;
