@@ -37,6 +37,7 @@ import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 import moment from "moment";
 import Message from "../components/Message";
+import Tags from "../components/Tags";
 
 const EditTemplateScreen = () => {
   const { id: templateId } = useParams();
@@ -277,7 +278,7 @@ const EditTemplateScreen = () => {
             </Form.Group>
 
             {/* Markdown Preview */}
-            <Card className="mb-4">
+            <Card className="my-2">
               <Card.Header>Markdown Preview</Card.Header>
               <Card.Body>
                 <div className="markdown-body">
@@ -285,6 +286,10 @@ const EditTemplateScreen = () => {
                 </div>
               </Card.Body>
             </Card>
+
+            <Form.Group className="my-3">
+              <Tags />
+            </Form.Group>
 
             <Form.Group className="flex flex-row justify-between">
               <Form.Select
