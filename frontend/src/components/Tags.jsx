@@ -13,6 +13,11 @@ const Tags = () => {
 
   const onAdd = useCallback(
     (newTag) => {
+      const isDuplicate = selected.some((tag) => tag.label === newTag.label);
+      if (isDuplicate) {
+        return;
+      }
+
       const tagWithUUID = {
         ...newTag,
         value: uuidv4(),
