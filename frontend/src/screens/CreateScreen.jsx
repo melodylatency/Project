@@ -24,7 +24,7 @@ import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
 import Tags from "../components/Tags";
 import "github-markdown-css/github-markdown-light.css";
-import { clearTemplateTags } from "../redux/slices/tagSlice";
+import { setTagList } from "../redux/slices/tagSlice";
 
 const CreateScreen = () => {
   const [title, setTitle] = useState("Untitled Template");
@@ -120,7 +120,7 @@ const CreateScreen = () => {
       }).unwrap();
       localStorage.removeItem("questionList");
       dispatch(setQuestionList([]));
-      dispatch(clearTemplateTags());
+      dispatch(setTagList([]));
       refetch();
       navigate("/");
       toast.success("Template created successfully!");
@@ -176,7 +176,10 @@ const CreateScreen = () => {
           </Card>
 
           <Form.Group className="my-3">
-            <Tags />
+            <Tags
+              selected={tagList}
+              setSelected={(newTags) => dispatch(setTagList(newTags))}
+            />
           </Form.Group>
 
           {/* Questions List */}

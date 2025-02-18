@@ -1,19 +1,17 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { ReactTags } from "react-tag-autocomplete";
 import { v4 as uuidv4 } from "uuid"; // Import uuidv4
 import "../css/tagStyles.css";
 import { suggestions } from "./countries";
-import { useDispatch, useSelector } from "react-redux";
-import { addTag, removeTag } from "../redux/slices/tagSlice";
 
-const Tags = () => {
-  const { tagList } = useSelector((state) => state.tag);
-
-  const dispatch = useDispatch();
+const Tags = ({ selected, setSelected }) => {
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
 
   const onAdd = useCallback(
     (newTag) => {
-      const isDuplicate = tagList.some((tag) => tag.label === newTag.label);
+      const isDuplicate = selected.some((tag) => tag.label === newTag.label);
       if (isDuplicate) {
         return;
       }
@@ -22,22 +20,22 @@ const Tags = () => {
         ...newTag,
         value: uuidv4(),
       };
-      dispatch(addTag(tagWithUUID));
+      setSelected([...selected, tagWithUUID]);
     },
-    [tagList, dispatch]
+    [selected, setSelected]
   );
 
   const onDelete = useCallback(
     (tagIndex) => {
-      dispatch(removeTag(tagIndex));
+      setSelected(selected.filter((_, i) => i !== tagIndex));
     },
-    [dispatch]
+    [selected, setSelected]
   );
 
   return (
     <ReactTags
       labelText="Select tags"
-      selected={tagList}
+      selected={selected}
       suggestions={suggestions}
       onAdd={onAdd}
       onDelete={onDelete}
