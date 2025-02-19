@@ -11,7 +11,14 @@ export const tagsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 60,
     }),
+    getTagCloud: builder.query({
+      query: () => ({
+        url: `${TAGS_URL}/cloud`,
+        method: "GET",
+        providesTags: ["Tag"],
+      }),
+    }),
   }),
 });
 
-export const { useGetTagsQuery } = tagsApiSlice;
+export const { useGetTagsQuery, useGetTagCloudQuery } = tagsApiSlice;
