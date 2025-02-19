@@ -10,7 +10,14 @@ import { useGetTagCloudQuery } from "../redux/slices/tagsApiSlice";
 const HomeScreen = () => {
   const { data: templates, isLoading, error } = useGetTemplatesQuery();
 
-  const { data } = useGetTagCloudQuery();
+  const { data } = useGetTagCloudQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const options = {
+    luminosity: "bright",
+    hue: "purple",
+  };
 
   const top5 = useMemo(() => {
     if (!Array.isArray(templates) || templates.length === 0) return [];
@@ -73,6 +80,7 @@ const HomeScreen = () => {
               <TagCloud
                 minSize={12}
                 maxSize={35}
+                colorOptions={options}
                 tags={data}
                 className="cursor-pointer my-2"
                 onClick={(tag) => alert(`'${tag.value}' was selected!`)}

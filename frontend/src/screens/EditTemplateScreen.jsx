@@ -75,7 +75,7 @@ const EditTemplateScreen = () => {
   const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [sortOrderForms, setSortOrderForms] = useState("desc");
   const [newQuestion, setNewQuestion] = useState({
-    type: "text",
+    type: "SINGLE_LINE",
     title: "",
     description: "",
     displayOnTable: true,
@@ -85,6 +85,7 @@ const EditTemplateScreen = () => {
 
   const { refetch } = useGetTemplatesQuery();
   const { refetch: refetchTags } = useGetTagsQuery();
+  const { refetch: refetchTagCloud } = useGetTagsQuery();
 
   useEffect(() => {
     if (template) {
@@ -231,6 +232,7 @@ const EditTemplateScreen = () => {
       refetch();
       refetchTemplate();
       refetchTags();
+      refetchTagCloud();
       navigate("/");
       toast.success("Template updated successfully!");
     } catch (err) {

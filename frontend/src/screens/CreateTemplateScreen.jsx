@@ -25,7 +25,10 @@ import ReactMarkdown from "react-markdown";
 import Tags from "../components/Tags";
 import "github-markdown-css/github-markdown-light.css";
 import { setTagList } from "../redux/slices/tagSlice";
-import { useGetTagsQuery } from "../redux/slices/tagsApiSlice";
+import {
+  useGetTagCloudQuery,
+  useGetTagsQuery,
+} from "../redux/slices/tagsApiSlice";
 
 const CreateTemplateScreen = () => {
   const [title, setTitle] = useState("Untitled Template");
@@ -48,6 +51,7 @@ const CreateTemplateScreen = () => {
   const [createTemplate, { isLoading }] = useCreateTemplateMutation();
   const { refetch } = useGetTemplatesQuery();
   const { refetch: refetchTags } = useGetTagsQuery();
+  const { refetch: refetchTagCloud } = useGetTagCloudQuery();
 
   const addQuestion = () => {
     const countOfType = questionList.filter(
@@ -126,6 +130,7 @@ const CreateTemplateScreen = () => {
       dispatch(setTagList([]));
       refetch();
       refetchTags();
+      refetchTagCloud();
       navigate("/");
       toast.success("Template created successfully!");
     } catch (err) {
