@@ -57,8 +57,7 @@ const EditTemplateScreen = () => {
   const [createQuestion, { isLoading: isCreatingQuestion }] =
     useCreateQuestionMutation();
 
-  const [updateQuestion, { isLoading: isUpdatingQuestion }] =
-    useUpdateQuestionMutation();
+  const [updateQuestion] = useUpdateQuestionMutation();
 
   const [deleteQuestion, { isLoading: isDeleting }] =
     useDeleteQuestionMutation();
@@ -420,7 +419,6 @@ const EditTemplateScreen = () => {
             </Card>
             {(isLoading ||
               isDeleting ||
-              isUpdatingQuestion ||
               isLoadingTemplate ||
               isCreatingQuestion) && <Loader />}
           </DndContext>
