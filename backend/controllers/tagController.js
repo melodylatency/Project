@@ -37,7 +37,7 @@ const getTagCloud = asyncHandler(async (req, res) => {
       },
     ],
     group: ["Tag.id", "Tag.label"], // Group by all non-aggregated Tag fields
-    order: [["label", "ASC"]],
+    order: [["value", "ASC"]],
   });
 
   res.status(200).json(tags);
