@@ -6,14 +6,21 @@ import Tag from "../models/tagModel.js";
 // @access  Public
 const getTags = asyncHandler(async (req, res) => {
   const tags = await Tag.findAll({
-    attributes: { exclude: ["createdAt", "updatedAt"] },
+    attributes: [["id", "value"], "label"],
+    order: [["label", "ASC"]],
   });
-  const suggestions = tags.map(({ id, label }) => ({
-    value: id,
-    label,
-  }));
-  suggestions.sort((a, b) => a.label.localeCompare(b.label));
-  res.status(200).json(suggestions);
+  res.status(200).json(tags);
 });
 
-export { getTags };
+// @desc    Fetch tag cloud
+// @route   /api/tags/cloud
+// @access  Public
+const getTagCloud = asyncHandler(async (req, res) => {
+  const tags = await Tag.findAll({
+    attributes: [["label", "value"], "count"],
+    order: [["label", "ASC"]],
+  });
+  res.status(200).json(tags);
+});
+
+export { getTags, getTagCloud };
