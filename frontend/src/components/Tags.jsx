@@ -12,7 +12,6 @@ const Tags = ({ selected, setSelected }) => {
       const isDuplicate = selected.some((tag) => tag.label === newTag.label);
       if (isDuplicate) return;
 
-      // Use existing value for suggestions, generate UUID for new tags
       const tagToAdd = newTag.__isNew__
         ? { ...newTag, value: uuidv4() }
         : newTag;
@@ -37,7 +36,7 @@ const Tags = ({ selected, setSelected }) => {
       onAdd={onAdd}
       onDelete={onDelete}
       allowNew
-      newOptionText="Add new: {label}"
+      newOptionText="Add new: {tag}"
     />
   );
 };

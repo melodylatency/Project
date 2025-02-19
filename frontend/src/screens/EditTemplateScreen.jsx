@@ -55,8 +55,6 @@ const EditTemplateScreen = () => {
     error: errorForm,
   } = useGetTemplateFormsQuery(templateId);
 
-  const { refetch: refetchTags } = useGetTagsQuery();
-
   const [createQuestion, { isLoading: isCreatingQuestion }] =
     useCreateQuestionMutation();
 
@@ -86,6 +84,7 @@ const EditTemplateScreen = () => {
   const navigate = useNavigate();
 
   const { refetch } = useGetTemplatesQuery();
+  const { refetch: refetchTags } = useGetTagsQuery();
 
   useEffect(() => {
     if (template) {
