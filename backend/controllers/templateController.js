@@ -3,6 +3,7 @@ import Template from "../models/templateModel.js";
 import Question from "../models/questionModel.js";
 import Tag from "../models/tagModel.js";
 import Review from "../models/reviewModel.js";
+import User from "../models/userModel.js";
 
 // @desc    Fetch all templates
 // @route   /api/templates
@@ -23,26 +24,39 @@ const getTemplateById = asyncHandler(async (req, res) => {
       {
         model: Tag,
         attributes: ["id", "name"],
-        through: { attributes: [] }, // this removes join table details
+        through: { attributes: [] },
+      },
+      {
+        model: Question,
+        attributes: [
+          "id",
+          "type",
+          "title",
+          "description",
+          "index",
+          "show_in_results",
+        ],
+      },
+      {
+        model: Review,
+        attributes: ["id", "name", "isLiked", "comment", "createdAt"],
+        include: [
+          {
+            model: User,
+            attributes: ["id", "name", "email"],
+          },
+        ],
       },
     ],
+    order: [[Question, "index", "ASC"]],
   });
+
   if (!template) {
     res.status(404);
     throw new Error("Template not found");
   }
-  const questions = await Question.findAll({
-    where: { template_id },
-    order: [["index", "ASC"]],
-  });
-  const reviews = await Review.findAll({ where: { template_id } });
 
-  const collectedTemplate = {
-    ...template.toJSON(),
-    questionList: questions,
-    reviews,
-  };
-  res.status(200).json(collectedTemplate);
+  res.status(200).json(template);
 });
 
 // @desc    Fetch template by author ID

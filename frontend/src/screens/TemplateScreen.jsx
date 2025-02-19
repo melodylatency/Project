@@ -173,8 +173,8 @@ const FormScreen = () => {
                   <BiLike />
                 </ListGroup.Item>
                 <h2 className="text-3xl my-3">Reviews</h2>
-                {template.reviews.length === 0 && <Message>No Reviews</Message>}
-                {template.reviews.map((review) => (
+                {template.Reviews.length === 0 && <Message>No Reviews</Message>}
+                {template.Reviews.map((review) => (
                   <ListGroupItem key={review.id}>
                     <strong>{review.name}</strong>
                     {review.isLiked && (
@@ -242,7 +242,7 @@ const FormScreen = () => {
           <Row className="mt-4">
             <Col md={12}>
               <Form onSubmit={handleSubmittingForm}>
-                {template.questionList.map((question) => {
+                {template.Questions.map((question) => {
                   // Retrieve current answers for this template
                   const currentTemplateAnswers = answerMap[templateId] || {};
                   return (

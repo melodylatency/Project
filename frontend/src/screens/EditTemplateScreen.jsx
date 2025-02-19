@@ -89,7 +89,7 @@ const EditTemplateScreen = () => {
     if (template) {
       setTitle(template.title);
       setDescription(template.description);
-      setQuestionList(template.questionList);
+      setQuestionList(template.Questions);
       setAcess(template.access);
       setTopic(template.topic);
     }
@@ -130,38 +130,36 @@ const EditTemplateScreen = () => {
 
   const handleDragEnd = async (event) => {
     if (editingQuestionId !== null) return;
-
     const { active, over } = event;
-    if (active.id !== over.id && template?.questionList) {
-      const updatedQuestions = [...template.questionList];
+    if (!over || active.id === over.id) return;
 
-      const oldIndex = updatedQuestions.findIndex((q) => q.id === active.id);
-      const newIndex = updatedQuestions.findIndex((q) => q.id === over.id);
+    // Use the local state for ordering
+    const oldIndex = questionList.findIndex((q) => q.id === active.id);
+    const newIndex = questionList.findIndex((q) => q.id === over.id);
 
-      const reorderedQuestions = arrayMove(
-        updatedQuestions,
-        oldIndex,
-        newIndex
-      );
-
-      const indexedQuestions = reorderedQuestions.map((q, idx) => ({
+    // Reorder and update index property
+    const newQuestions = arrayMove(questionList, oldIndex, newIndex).map(
+      (q, idx) => ({
         ...q,
         index: idx,
-      }));
+      })
+    );
 
-      try {
-        // Update one question at a time
-        for (const question of indexedQuestions) {
-          await updateQuestion({
-            id: question.id,
-            index: question.index,
-          }).unwrap();
-        }
+    // Update local state to reflect new order immediately
+    setQuestionList(newQuestions);
 
-        await refetchTemplate();
-      } catch (err) {
-        toast.error(err?.data?.message || "Failed to reorder questions");
+    try {
+      // Update each question's index in the backend.
+      for (const question of newQuestions) {
+        await updateQuestion({
+          id: question.id,
+          index: question.index,
+        }).unwrap();
       }
+      // Optionally, refetch the template to sync any other changes:
+      await refetchTemplate();
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to reorder questionList");
     }
   };
 
@@ -304,8 +302,10 @@ const EditTemplateScreen = () => {
                 onChange={(e) => setTopic(e.target.value)}
                 className="w-1/3"
               >
-                {topicList.map((topic) => (
-                  <option value={topic}>{topic}</option>
+                {topicList.map((topic, index) => (
+                  <option key={index} value={topic}>
+                    {topic}
+                  </option>
                 ))}
               </Form.Select>
             </Form.Group>
@@ -328,11 +328,15 @@ const EditTemplateScreen = () => {
               items={questionList.map((q) => q.id)}
               strategy={verticalListSortingStrategy}
             >
-              {questionList.map((question, index) => (
-                <SortableItem key={question.id} id={question.id} index={index}>
+              {questionList.map((question) => (
+                <SortableItem
+                  key={question.id}
+                  id={question.id}
+                  index={question.index}
+                >
                   <QuestionCard
                     question={question}
-                    index={index}
+                    index={question.index}
                     onDelete={() => handleDelete(question.id)}
                     onUpdate={() => setEditingQuestionId(question.id)}
                     isEditing={question.id === editingQuestionId}
