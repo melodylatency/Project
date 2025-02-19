@@ -20,7 +20,7 @@ import HomeScreen from "./screens/HomeScreen";
 import TemplateScreen from "./screens/TemplateScreen";
 import EditTemplateScreen from "./screens/EditTemplateScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import CreateScreen from "./screens/CreateScreen";
+import CreateTemplateScreen from "./screens/CreateTemplateScreen";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,7 +33,7 @@ const router = createBrowserRouter(
       <Route path="/admin" element={<AdminScreen />} />
       <Route path="/video" element={<VideoScreen />} />
       <Route path="/profile" element={<ProfileScreen />} />
-      <Route path="/create" element={<CreateScreen />} />
+      <Route path="/create" element={<CreateTemplateScreen />} />
     </Route>
   )
 );

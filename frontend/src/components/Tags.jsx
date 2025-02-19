@@ -2,27 +2,29 @@ import React, { useCallback } from "react";
 import { ReactTags } from "react-tag-autocomplete";
 import { v4 as uuidv4 } from "uuid"; // Import uuidv4
 import "../css/tagStyles.css";
+import { useGetTagsQuery } from "../redux/slices/tagsApiSlice";
 
-const Tags = ({ suggestions, selected, setSelected }) => {
+const Tags = ({ selected, setSelected }) => {
+  const { data: suggestions } = useGetTagsQuery();
+
   const onAdd = useCallback(
     (newTag) => {
       const isDuplicate = selected.some((tag) => tag.label === newTag.label);
-      if (isDuplicate) {
-        return;
-      }
+      if (isDuplicate) return;
 
-      const tagWithUUID = {
-        ...newTag,
-        value: uuidv4(),
-      };
-      setSelected([...selected, tagWithUUID]);
+      // Use existing value for suggestions, generate UUID for new tags
+      const tagToAdd = newTag.__isNew__
+        ? { ...newTag, value: uuidv4() }
+        : newTag;
+
+      setSelected([...selected, tagToAdd]);
     },
     [selected, setSelected]
   );
 
   const onDelete = useCallback(
-    (tagIndex) => {
-      setSelected(selected.filter((_, i) => i !== tagIndex));
+    (tagId) => {
+      setSelected(selected.filter((_, i) => i !== tagId));
     },
     [selected, setSelected]
   );

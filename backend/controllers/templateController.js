@@ -23,7 +23,7 @@ const getTemplateById = asyncHandler(async (req, res) => {
     include: [
       {
         model: Tag,
-        attributes: ["id", "label"],
+        attributes: [["id", "value"], "label"],
         through: { attributes: [] },
       },
       {
@@ -57,9 +57,9 @@ const getTemplateById = asyncHandler(async (req, res) => {
   }
 
   // Sort tags alphabetically by label
-  if (template.Tags) {
-    template.Tags.sort((a, b) => a.label.localeCompare(b.label));
-  }
+  // if (template.Tags) {
+  //   template.Tags.sort((a, b) => a.label.localeCompare(b.label));
+  // }
 
   res.status(200).json(template);
 });

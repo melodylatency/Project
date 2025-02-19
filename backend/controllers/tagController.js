@@ -8,7 +8,12 @@ const getTags = asyncHandler(async (req, res) => {
   const tags = await Tag.findAll({
     attributes: { exclude: ["createdAt", "updatedAt"] },
   });
-  res.status(200).json(tags);
+  const suggestions = tags.map(({ id, label }) => ({
+    value: id,
+    label,
+  }));
+  suggestions.sort((a, b) => a.label.localeCompare(b.label));
+  res.status(200).json(suggestions);
 });
 
 export { getTags };

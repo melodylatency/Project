@@ -55,7 +55,7 @@ const EditTemplateScreen = () => {
     error: errorForm,
   } = useGetTemplateFormsQuery(templateId);
 
-  const { data: suggestions, refetch: refetchTags } = useGetTagsQuery();
+  const { refetch: refetchTags } = useGetTagsQuery();
 
   const [createQuestion, { isLoading: isCreatingQuestion }] =
     useCreateQuestionMutation();
@@ -97,6 +97,10 @@ const EditTemplateScreen = () => {
       setSelected(template.Tags);
     }
   }, [template]);
+
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
 
   const addQuestion = async () => {
     const countOfType = questionList.filter(
@@ -287,11 +291,7 @@ const EditTemplateScreen = () => {
             </Card>
 
             <Form.Group className="my-3">
-              <Tags
-                suggestions={suggestions}
-                selected={selected}
-                setSelected={setSelected}
-              />
+              <Tags selected={selected} setSelected={setSelected} />
             </Form.Group>
 
             <Form.Group className="flex flex-row justify-between">
