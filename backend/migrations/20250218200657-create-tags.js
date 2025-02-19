@@ -7,7 +7,7 @@ export default {
         primaryKey: true,
         allowNull: false,
       },
-      name: {
+      label: {
         type: Sequelize.STRING,
         allowNull: false,
       },

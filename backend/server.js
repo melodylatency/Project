@@ -4,6 +4,7 @@ import userRoutes from "./routes/userRoutes.js";
 import templateRoutes from "./routes/templateRoutes.js";
 import formRoutes from "./routes/formRoutes.js";
 import questionRoutes from "./routes/questionRoutes.js";
+import tagRoutes from "./routes/tagRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -33,6 +34,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/forms", formRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/tags", tagRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "frontend/build")));

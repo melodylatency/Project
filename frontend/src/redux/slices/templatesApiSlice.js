@@ -30,7 +30,7 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
         url: `${TEMPLATES_URL}/create`,
         method: "POST",
         body: data,
-        invalidatesTags: ["Template"],
+        invalidatesTags: ["Template", "Tag"],
       }),
     }),
     updateTemplate: builder.mutation({
@@ -38,7 +38,7 @@ export const templatesApiSlice = apiSlice.injectEndpoints({
         url: `${TEMPLATES_URL}`,
         method: "PUT",
         body: data,
-        invalidatesTags: ["Template"],
+        invalidatesTags: ["Template", "Tag"],
       }),
     }),
     deleteTemplate: builder.mutation({

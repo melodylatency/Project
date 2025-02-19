@@ -10,7 +10,7 @@ Tag.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    name: {
+    label: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,

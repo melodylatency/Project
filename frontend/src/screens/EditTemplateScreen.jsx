@@ -30,6 +30,7 @@ import {
   useDeleteQuestionMutation,
   useUpdateQuestionMutation,
 } from "../redux/slices/questionsApiSlice";
+import { useGetTagsQuery } from "../redux/slices/tagsApiSlice";
 import { useGetTemplateFormsQuery } from "../redux/slices/formsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
@@ -53,6 +54,8 @@ const EditTemplateScreen = () => {
     isLoading: loadingForms,
     error: errorForm,
   } = useGetTemplateFormsQuery(templateId);
+
+  const { data: suggestions, refetch: refetchTags } = useGetTagsQuery();
 
   const [createQuestion, { isLoading: isCreatingQuestion }] =
     useCreateQuestionMutation();
@@ -91,6 +94,7 @@ const EditTemplateScreen = () => {
       setQuestionList(template.Questions);
       setAcess(template.access);
       setTopic(template.topic);
+      setSelected(template.Tags);
     }
   }, [template]);
 
@@ -219,9 +223,11 @@ const EditTemplateScreen = () => {
         access,
         topic,
         templateId,
+        tagList: selected,
       }).unwrap();
       refetch();
       refetchTemplate();
+      refetchTags();
       navigate("/");
       toast.success("Template updated successfully!");
     } catch (err) {
@@ -281,7 +287,11 @@ const EditTemplateScreen = () => {
             </Card>
 
             <Form.Group className="my-3">
-              <Tags selected={selected} setSelected={setSelected} />
+              <Tags
+                suggestions={suggestions}
+                selected={selected}
+                setSelected={setSelected}
+              />
             </Form.Group>
 
             <Form.Group className="flex flex-row justify-between">
