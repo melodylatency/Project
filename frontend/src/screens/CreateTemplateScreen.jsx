@@ -31,11 +31,12 @@ const CreateTemplateScreen = () => {
   const [title, setTitle] = useState("Untitled Template");
   const [description, setDescription] = useState("");
   const [newQuestion, setNewQuestion] = useState({
-    type: "text",
+    type: "SINGLE_LINE",
     title: "",
     description: "",
-    displayOnTable: true,
+    show_in_results: true,
   });
+  const [editingQuestionId, setEditingQuestionId] = useState(null);
 
   const { tagList } = useSelector((state) => state.tag);
   const { questionList } = useSelector((state) => state.question);
@@ -68,10 +69,10 @@ const CreateTemplateScreen = () => {
       };
       dispatch(addToQuestionList(questionWithId));
       setNewQuestion({
-        type: "text",
+        type: "SINGLE_LINE",
         title: "",
         description: "",
-        displayOnTable: true,
+        show_in_results: true,
       });
     }
   };
@@ -195,8 +196,13 @@ const CreateTemplateScreen = () => {
               <SortableItem key={question.id} id={question.id} index={index}>
                 <QuestionCard
                   question={question}
-                  onDelete={deleteQuestion}
-                  onUpdateQuestion={updateQuestion}
+                  index={question.index}
+                  onDelete={() => deleteQuestion(question.id)}
+                  onUpdate={() => setEditingQuestionId(question.id)}
+                  isEditing={question.id === editingQuestionId}
+                  onSave={updateQuestion}
+                  onCancelEdit={() => setEditingQuestionId(null)}
+                  dragHandleProps={undefined}
                 />
               </SortableItem>
             ))}
@@ -234,11 +240,11 @@ const CreateTemplateScreen = () => {
                   <Form.Check
                     type="checkbox"
                     label="Display"
-                    checked={newQuestion.displayOnTable}
+                    checked={newQuestion.show_in_results}
                     onChange={(e) =>
                       setNewQuestion({
                         ...newQuestion,
-                        displayOnTable: e.target.checked,
+                        show_in_results: e.target.checked,
                       })
                     }
                   />
