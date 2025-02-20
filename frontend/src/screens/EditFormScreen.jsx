@@ -4,11 +4,13 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useSelector } from "react-redux";
 import { useGetFormByIdQuery } from "../redux/slices/formsApiSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const FormScreen = () => {
   const { id: formId } = useParams();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [answerMap, setAnswerMap] = useState({});
 
   const { userInfo } = useSelector((state) => state.auth);
   const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
@@ -21,13 +23,44 @@ const FormScreen = () => {
         navigate("/");
         toast.error("Unauthorized!");
       }
-    }
-  });
 
-  const answerMap = form?.answerList?.reduce((acc, answer) => {
-    acc[answer.question_id] = answer.value;
-    return acc;
-  }, {});
+      if (form?.answerList) {
+        const initialAnswers = form.answerList.reduce((acc, answer) => {
+          acc[answer.question_id] = answer.value;
+          return acc;
+        }, {});
+        setAnswerMap(initialAnswers);
+      }
+    }
+  }, [setAnswerMap, form, userInfo, navigate]);
+
+  const handleInputChange = (formId, questionId, value, type) => {
+    let newValue;
+
+    switch (type) {
+      case "INTEGER":
+        if (value < 0) {
+          setErrorMessage("Integer values must be positive.");
+          return;
+        } else {
+          setErrorMessage("");
+          newValue = value === "" ? "" : Number(value);
+        }
+        break;
+      case "CHECKBOX":
+        newValue = !answerMap[questionId];
+        break;
+      default:
+        newValue = value;
+    }
+
+    setAnswerMap((prevMap) => ({
+      ...prevMap,
+      [questionId]: newValue,
+    }));
+
+    //updateAnswer({ formId, questionId, answer: newValue });
+  };
 
   return (
     <>
@@ -46,8 +79,6 @@ const FormScreen = () => {
             <Col md={12}>
               <Form>
                 {form.questionList.map((question) => {
-                  // Retrieve current answers for this form
-                  const currentAnswer = answerMap[question.id];
                   return (
                     <Card key={question.id} className="mb-3">
                       <Card.Body>
@@ -61,11 +92,19 @@ const FormScreen = () => {
                         {question.type === "SINGLE_LINE" && (
                           <Form.Control
                             type="text"
-                            value={currentAnswer ?? ""}
+                            value={answerMap[question.id] ?? ""}
                             disabled={
                               !(
                                 userInfo.id === form.user_id ||
                                 userInfo.isAdmin === true
+                              )
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                formId,
+                                question.id,
+                                e.target.value,
+                                "SINGLE_LINE"
                               )
                             }
                             placeholder="Enter your answer"
@@ -76,11 +115,19 @@ const FormScreen = () => {
                           <Form.Control
                             as="textarea"
                             rows={3}
-                            value={currentAnswer ?? ""}
+                            value={answerMap[question.id] ?? ""}
                             disabled={
                               !(
                                 userInfo.id === form.user_id ||
                                 userInfo.isAdmin === true
+                              )
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                formId,
+                                question.id,
+                                e.target.value,
+                                "MULTI_LINE"
                               )
                             }
                             placeholder="Enter your answer"
@@ -91,15 +138,20 @@ const FormScreen = () => {
                           <>
                             <Form.Control
                               type="number"
-                              value={currentAnswer ?? ""}
-                              disabled={
-                                !(
-                                  userInfo.id === form.user_id ||
-                                  userInfo.isAdmin === true
+                              value={answerMap[question.id] ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  formId,
+                                  question.id,
+                                  e.target.value,
+                                  "INTEGER"
                                 )
                               }
                               placeholder="Enter a positive number"
                             />
+                            {errorMessage && (
+                              <Message variant="danger">{errorMessage}</Message>
+                            )}
                           </>
                         )}
 
@@ -114,7 +166,15 @@ const FormScreen = () => {
                                 userInfo.isAdmin === true
                               )
                             }
-                            checked={currentAnswer ?? false}
+                            onChange={() =>
+                              handleInputChange(
+                                formId,
+                                question.id,
+                                null,
+                                "CHECKBOX"
+                              )
+                            }
+                            checked={answerMap[question.id] ?? false}
                           />
                         )}
                       </Card.Body>
