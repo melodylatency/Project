@@ -3,7 +3,10 @@ import { Row, Col, Button, Form, Card } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useSelector } from "react-redux";
-import { useGetFormByIdQuery } from "../redux/slices/formsApiSlice";
+import {
+  useGetFormByIdQuery,
+  useUpdateFormMutation,
+} from "../redux/slices/formsApiSlice";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -14,6 +17,8 @@ const FormScreen = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
   const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
+
+  const [updateForm, { isLoading: updatingForm }] = useUpdateFormMutation();
 
   const navigate = useNavigate();
 
@@ -71,6 +76,7 @@ const FormScreen = () => {
     try {
       await updateForm({
         answerMap: answerArray,
+        formId,
       }).unwrap();
       setAnswerMap({});
       navigate("/profile");
@@ -206,7 +212,7 @@ const FormScreen = () => {
                     Resubmit Form
                   </Button>
                 </div>
-                {isLoading && <Loader />}
+                {isLoading || (updatingForm && <Loader />)}
               </Form>
             </Col>
           </Row>

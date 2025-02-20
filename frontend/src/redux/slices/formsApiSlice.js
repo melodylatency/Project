@@ -32,6 +32,13 @@ export const formsApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    updateForm: builder.mutation({
+      query: (data) => ({
+        url: `${FORMS_URL}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
     deleteForm: builder.mutation({
       query: (formId) => ({
         url: `${FORMS_URL}/${formId}`,
@@ -46,5 +53,6 @@ export const {
   useGetTemplateFormsQuery,
   useGetFormByIdQuery,
   useCreateFormMutation,
+  useUpdateFormMutation,
   useDeleteFormMutation,
 } = formsApiSlice;

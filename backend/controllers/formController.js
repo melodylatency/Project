@@ -100,20 +100,28 @@ const createForm = asyncHandler(async (req, res) => {
 // @route   PUT /api/forms
 // @access  Private
 const updateForm = asyncHandler(async (req, res) => {
-  const { title, user_id, template_id, answerMap } = req.body;
+  const { answerMap, formId } = req.body;
 
-  if (!title || !user_id || !answerMap) {
+  if (!answerMap || !formId) {
     res.status(400);
-    throw new Error("Missing required fields: title, answers, or user_id");
+    throw new Error("Missing required fields: answerMap or formId");
   }
 
-  const form = await Form.create({
-    title,
-    user_id,
-    template_id,
+  // Fetch the existing answers for the form
+  const existingAnswers = await Answer.findAll({
+    where: { form_id: formId },
   });
 
-  const answersData = answerMap.map(({ questionId, value }) => {
+  // Convert the array of existing answers to a map for easy lookup
+  const existingAnswersMap = existingAnswers.reduce((acc, answer) => {
+    acc[answer.question_id] = answer;
+    return acc;
+  }, {});
+
+  const updatedAnswers = [];
+
+  // Iterate over the provided answerMap to check for updates
+  for (const { questionId, value } of answerMap) {
     let processedValue;
 
     if (typeof value === "boolean") {
@@ -124,20 +132,19 @@ const updateForm = asyncHandler(async (req, res) => {
       processedValue = String(value);
     }
 
-    return {
-      question_id: questionId,
-      value: processedValue,
-      form_id: form.id,
-    };
-  });
+    // Check if the value has changed
+    if (
+      existingAnswersMap[questionId] &&
+      existingAnswersMap[questionId].value !== processedValue
+    ) {
+      // If value has changed, update the answer
+      await existingAnswersMap[questionId].update({ value: processedValue });
+      updatedAnswers.push({ questionId, value: processedValue });
+    }
+  }
 
-  // Bulk create answers
-  await Answer.bulkCreate(answersData);
-
-  res.status(201).json({
-    id: form.id,
-    title: form.title,
-    createdAt: form.createdAt,
+  res.status(200).json({
+    updatedAnswers,
   });
 });
 
@@ -156,4 +163,11 @@ const deleteForm = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Form deleted successfully" });
 });
 
-export { getUserForms, getTemplateForms, getFormById, createForm, deleteForm };
+export {
+  getUserForms,
+  getTemplateForms,
+  getFormById,
+  createForm,
+  updateForm,
+  deleteForm,
+};
