@@ -21,12 +21,14 @@ import TemplateScreen from "./screens/TemplateScreen";
 import EditTemplateScreen from "./screens/EditTemplateScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import CreateTemplateScreen from "./screens/CreateTemplateScreen";
+import FormScreen from "./screens/FormScreen";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" index={true} element={<HomeScreen />} />
       <Route path="/template/:id" element={<TemplateScreen />} />
+      <Route path="/form/:id" element={<FormScreen />} />
       <Route path="/template/edit/:id" element={<EditTemplateScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import Template from "../components/Template";
 import { useGetTemplatesQuery } from "../redux/slices/templatesApiSlice";
@@ -8,11 +8,19 @@ import { TagCloud } from "react-tagcloud";
 import { useGetTagCloudQuery } from "../redux/slices/tagsApiSlice";
 
 const HomeScreen = () => {
+  const [tags, setTags] = useState([]);
+
   const { data: templates, isLoading, error } = useGetTemplatesQuery();
 
   const { data } = useGetTagCloudQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
+
+  useEffect(() => {
+    if (data) {
+      setTags(data);
+    }
+  }, [setTags, data]);
 
   const options = {
     luminosity: "bright",
@@ -81,7 +89,7 @@ const HomeScreen = () => {
                 minSize={12}
                 maxSize={35}
                 colorOptions={options}
-                tags={data}
+                tags={tags}
                 className="cursor-pointer my-2"
                 onClick={(tag) => alert(`'${tag.value}' was selected!`)}
               />
