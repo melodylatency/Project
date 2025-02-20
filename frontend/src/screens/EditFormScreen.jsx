@@ -16,7 +16,7 @@ const FormScreen = () => {
   const [answerMap, setAnswerMap] = useState({});
 
   const { userInfo } = useSelector((state) => state.auth);
-  const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
+  const { data: form, refetch, isLoading, error } = useGetFormByIdQuery(formId);
 
   const [updateForm, { isLoading: updatingForm }] = useUpdateFormMutation();
 
@@ -78,6 +78,7 @@ const FormScreen = () => {
         answerMap: answerArray,
         formId,
       }).unwrap();
+      refetch();
       setAnswerMap({});
       navigate("/profile");
       toast.success("Form updated successfully!");

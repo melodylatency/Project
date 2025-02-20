@@ -37,6 +37,7 @@ export const formsApiSlice = apiSlice.injectEndpoints({
         url: `${FORMS_URL}`,
         method: "PUT",
         body: data,
+        invalidatesTags: ["Form"],
       }),
     }),
     deleteForm: builder.mutation({
