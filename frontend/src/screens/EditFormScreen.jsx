@@ -34,7 +34,7 @@ const FormScreen = () => {
     }
   }, [setAnswerMap, form, userInfo, navigate]);
 
-  const handleInputChange = (formId, questionId, value, type) => {
+  const handleInputChange = (questionId, value, type) => {
     let newValue;
 
     switch (type) {
@@ -58,8 +58,26 @@ const FormScreen = () => {
       ...prevMap,
       [questionId]: newValue,
     }));
+  };
 
-    //updateAnswer({ formId, questionId, answer: newValue });
+  const handleResubmittingForm = async (e) => {
+    e.preventDefault();
+    const answerArray = Object.entries(answerMap).map(
+      ([questionId, value]) => ({
+        questionId,
+        value,
+      })
+    );
+    try {
+      await updateForm({
+        answerMap: answerArray,
+      }).unwrap();
+      setAnswerMap({});
+      navigate("/profile");
+      toast.success("Form updated successfully!");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -77,7 +95,7 @@ const FormScreen = () => {
           </Link>
           <Row className="mt-4">
             <Col md={12}>
-              <Form>
+              <Form onSubmit={handleResubmittingForm}>
                 {form.questionList.map((question) => {
                   return (
                     <Card key={question.id} className="mb-3">
@@ -101,7 +119,6 @@ const FormScreen = () => {
                             }
                             onChange={(e) =>
                               handleInputChange(
-                                formId,
                                 question.id,
                                 e.target.value,
                                 "SINGLE_LINE"
@@ -124,7 +141,6 @@ const FormScreen = () => {
                             }
                             onChange={(e) =>
                               handleInputChange(
-                                formId,
                                 question.id,
                                 e.target.value,
                                 "MULTI_LINE"
@@ -141,7 +157,6 @@ const FormScreen = () => {
                               value={answerMap[question.id] ?? ""}
                               onChange={(e) =>
                                 handleInputChange(
-                                  formId,
                                   question.id,
                                   e.target.value,
                                   "INTEGER"
@@ -167,12 +182,7 @@ const FormScreen = () => {
                               )
                             }
                             onChange={() =>
-                              handleInputChange(
-                                formId,
-                                question.id,
-                                null,
-                                "CHECKBOX"
-                              )
+                              handleInputChange(question.id, null, "CHECKBOX")
                             }
                             checked={answerMap[question.id] ?? false}
                           />
