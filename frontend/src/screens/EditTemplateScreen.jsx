@@ -98,10 +98,6 @@ const EditTemplateScreen = () => {
     }
   }, [template]);
 
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
-
   const addQuestion = async () => {
     const countOfType = questionList.filter(
       (q) => q.type === newQuestion.type

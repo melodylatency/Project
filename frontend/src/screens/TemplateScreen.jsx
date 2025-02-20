@@ -29,7 +29,7 @@ import "github-markdown-css/github-markdown-light.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-const FormScreen = () => {
+const TemplateScreen = () => {
   const [isLiked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -356,4 +356,4 @@ const FormScreen = () => {
   );
 };
 
-export default FormScreen;
+export default TemplateScreen;

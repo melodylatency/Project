@@ -4,11 +4,25 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useSelector } from "react-redux";
 import { useGetFormByIdQuery } from "../redux/slices/formsApiSlice";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const FormScreen = () => {
   const { id: formId } = useParams();
 
+  const { userInfo } = useSelector((state) => state.auth);
   const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userInfo && form) {
+      if (userInfo.id !== form.user_id && userInfo.isAdmin === false) {
+        navigate("/");
+        toast.error("Unauthorized!");
+      }
+    }
+  });
 
   const answerMap = form?.answerList?.reduce((acc, answer) => {
     acc[answer.question_id] = answer.value;
@@ -25,10 +39,7 @@ const FormScreen = () => {
         </Message>
       ) : (
         <div>
-          <Link
-            className="btn btn-light my-3"
-            to={`/template/edit/${form.template_id}`}
-          >
+          <Link className="btn btn-light my-3" to={`/profile`}>
             Go Back
           </Link>
           <Row className="mt-4">
@@ -51,8 +62,12 @@ const FormScreen = () => {
                           <Form.Control
                             type="text"
                             value={currentAnswer ?? ""}
-                            readOnly
-                            disabled={true}
+                            disabled={
+                              !(
+                                userInfo.id === form.user_id ||
+                                userInfo.isAdmin === true
+                              )
+                            }
                             placeholder="Enter your answer"
                           />
                         )}
@@ -62,8 +77,12 @@ const FormScreen = () => {
                             as="textarea"
                             rows={3}
                             value={currentAnswer ?? ""}
-                            readOnly
-                            disabled={true}
+                            disabled={
+                              !(
+                                userInfo.id === form.user_id ||
+                                userInfo.isAdmin === true
+                              )
+                            }
                             placeholder="Enter your answer"
                           />
                         )}
@@ -73,8 +92,12 @@ const FormScreen = () => {
                             <Form.Control
                               type="number"
                               value={currentAnswer ?? ""}
-                              readOnly
-                              disabled={true}
+                              disabled={
+                                !(
+                                  userInfo.id === form.user_id ||
+                                  userInfo.isAdmin === true
+                                )
+                              }
                               placeholder="Enter a positive number"
                             />
                           </>
@@ -85,16 +108,34 @@ const FormScreen = () => {
                             type="checkbox"
                             id={question.id}
                             label="Check this box"
-                            disabled={true}
+                            disabled={
+                              !(
+                                userInfo.id === form.user_id ||
+                                userInfo.isAdmin === true
+                              )
+                            }
                             checked={currentAnswer ?? false}
-                            readOnly
                           />
                         )}
                       </Card.Body>
                     </Card>
                   );
                 })}
-
+                <div className="flex justify-center">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    disabled={
+                      !(
+                        userInfo.id === form.user_id ||
+                        userInfo.isAdmin === true
+                      )
+                    }
+                  >
+                    Resubmit Form
+                  </Button>
+                </div>
                 {isLoading && <Loader />}
               </Form>
             </Col>

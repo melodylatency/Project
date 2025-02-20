@@ -278,7 +278,7 @@ const ProfileScreen = () => {
                           <td>
                             <div className="d-flex align-items-center gap-1">
                               <Link
-                                to={`/form/${form.id}`}
+                                to={`/form/edit/${form.id}`}
                                 className="text-blue-500 underline"
                               >
                                 {form.id}
