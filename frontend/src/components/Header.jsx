@@ -58,6 +58,9 @@ const Header = () => {
               <NavDropdown.Item onClick={() => changeLanguage("ru")}>
                 Русский
               </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => changeLanguage("be")}>
+                Беларуская
+              </NavDropdown.Item>
             </NavDropdown>
             {userInfo ? (
               <NavDropdown

@@ -40,7 +40,7 @@ const Tags = ({ selected, setSelected }) => {
       onAdd={onAdd}
       onDelete={onDelete}
       allowNew
-      newOptionText="Add new: {tag}"
+      newOptionText={t("tagNew")}
     />
   );
 };
