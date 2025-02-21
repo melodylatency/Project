@@ -7,8 +7,11 @@ import Loader from "../components/Loader";
 import { useLoginMutation } from "../redux/slices/usersApiSlice";
 import { setCredentials } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const LoginScreen = () => {
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,7 +19,7 @@ const LoginScreen = () => {
   const navigate = useNavigate();
 
   const [login, { isLoading }] = useLoginMutation();
-  const { userInfo } = useSelector((state) => state.auth); // selecting auth slice
+  const { userInfo } = useSelector((state) => state.auth);
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
@@ -42,25 +45,25 @@ const LoginScreen = () => {
   return (
     <FormContainer>
       <div className="my-5">
-        <h1 className="text-5xl font-sans text-gray-600">Sign in</h1>
+        <h1 className="text-5xl font-sans text-gray-600">{t("signIn")}</h1>
       </div>
 
       <Form onSubmit={submitHandler}>
         <Form.Group controlId="email" className="my-3">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label>{t("emailAddress")}</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter email"
+            placeholder={t("enterEmail")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Form.Group controlId="password" className="my-3">
-          <Form.Label>Password</Form.Label>
+          <Form.Label>{t("password")}</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Enter password"
+            placeholder={t("enterPassword")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
@@ -73,7 +76,7 @@ const LoginScreen = () => {
             className="mt-2"
             disabled={isLoading}
           >
-            Log in
+            {t("loginButton")}
           </Button>
         </div>
         {isLoading && <Loader />}
@@ -82,12 +85,12 @@ const LoginScreen = () => {
       <Row className="py-3">
         <Col>
           <h1 className="font-serif text-black">
-            New customer?{" "}
+            {t("newCustomer")}{" "}
             <Link
               to={redirect ? `/register?redirect=${redirect}` : "/register"}
               className="underline text-blue-900"
             >
-              Register
+              {t("register")}
             </Link>
           </h1>
         </Col>

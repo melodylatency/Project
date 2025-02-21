@@ -7,8 +7,11 @@ import Loader from "../components/Loader";
 import { useRegisterMutation } from "../redux/slices/usersApiSlice";
 import { setCredentials } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const RegisterScreen = () => {
+  const { t } = useTranslation();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +21,7 @@ const RegisterScreen = () => {
   const navigate = useNavigate();
 
   const [register, { isLoading }] = useRegisterMutation();
-  const { userInfo } = useSelector((state) => state.auth); // selecting auth slice
+  const { userInfo } = useSelector((state) => state.auth);
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
@@ -33,7 +36,7 @@ const RegisterScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("Passwords differ");
+      toast.error(t("passwordMismatch"));
       return;
     } else {
       try {
@@ -49,45 +52,45 @@ const RegisterScreen = () => {
   return (
     <FormContainer>
       <div className="my-5">
-        <h1 className="text-5xl font-sans text-gray-600">Register</h1>
+        <h1 className="text-5xl font-sans text-gray-600">{t("register")}</h1>
       </div>
 
       <Form onSubmit={submitHandler}>
         <Form.Group controlId="name" className="my-3">
-          <Form.Label>Name</Form.Label>
+          <Form.Label>{t("name")}</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter name"
+            placeholder={t("enterName")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Form.Group controlId="email" className="my-3">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label>{t("emailAddress")}</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter email"
+            placeholder={t("enterEmail")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Form.Group controlId="password" className="my-3">
-          <Form.Label>Password</Form.Label>
+          <Form.Label>{t("password")}</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Enter password"
+            placeholder={t("enterPassword")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group controlId="password" className="my-3">
-          <Form.Label>Confirm password</Form.Label>
+        <Form.Group controlId="confirmPassword" className="my-3">
+          <Form.Label>{t("confirmPassword")}</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Enter password again"
+            placeholder={t("enterPasswordAgain")}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           ></Form.Control>
@@ -100,7 +103,7 @@ const RegisterScreen = () => {
             className="mt-2"
             disabled={isLoading}
           >
-            Sign up
+            {t("signUp")}
           </Button>
         </div>
         {isLoading && <Loader />}
@@ -109,12 +112,12 @@ const RegisterScreen = () => {
       <Row className="py-3">
         <Col>
           <h1 className="font-serif text-black">
-            Already have an account?{" "}
+            {t("alreadyHaveAccount")}{" "}
             <Link
               to={redirect ? `/login?redirect=${redirect}` : "/login"}
               className="underline text-blue-900"
             >
-              Sign in
+              {t("signIn")}
             </Link>
           </h1>
         </Col>

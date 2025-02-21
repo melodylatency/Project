@@ -96,14 +96,13 @@ const TemplateScreen = () => {
       case "INTEGER":
         if (value < 0) {
           setErrorMessage("Integer values must be positive.");
-          return; // Don't update state if invalid
+          return;
         } else {
-          setErrorMessage(""); // Clear error if input is valid
+          setErrorMessage("");
           newValue = value === "" ? "" : Number(value);
         }
         break;
       case "CHECKBOX":
-        // Flip the current checkbox value (defaulting to false)
         newValue = !(
           (answerMap[templateId] && answerMap[templateId][questionId]) ||
           false
@@ -182,13 +181,15 @@ const TemplateScreen = () => {
                   <p>{template.likes}</p>
                   <BiLike />
                 </ListGroup.Item>
-                <h2 className="text-3xl my-3">Reviews</h2>
-                {template.Reviews.length === 0 && <Message>No Reviews</Message>}
+                <h2 className="text-3xl my-3">{t("reviews")}</h2>
+                {template.Reviews.length === 0 && (
+                  <Message>{t("noReviews")}</Message>
+                )}
                 {template.Reviews.map((review) => (
                   <ListGroupItem key={review.id}>
                     <strong>{review.name}</strong>
                     {review.isLiked && (
-                      <p className="text-muted font-light">User left a 👍</p>
+                      <p className="text-muted font-light">{t("like")}</p>
                     )}
                     <p>{review.createdAt.substring(0, 10)}</p>
                     <p className="mt-4">{review.comment}</p>
@@ -202,7 +203,7 @@ const TemplateScreen = () => {
             <Col md={6}>
               <ListGroup variant="flush">
                 <ListGroupItem className="bg-transparent">
-                  <h2 className="text-3xl mb-3">Leave a review</h2>
+                  <h2 className="text-3xl mb-3">{t("leaveReview")}</h2>
 
                   {loadingReview && <Loader />}
 
@@ -212,12 +213,12 @@ const TemplateScreen = () => {
                         <Form.Check
                           type="checkbox"
                           checked={isLiked}
-                          label="Like"
+                          label={t("like")}
                           onChange={(e) => setLiked(e.target.checked)}
                         />
                       </Form.Group>
                       <Form.Group controlId="comment" className="my-2">
-                        <Form.Label>Comment</Form.Label>
+                        <Form.Label>{t("comment")}</Form.Label>
                         <Form.Control
                           as="textarea"
                           rows={3}
@@ -231,7 +232,7 @@ const TemplateScreen = () => {
                         type="submit"
                         variant="primary"
                       >
-                        Submit
+                        {t("submit")}
                       </Button>
                     </Form>
                   ) : (
@@ -240,9 +241,8 @@ const TemplateScreen = () => {
                         className="text-blue-500 underline"
                         to={`/login?redirect=/template/${templateId}`}
                       >
-                        Sign in
-                      </Link>{" "}
-                      to submit a review
+                        {t("signInToReview")}
+                      </Link>
                     </Message>
                   )}
                 </ListGroupItem>
@@ -253,7 +253,6 @@ const TemplateScreen = () => {
             <Col md={12}>
               <Form onSubmit={handleSubmittingForm}>
                 {template.Questions.map((question) => {
-                  // Retrieve current answers for this template
                   const currentTemplateAnswers = answerMap[templateId] || {};
                   return (
                     <Card key={question.id} className="mb-3">
@@ -278,7 +277,7 @@ const TemplateScreen = () => {
                                 "SINGLE_LINE"
                               )
                             }
-                            placeholder="Enter your answer"
+                            placeholder={t("enterYourAnswer")}
                           />
                         )}
 
@@ -296,7 +295,7 @@ const TemplateScreen = () => {
                                 "MULTI_LINE"
                               )
                             }
-                            placeholder="Enter your answer"
+                            placeholder={t("enterYourAnswer")}
                           />
                         )}
 
@@ -314,10 +313,12 @@ const TemplateScreen = () => {
                                   "INTEGER"
                                 )
                               }
-                              placeholder="Enter a positive number"
+                              placeholder={t("positiveIntegerOnly")}
                             />
                             {errorMessage && (
-                              <Message variant="danger">{errorMessage}</Message>
+                              <Message variant="danger">
+                                {t("positiveIntegerOnly")}
+                              </Message>
                             )}
                           </>
                         )}
@@ -326,7 +327,7 @@ const TemplateScreen = () => {
                           <Form.Check
                             type="checkbox"
                             id={question.id}
-                            label="Check this box"
+                            label={t("checkboxLabel")}
                             disabled={!userInfo}
                             checked={
                               currentTemplateAnswers[question.id] ?? false
@@ -353,7 +354,7 @@ const TemplateScreen = () => {
                     size="lg"
                     disabled={!userInfo}
                   >
-                    Submit Form
+                    {t("submitForm")}
                   </Button>
                 </div>
                 {(isLoading || creatingForm) && <Loader />}
