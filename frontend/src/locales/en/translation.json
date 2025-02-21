@@ -1,0 +1,12 @@
+{
+  "topTemplates": "Top 5 Viewed Templates",
+  "allTemplates": "All other Templates",
+  "nothingToSee": "Nothing to see here...",
+  "language": "Language",
+  "brand": "Daniel's User Management",
+  "adminPanel": "Admin Panel",
+  "profile": "Profile",
+  "logout": "Logout",
+  "login": "Login",
+  "tagAlert": "'{{value}}' was selected!"
+}

@@ -6,12 +6,13 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { TagCloud } from "react-tagcloud";
 import { useGetTagCloudQuery } from "../redux/slices/tagsApiSlice";
+import { useTranslation } from "react-i18next";
 
 const HomeScreen = () => {
+  const { t } = useTranslation();
   const [tags, setTags] = useState([]);
 
   const { data: templates, isLoading, error } = useGetTemplatesQuery();
-
   const { data } = useGetTagCloudQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
@@ -20,7 +21,7 @@ const HomeScreen = () => {
     if (data) {
       setTags(data);
     }
-  }, [setTags, data]);
+  }, [data]);
 
   const options = {
     luminosity: "bright",
@@ -52,7 +53,7 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
-          <h1 className="text-center text-6xl py-5">Top 5 Viewed Templates</h1>
+          <h1 className="text-center text-6xl py-5">{t("topTemplates")}</h1>
           {templates.length > 0 ? (
             <Row>
               {top5.map((template) => (
@@ -63,11 +64,11 @@ const HomeScreen = () => {
             </Row>
           ) : (
             <h1 className="flex justify-center text-3xl text-gray-500">
-              Nothing to see here...
+              {t("nothingToSee")}
             </h1>
           )}
 
-          <h1 className="text-center text-6xl py-5">All other Templates</h1>
+          <h1 className="text-center text-6xl py-5">{t("allTemplates")}</h1>
 
           {templates.length > 5 ? (
             <Row>
@@ -79,19 +80,18 @@ const HomeScreen = () => {
             </Row>
           ) : (
             <h1 className="flex justify-center text-3xl text-gray-500">
-              Nothing to see here...
+              {t("nothingToSee")}
             </h1>
           )}
           <Row className="flex justify-center">
             <Col md={6}>
-              {" "}
               <TagCloud
                 minSize={12}
                 maxSize={35}
                 colorOptions={options}
                 tags={tags}
                 className="cursor-pointer my-2"
-                onClick={(tag) => alert(`'${tag.value}' was selected!`)}
+                onClick={(tag) => alert(t("tagAlert", { value: tag.value }))}
               />
             </Col>
           </Row>

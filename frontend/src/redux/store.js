@@ -5,6 +5,7 @@ import questionSliceReducer from "./slices/questionSlice";
 import answerSliceReducer from "./slices/answerSlice";
 import templateSliceReducer from "./slices/templateSlice";
 import tagSliceReducer from "./slices/tagSlice";
+import languageSliceReducer from "./slices/languageSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     answer: answerSliceReducer,
     template: templateSliceReducer,
     tag: tagSliceReducer,
+    language: languageSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),

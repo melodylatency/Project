@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import { Container } from "react-bootstrap";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import "./i18n";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
