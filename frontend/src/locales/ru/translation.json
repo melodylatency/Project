@@ -8,5 +8,6 @@
   "profile": "Профиль",
   "logout": "Выйти",
   "login": "Войти",
-  "tagAlert": "Выбран '{{value}}'!"
+  "tagAlert": "Выбран '{{value}}'!",
+  "goBack": "Назад"
 }

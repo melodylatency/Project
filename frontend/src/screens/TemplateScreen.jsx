@@ -28,8 +28,10 @@ import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown-light.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const TemplateScreen = () => {
+  const { t } = useTranslation();
   const [isLiked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -149,7 +151,7 @@ const TemplateScreen = () => {
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
-        Go Back
+        {t("goBack")}
       </Link>
 
       {isLoading ? (
