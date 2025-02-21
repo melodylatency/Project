@@ -3,8 +3,10 @@ import { Row, Col, Form, Card } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useGetFormByIdQuery } from "../redux/slices/formsApiSlice";
+import { useTranslation } from "react-i18next";
 
 const FormScreen = () => {
+  const { t } = useTranslation();
   const { id: formId } = useParams();
 
   const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
@@ -28,7 +30,7 @@ const FormScreen = () => {
             className="btn btn-light my-3"
             to={`/template/edit/${form.template_id}`}
           >
-            Go Back
+            {t("goBack")}
           </Link>
           <Row className="mt-4">
             <Col md={12}>

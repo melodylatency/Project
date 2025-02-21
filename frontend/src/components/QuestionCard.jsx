@@ -53,10 +53,10 @@ const QuestionCard = ({
                   value={editedQuestion.type}
                   onChange={handleChange}
                 >
-                  <option value="SINGLE_LINE">{t("singleLine")}</option>
-                  <option value="MULTI_LINE">{t("multiLine")}</option>
-                  <option value="INTEGER">{t("integer")}</option>
-                  <option value="CHECKBOX">{t("checkbox")}</option>
+                  <option value="SINGLE_LINE">{t("SINGLE_LINE")}</option>
+                  <option value="MULTI_LINE">{t("MULTI_LINE")}</option>
+                  <option value="INTEGER">{t("INTEGER")}</option>
+                  <option value="CHECKBOX">{t("CHECKBOX")}</option>
                 </Form.Select>
               </Col>
               <Col md={2}>
@@ -110,7 +110,7 @@ const QuestionCard = ({
               <span className="me-2">{index + 1}.</span>
               <h5 className="ml-1">{question.title}</h5>
               <span className="badge bg-secondary ms-2">
-                {t(question.type.toLowerCase())}
+                {t(question.type)}
               </span>
             </div>
             <p className="text-muted">{question.description}</p>

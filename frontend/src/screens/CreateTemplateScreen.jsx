@@ -234,10 +234,10 @@ const CreateTemplateScreen = () => {
                       setNewQuestion({ ...newQuestion, type: e.target.value })
                     }
                   >
-                    <option value="SINGLE_LINE">{t("singleLine")}</option>
-                    <option value="MULTI_LINE">{t("multiLine")}</option>
-                    <option value="INTEGER">{t("integer")}</option>
-                    <option value="CHECKBOX">{t("checkbox")}</option>
+                    <option value="SINGLE_LINE">{t("SINGLE_LINE")}</option>
+                    <option value="MULTI_LINE">{t("MULTI_LINE")}</option>
+                    <option value="INTEGER">{t("INTEGER")}</option>
+                    <option value="CHECKBOX">{t("CHECKBOX")}</option>
                   </Form.Select>
                 </Col>
                 <Col md={2}>

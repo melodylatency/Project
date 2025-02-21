@@ -9,8 +9,10 @@ import {
 } from "../redux/slices/formsApiSlice";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const FormScreen = () => {
+  const { t } = useTranslation();
   const { id: formId } = useParams();
   const [errorMessage, setErrorMessage] = useState("");
   const [answerMap, setAnswerMap] = useState({});
@@ -99,7 +101,7 @@ const FormScreen = () => {
       ) : (
         <div>
           <Link className="btn btn-light my-3" to={`/profile`}>
-            Go Back
+            {t("goBack")}
           </Link>
           <Row className="mt-4">
             <Col md={12}>
@@ -132,7 +134,7 @@ const FormScreen = () => {
                                 "SINGLE_LINE"
                               )
                             }
-                            placeholder="Enter your answer"
+                            placeholder={t("enterYourAnswer")}
                           />
                         )}
 
@@ -211,7 +213,7 @@ const FormScreen = () => {
                       )
                     }
                   >
-                    Resubmit Form
+                    {t("submitForm")}
                   </Button>
                 </div>
                 {isLoading || (updatingForm && <Loader />)}

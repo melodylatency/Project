@@ -39,8 +39,10 @@ import "github-markdown-css/github-markdown-light.css";
 import moment from "moment";
 import Message from "../components/Message";
 import Tags from "../components/Tags";
+import { useTranslation } from "react-i18next";
 
 const EditTemplateScreen = () => {
+  const { t } = useTranslation();
   const { id: templateId } = useParams();
 
   const {
@@ -104,12 +106,11 @@ const EditTemplateScreen = () => {
     ).length;
 
     if (newQuestion.title.trim() === "") {
+      toast.error(t("questionTitleRequired"));
     } else if (newQuestion.description.trim().length > 1500) {
-      toast.error("Description too large.");
+      toast.error(t("descriptionTooLarge"));
     } else if (countOfType >= 4) {
-      alert(
-        `You can add a maximum of 4 questionList of type "${newQuestion.type}"`
-      );
+      alert(t("maxQuestionsOfType", { type: newQuestion.type }));
     } else {
       try {
         await createQuestion({
@@ -124,7 +125,7 @@ const EditTemplateScreen = () => {
           displayOnTable: true,
         });
         refetchTemplate();
-        toast.success("Question created successfully");
+        toast.success(t("questionCreatedSuccess"));
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -208,11 +209,11 @@ const EditTemplateScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim() === "") {
-      alert("Form title cannot be empty");
+      alert(t("templateTitleRequired"));
       return;
     }
     if (questionList.length === 0) {
-      alert("Please add at least one question.");
+      alert(t("addAtLeastOneQuestion"));
       return;
     }
 
@@ -230,7 +231,7 @@ const EditTemplateScreen = () => {
       refetchTags();
       refetchTagCloud();
       navigate("/");
-      toast.success("Template updated successfully!");
+      toast.success(t("templateUpdatedSuccess"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -239,39 +240,36 @@ const EditTemplateScreen = () => {
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
       <Link className="btn btn-light my-3" to="/profile">
-        Go Back
+        {t("goBack")}
       </Link>
-      <h1 className="text-center mb-4 text-5xl">Edit Template</h1>
-      {/* Move DndContext outside the Form */}
+      <h1 className="text-center mb-4 text-5xl">{t("editTemplate")}</h1>
+
       <Tabs
         defaultActiveKey="general"
         id="uncontrolled-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="general" title="General Settings">
+        <Tab eventKey="general" title={t("generalSettings")}>
           <Form onSubmit={handleSubmit}>
-            {/* Form Title */}
-
             <Form.Group className="mb-3" controlId="formTitle">
-              <Form.Label className="fs-4">Template Title</Form.Label>
+              <Form.Label className="fs-4">{t("templateTitle")}</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter a title"
+                placeholder={t("enterTitle")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 size="lg"
               />
             </Form.Group>
 
-            {/* Form Description with Markdown Support */}
             <Form.Group className="mb-4" controlId="formDescription">
               <Form.Label className="fs-5">
-                Template Description (supports Markdown)
+                {t("templateDescription")}
               </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={10}
-                placeholder="Enter a description (optional, Markdown supported)"
+                placeholder={t("enterDescriptionOptional")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -279,7 +277,7 @@ const EditTemplateScreen = () => {
 
             {/* Markdown Preview */}
             <Card className="my-2">
-              <Card.Header>Markdown Preview</Card.Header>
+              <Card.Header>{t("markdownPreview")}</Card.Header>
               <Card.Body>
                 <div className="markdown-body">
                   <ReactMarkdown>{description}</ReactMarkdown>
@@ -298,8 +296,8 @@ const EditTemplateScreen = () => {
                 onChange={(e) => setAcess(e.target.value)}
                 className="w-1/3"
               >
-                <option value="public">Public</option>
-                <option value="restricted">Restricted</option>
+                <option value="public">{t("public")}</option>
+                <option value="restricted">{t("restricted")}</option>
               </Form.Select>
 
               <Form.Select
@@ -310,20 +308,20 @@ const EditTemplateScreen = () => {
               >
                 {topicList.map((topic, index) => (
                   <option key={index} value={topic}>
-                    {topic}
+                    {t(topic.toLowerCase())}
                   </option>
                 ))}
               </Form.Select>
             </Form.Group>
             <div className="text-center mt-2">
               <Button variant="primary" type="submit" size="lg">
-                Save Form
+                {t("saveForm")}
               </Button>
             </div>
           </Form>
         </Tab>
 
-        <Tab eventKey="questions" title="Questions">
+        <Tab eventKey="questions" title={t("questions")}>
           <DndContext
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
@@ -354,15 +352,16 @@ const EditTemplateScreen = () => {
               ))}
             </SortableContext>
 
-            {/* Add New Question */}
             <Card className="mt-4 mb-4 shadow-sm">
-              <Card.Header className="bg-light">Add New Question</Card.Header>
+              <Card.Header className="bg-light">
+                {t("addNewQuestion")}
+              </Card.Header>
               <Card.Body>
                 <Row className="g-3 align-items-center">
                   <Col md={6}>
                     <Form.Control
                       type="text"
-                      placeholder="Enter the question"
+                      placeholder={t("enterTheQuestion")}
                       value={newQuestion.title}
                       onChange={(e) =>
                         setNewQuestion({
@@ -379,16 +378,16 @@ const EditTemplateScreen = () => {
                         setNewQuestion({ ...newQuestion, type: e.target.value })
                       }
                     >
-                      <option value="SINGLE_LINE">Single-line</option>
-                      <option value="MULTI_LINE">Multi-line</option>
-                      <option value="INTEGER">Integer</option>
-                      <option value="CHECKBOX">Checkbox</option>
+                      <option value="SINGLE_LINE">{t("SINGLE_LINE")}</option>
+                      <option value="MULTI_LINE">{t("MULTI_LINE")}</option>
+                      <option value="INTEGER">{t("INTEGER")}</option>
+                      <option value="CHECKBOX">{t("CHECKBOX")}</option>
                     </Form.Select>
                   </Col>
                   <Col md={2}>
                     <Form.Check
                       type="checkbox"
-                      label="Display"
+                      label={t("display")}
                       checked={newQuestion.displayOnTable}
                       onChange={(e) =>
                         setNewQuestion({
@@ -408,7 +407,7 @@ const EditTemplateScreen = () => {
                   <Col md={12}>
                     <Form.Control
                       as={"textarea"}
-                      placeholder="Optional description"
+                      placeholder={t("optionalDescription")}
                       value={newQuestion.description}
                       onChange={(e) =>
                         setNewQuestion({
@@ -420,7 +419,7 @@ const EditTemplateScreen = () => {
                   </Col>
                 </Row>
                 <Form.Text className="text-muted">
-                  Note: You can add up to 4 questionList of each type.
+                  {t("maxQuestionsNote")}
                 </Form.Text>
               </Card.Body>
             </Card>
@@ -437,14 +436,14 @@ const EditTemplateScreen = () => {
           ) : errorForm ? (
             <Message>{errorForm?.data?.message || errorForm.error}</Message>
           ) : forms.length === 0 ? (
-            <Message>No forms found.</Message>
+            <Message>{t("noFormsFound")}</Message>
           ) : (
             <>
               <Table striped hover responsive className="table-sm">
                 <thead>
                   <tr>
-                    <th className="text-nowrap">USER ID</th>
-                    <th className="text-nowrap">FORM ID</th>
+                    <th className="text-nowrap">{t("userId")}</th>
+                    <th className="text-nowrap">{t("formId")}</th>
                     <th
                       className="min-w-[120px] cursor-pointer"
                       onClick={() =>
@@ -454,7 +453,7 @@ const EditTemplateScreen = () => {
                       }
                     >
                       <div className="d-flex align-items-center gap-1 text-nowrap">
-                        DATE FILLED
+                        {t("dateFilled")}
                         {sortOrderForms === "asc" ? (
                           <FaChevronUp className="text-muted" />
                         ) : (
@@ -498,7 +497,7 @@ const EditTemplateScreen = () => {
           )}
         </Tab>
         <Tab eventKey="aggregation" title="Aggregation">
-          Tab content for aggregation
+          {t("aggregationContent")}
         </Tab>
       </Tabs>
     </Container>
