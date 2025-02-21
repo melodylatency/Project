@@ -82,6 +82,9 @@ const EditTemplateScreen = () => {
     description: "",
     displayOnTable: true,
   });
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const navigate = useNavigate();
 
@@ -99,6 +102,19 @@ const EditTemplateScreen = () => {
       setSelected(template.Tags);
     }
   }, [template]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const addQuestion = async () => {
     const countOfType = questionList.filter(
@@ -137,11 +153,9 @@ const EditTemplateScreen = () => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    // Use the local state for ordering
     const oldIndex = questionList.findIndex((q) => q.id === active.id);
     const newIndex = questionList.findIndex((q) => q.id === over.id);
 
-    // Reorder and update index property
     const newQuestions = arrayMove(questionList, oldIndex, newIndex).map(
       (q, idx) => ({
         ...q,
@@ -149,18 +163,16 @@ const EditTemplateScreen = () => {
       })
     );
 
-    // Update local state to reflect new order immediately
     setQuestionList(newQuestions);
 
     try {
-      // Update each question's index in the backend.
       for (const question of newQuestions) {
         await updateQuestion({
           id: question.id,
           index: question.index,
         }).unwrap();
       }
-      // Optionally, refetch the template to sync any other changes:
+
       await refetchTemplate();
     } catch (err) {
       toast.error(err?.data?.message || "Failed to reorder questionList");
@@ -242,17 +254,25 @@ const EditTemplateScreen = () => {
       <Link className="btn btn-light my-3" to="/profile">
         {t("goBack")}
       </Link>
-      <h1 className="text-center mb-4 text-5xl">{t("editTemplate")}</h1>
+      <h1 className="text-center mb-4 text-5xl dark:text-gray-300">
+        {t("editTemplate")}
+      </h1>
 
       <Tabs
         defaultActiveKey="general"
         id="uncontrolled-tab-example"
         className="mb-3"
+        data-bs-theme={isDark ? "dark" : "light"}
       >
         <Tab eventKey="general" title={t("generalSettings")}>
-          <Form onSubmit={handleSubmit}>
+          <Form
+            onSubmit={handleSubmit}
+            data-bs-theme={isDark ? "dark" : "light"}
+          >
             <Form.Group className="mb-3" controlId="formTitle">
-              <Form.Label className="fs-4">{t("templateTitle")}</Form.Label>
+              <Form.Label className="fs-4 dark:text-gray-400">
+                {t("templateTitle")}
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder={t("enterTitle")}
@@ -263,7 +283,7 @@ const EditTemplateScreen = () => {
             </Form.Group>
 
             <Form.Group className="mb-4" controlId="formDescription">
-              <Form.Label className="fs-5">
+              <Form.Label className="fs-5 dark:text-gray-400">
                 {t("templateDescription")}
               </Form.Label>
               <Form.Control
@@ -275,7 +295,6 @@ const EditTemplateScreen = () => {
               />
             </Form.Group>
 
-            {/* Markdown Preview */}
             <Card className="my-2">
               <Card.Header>{t("markdownPreview")}</Card.Header>
               <Card.Body>
@@ -326,8 +345,7 @@ const EditTemplateScreen = () => {
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            {/* Questions List */}
-            <h4 className="mb-3">Questions</h4>
+            <h4 className="mb-3 dark:text-gray-400">{t("questions")}:</h4>
             <SortableContext
               items={questionList.map((q) => q.id)}
               strategy={verticalListSortingStrategy}
@@ -352,10 +370,11 @@ const EditTemplateScreen = () => {
               ))}
             </SortableContext>
 
-            <Card className="mt-4 mb-4 shadow-sm">
-              <Card.Header className="bg-light">
-                {t("addNewQuestion")}
-              </Card.Header>
+            <Card
+              className="mt-4 mb-4 shadow-sm"
+              data-bs-theme={isDark ? "dark" : "light"}
+            >
+              <Card.Header>{t("addNewQuestion")}</Card.Header>
               <Card.Body>
                 <Row className="g-3 align-items-center">
                   <Col md={6}>
@@ -439,7 +458,12 @@ const EditTemplateScreen = () => {
             <Message>{t("noFormsFound")}</Message>
           ) : (
             <>
-              <Table striped hover responsive className="table-sm">
+              <Table
+                striped
+                hover
+                responsive
+                data-bs-theme={isDark ? "dark" : "light"}
+              >
                 <thead>
                   <tr>
                     <th className="text-nowrap">{t("userId")}</th>

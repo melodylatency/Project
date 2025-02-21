@@ -3,8 +3,11 @@ import { ReactTags } from "react-tag-autocomplete";
 import { v4 as uuidv4 } from "uuid"; // Import uuidv4
 import "../css/tagStyles.css";
 import { useGetTagsQuery } from "../redux/slices/tagsApiSlice";
+import { useTranslation } from "react-i18next";
 
 const Tags = ({ selected, setSelected }) => {
+  const { t } = useTranslation();
+
   const { data: suggestions } = useGetTagsQuery();
 
   const onAdd = useCallback(
@@ -30,6 +33,7 @@ const Tags = ({ selected, setSelected }) => {
 
   return (
     <ReactTags
+      placeholderText={t("tagEnter")}
       labelText="Select tags"
       selected={selected}
       suggestions={suggestions}

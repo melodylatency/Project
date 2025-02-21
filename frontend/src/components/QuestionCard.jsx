@@ -14,10 +14,26 @@ const QuestionCard = ({
 }) => {
   const { t } = useTranslation(); // Initialize useTranslation
   const [editedQuestion, setEditedQuestion] = useState({});
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   useEffect(() => {
     setEditedQuestion({ ...question });
   }, [question]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -34,7 +50,10 @@ const QuestionCard = ({
 
   if (isEditing) {
     return (
-      <Card className="mb-3 shadow-sm">
+      <Card
+        className="mb-3 shadow-sm"
+        data-bs-theme={isDark ? "dark" : "light"}
+      >
         <Card.Body>
           <div>
             <Row className="g-3 align-items-center">
@@ -95,7 +114,7 @@ const QuestionCard = ({
   }
 
   return (
-    <Card className="mb-3 shadow-sm">
+    <Card className="mb-3 shadow-sm" data-bs-theme={isDark ? "dark" : "light"}>
       <Card.Body>
         <Row className="align-items-center">
           <Col>

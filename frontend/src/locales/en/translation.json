@@ -9,6 +9,7 @@
   "logout": "Logout",
   "login": "Login",
   "tagAlert": "'{{value}}' was selected!",
+  "tagEnter": "Add your tags",
   "goBack": "Go Back",
   "leaveReview": "Leave a review",
   "reviews": "Reviews",
