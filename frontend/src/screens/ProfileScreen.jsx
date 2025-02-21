@@ -18,8 +18,10 @@ import { MdOutlineEdit } from "react-icons/md";
 import { setCredentials } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const ProfileScreen = () => {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,7 +67,7 @@ const ProfileScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("Passwords don't match.");
+      toast.error(t("passwordMismatch"));
     } else {
       try {
         const res = await updateProfile({
@@ -76,7 +78,7 @@ const ProfileScreen = () => {
         }).unwrap();
 
         dispatch(setCredentials(res));
-        toast.success("Profile updated.");
+        toast.success(t("update"));
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -125,25 +127,23 @@ const ProfileScreen = () => {
       selectedItems = selectedTemplates;
       mutation = deleteTemplate;
       refetchFunction = refetchTemplates;
-      itemType = "template(s)";
+      itemType = t("templates");
     } else if (action === "deleteForm") {
       selectedItems = selectedForms;
       mutation = deleteForm;
       refetchFunction = refetchForms;
-      itemType = "form(s)";
+      itemType = t("forms");
     } else {
-      toast.error("Unknown action");
+      toast.error(t("unknownAction"));
       return;
     }
 
     if (selectedItems.length === 0) {
-      toast.error("Please select items to proceed");
+      toast.error(t("pleaseSelectItems"));
       return;
     }
 
-    if (
-      window.confirm(`Are you sure you want to delete selected ${itemType}?`)
-    ) {
+    if (window.confirm(t("areYouSureDelete", { itemType }))) {
       try {
         const results = await Promise.allSettled(
           selectedItems.map((itemId) => mutation(itemId).unwrap())
@@ -155,7 +155,7 @@ const ProfileScreen = () => {
 
         if (successfulDeletions > 0) {
           toast.success(
-            `${successfulDeletions} ${itemType} deleted successfully`
+            t("deletionSuccess", { count: successfulDeletions, itemType })
           );
         }
 
@@ -167,7 +167,7 @@ const ProfileScreen = () => {
         }
         refetchFunction();
       } catch (err) {
-        toast.error(err?.data?.message || "Deletion failed");
+        toast.error(err?.data?.message || t("deletionFailed"));
       }
     }
   };
@@ -175,67 +175,67 @@ const ProfileScreen = () => {
   return (
     <Row>
       <Col md={3}>
-        <h2 className="text-5xl py-5">User Profile</h2>
+        <h2 className="text-5xl py-5">{t("userProfile")}</h2>
         <Form onSubmit={submitHandler}>
           <Form.Group controlId="name" className="my-3">
-            <Form.Label>Name</Form.Label>
+            <Form.Label>{t("name")}</Form.Label>
             <Form.Control
               type="name"
-              placeholder="Enter name"
+              placeholder={t("name")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             ></Form.Control>
           </Form.Group>
           <Form.Group controlId="email" className="my-3">
-            <Form.Label>Email</Form.Label>
+            <Form.Label>{t("email")}</Form.Label>
             <Form.Control
               type="email"
-              placeholder="Enter email"
+              placeholder={t("email")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             ></Form.Control>
           </Form.Group>
           <Form.Group controlId="password" className="my-3">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>{t("password")}</Form.Label>
             <Form.Control
               type="password"
-              placeholder="Enter password"
+              placeholder={t("password")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             ></Form.Control>
           </Form.Group>
           <Form.Group controlId="confirmPassword" className="my-3">
-            <Form.Label>Confirm password</Form.Label>
+            <Form.Label>{t("confirmPassword")}</Form.Label>
             <Form.Control
               type="password"
-              placeholder="Enter password again"
+              placeholder={t("confirmPassword")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             ></Form.Control>
           </Form.Group>
           <Button type="submit" variant="primary" className="my-3">
-            Update
+            {t("update")}
           </Button>
           {isLoading && <Loader />}
         </Form>
       </Col>
       <Col md={9}>
         <Tabs defaultActiveKey="forms" id="dashboard" className="pt-5">
-          <Tab eventKey="forms" title="Forms">
+          <Tab eventKey="forms" title={t("forms")}>
             {loadingForms || loadingDeleteForm ? (
               <Loader />
             ) : errorForm ? (
               <Message>{errorForm?.data?.message || errorForm.error}</Message>
             ) : forms.length === 0 ? (
-              <Message>No forms found.</Message>
+              <Message>{t("noFormsFound")}</Message>
             ) : (
               <>
                 <Table striped hover responsive className="table-sm">
                   <thead>
                     <tr>
                       <th></th>
-                      <th className="text-nowrap">TITLE</th>
-                      <th className="text-nowrap">FORM ID</th>
+                      <th className="text-nowrap">{t("title")}</th>
+                      <th className="text-nowrap">{t("formId")}</th>
                       <th
                         className="min-w-[120px] cursor-pointer"
                         onClick={() =>
@@ -245,7 +245,7 @@ const ProfileScreen = () => {
                         }
                       >
                         <div className="d-flex align-items-center gap-1 text-nowrap">
-                          DATE FILLED
+                          {t("dateFilled")}
                           {sortOrderForms === "asc" ? (
                             <FaChevronUp className="text-muted" />
                           ) : (
@@ -308,14 +308,14 @@ const ProfileScreen = () => {
                       variant="primary"
                       onClick={() => handleAction("deleteForm")}
                     >
-                      <FaTrash /> Delete
+                      <FaTrash /> {t("delete")}
                     </Button>
                   </Col>
                 </Row>
               </>
             )}
           </Tab>
-          <Tab eventKey="templates" title="Templates">
+          <Tab eventKey="templates" title={t("templates")}>
             {loadingTemplates || loadingDeleteTemplate ? (
               <Loader />
             ) : errorTemplate ? (
@@ -323,16 +323,16 @@ const ProfileScreen = () => {
                 {errorTemplate?.data?.message || errorTemplate.error}
               </Message>
             ) : templates.length === 0 ? (
-              <Message>No templates found.</Message>
+              <Message>{t("noTemplatesFound")}</Message>
             ) : (
               <>
                 <Table striped hover responsive className="table-sm">
                   <thead>
                     <tr>
                       <th></th>
-                      <th>TITLE</th>
-                      <th>TOPIC</th>
-                      <th>TEMPLATE ID</th>
+                      <th>{t("title")}</th>
+                      <th>{t("topic")}</th>
+                      <th>{t("templateId")}</th>
                       <th
                         style={{ cursor: "pointer" }}
                         onClick={() =>
@@ -342,7 +342,7 @@ const ProfileScreen = () => {
                         }
                       >
                         <div className="d-flex align-items-center gap-1">
-                          CREATED
+                          {t("created")}
                           {sortOrderTemplates === "asc" ? (
                             <FaChevronUp className="text-muted" />
                           ) : (
@@ -400,14 +400,12 @@ const ProfileScreen = () => {
                       variant="primary"
                       onClick={() => handleAction("deleteTemplate")}
                     >
-                      <FaTrash /> Delete
+                      <FaTrash /> {t("delete")}
                     </Button>
                   </Col>
                   <Col xs={12} sm="auto" className="ms-sm-auto">
-                    {" "}
-                    {/* Added ms-sm-auto */}
                     <Link to={"/create"}>
-                      <Button>Create</Button>
+                      <Button>{t("create")}</Button>
                     </Link>
                   </Col>
                 </Row>

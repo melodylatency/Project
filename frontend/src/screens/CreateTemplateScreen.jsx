@@ -29,9 +29,11 @@ import {
   useGetTagCloudQuery,
   useGetTagsQuery,
 } from "../redux/slices/tagsApiSlice";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const CreateTemplateScreen = () => {
-  const [title, setTitle] = useState("Untitled Template");
+  const { t } = useTranslation(); // Initialize useTranslation
+  const [title, setTitle] = useState(t("untitledTemplate"));
   const [description, setDescription] = useState("");
   const [newQuestion, setNewQuestion] = useState({
     type: "SINGLE_LINE",
@@ -59,12 +61,11 @@ const CreateTemplateScreen = () => {
     ).length;
 
     if (newQuestion.title.trim() === "") {
+      toast.error(t("questionTitleRequired"));
     } else if (newQuestion.description.trim().length > 1500) {
-      toast.error("Description too large.");
+      toast.error(t("descriptionTooLarge"));
     } else if (countOfType >= 4) {
-      alert(
-        `You can add a maximum of 4 questionList of type "${newQuestion.type}"`
-      );
+      alert(t("maxQuestionsOfType", { type: newQuestion.type }));
     } else {
       const questionWithId = {
         ...newQuestion,
@@ -108,11 +109,11 @@ const CreateTemplateScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim() === "") {
-      alert("Template title cannot be empty");
+      alert(t("templateTitleRequired"));
       return;
     }
     if (questionList.length === 0) {
-      alert("Please add at least one question.");
+      alert(t("addAtLeastOneQuestion"));
       return;
     }
 
@@ -132,7 +133,7 @@ const CreateTemplateScreen = () => {
       refetchTags();
       refetchTagCloud();
       navigate("/");
-      toast.success("Template created successfully!");
+      toast.success(t("templateCreatedSuccess"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -141,19 +142,17 @@ const CreateTemplateScreen = () => {
   return (
     <Container className="py-4" style={{ maxWidth: "800px" }}>
       <Link className="btn btn-light my-3" to="/profile">
-        Go Back
+        {t("goBack")}
       </Link>
-      <h1 className="text-center mb-4 text-5xl">Create New Template</h1>
-      {/* Move DndContext outside the Template */}
+      <h1 className="text-center mb-4 text-5xl">{t("createNewTemplate")}</h1>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
           {/* Form Title */}
-
           <Form.Group className="mb-3" controlId="formTitle">
-            <Form.Label className="fs-4">Template Title</Form.Label>
+            <Form.Label className="fs-4">{t("templateTitle")}</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter form title"
+              placeholder={t("enterFormTitle")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               size="lg"
@@ -162,13 +161,11 @@ const CreateTemplateScreen = () => {
 
           {/* Form Description with Markdown Support */}
           <Form.Group className="mb-4" controlId="formDescription">
-            <Form.Label className="fs-5">
-              Template Description (supports Markdown)
-            </Form.Label>
+            <Form.Label className="fs-5">{t("templateDescription")}</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Enter a description (optional, Markdown supported)"
+              placeholder={t("enterDescriptionOptional")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -176,7 +173,7 @@ const CreateTemplateScreen = () => {
 
           {/* Markdown Preview */}
           <Card className="mb-4">
-            <Card.Header>Markdown Preview</Card.Header>
+            <Card.Header>{t("markdownPreview")}</Card.Header>
             <Card.Body>
               <div className="markdown-body">
                 <ReactMarkdown>{description}</ReactMarkdown>
@@ -192,7 +189,7 @@ const CreateTemplateScreen = () => {
           </Form.Group>
 
           {/* Questions List */}
-          <h4 className="mb-3">Questions</h4>
+          <h4 className="mb-3">{t("questions")}</h4>
           <SortableContext
             items={questionList.map((q) => q.id)}
             strategy={verticalListSortingStrategy}
@@ -215,13 +212,15 @@ const CreateTemplateScreen = () => {
 
           {/* Add New Question */}
           <Card className="mt-4 mb-4 shadow-sm">
-            <Card.Header className="bg-light">Add New Question</Card.Header>
+            <Card.Header className="bg-light">
+              {t("addNewQuestion")}
+            </Card.Header>
             <Card.Body>
               <Row className="g-3 align-items-center">
                 <Col md={6}>
                   <Form.Control
                     type="text"
-                    placeholder="Enter the question"
+                    placeholder={t("enterTheQuestion")}
                     value={newQuestion.title}
                     onChange={(e) =>
                       setNewQuestion({ ...newQuestion, title: e.target.value })
@@ -235,16 +234,16 @@ const CreateTemplateScreen = () => {
                       setNewQuestion({ ...newQuestion, type: e.target.value })
                     }
                   >
-                    <option value="SINGLE_LINE">Single-line</option>
-                    <option value="MULTI_LINE">Multi-line</option>
-                    <option value="INTEGER">Integer</option>
-                    <option value="CHECKBOX">Checkbox</option>
+                    <option value="SINGLE_LINE">{t("singleLine")}</option>
+                    <option value="MULTI_LINE">{t("multiLine")}</option>
+                    <option value="INTEGER">{t("integer")}</option>
+                    <option value="CHECKBOX">{t("checkbox")}</option>
                   </Form.Select>
                 </Col>
                 <Col md={2}>
                   <Form.Check
                     type="checkbox"
-                    label="Display"
+                    label={t("display")}
                     checked={newQuestion.show_in_results}
                     onChange={(e) =>
                       setNewQuestion({
@@ -264,7 +263,7 @@ const CreateTemplateScreen = () => {
                 <Col md={12}>
                   <Form.Control
                     as={"textarea"}
-                    placeholder="Optional description"
+                    placeholder={t("optionalDescription")}
                     value={newQuestion.description}
                     onChange={(e) =>
                       setNewQuestion({
@@ -276,14 +275,14 @@ const CreateTemplateScreen = () => {
                 </Col>
               </Row>
               <Form.Text className="text-muted">
-                Note: You can add up to 4 questionList of each type.
+                {t("maxQuestionsNote")}
               </Form.Text>
             </Card.Body>
           </Card>
 
           <div className="text-center">
             <Button variant="primary" type="submit" size="lg">
-              Create
+              {t("create")}
             </Button>
           </div>
           {isLoading && <Loader />}

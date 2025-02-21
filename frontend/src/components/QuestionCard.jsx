@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Row, Col, Card, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const QuestionCard = ({
   question,
@@ -11,6 +12,7 @@ const QuestionCard = ({
   onSave,
   onCancelEdit,
 }) => {
+  const { t } = useTranslation(); // Initialize useTranslation
   const [editedQuestion, setEditedQuestion] = useState({});
 
   useEffect(() => {
@@ -40,7 +42,7 @@ const QuestionCard = ({
                 <Form.Control
                   type="text"
                   name="title"
-                  placeholder="Question Title"
+                  placeholder={t("questionTitle")}
                   value={editedQuestion.title}
                   onChange={handleChange}
                 />
@@ -51,17 +53,17 @@ const QuestionCard = ({
                   value={editedQuestion.type}
                   onChange={handleChange}
                 >
-                  <option value="SINGLE_LINE">Single-line</option>
-                  <option value="MULTI_LINE">Multi-line</option>
-                  <option value="INTEGER">Integer</option>
-                  <option value="CHECKBOX">Checkbox</option>
+                  <option value="SINGLE_LINE">{t("singleLine")}</option>
+                  <option value="MULTI_LINE">{t("multiLine")}</option>
+                  <option value="INTEGER">{t("integer")}</option>
+                  <option value="CHECKBOX">{t("checkbox")}</option>
                 </Form.Select>
               </Col>
               <Col md={2}>
                 <Form.Check
                   type="checkbox"
                   name="show_in_results"
-                  label="Display"
+                  label={t("display")}
                   checked={editedQuestion.show_in_results}
                   onChange={handleChange}
                 />
@@ -72,7 +74,7 @@ const QuestionCard = ({
                 <Form.Control
                   as="textarea"
                   name="description"
-                  placeholder="Optional Description"
+                  placeholder={t("optionalDescription")}
                   value={editedQuestion.description}
                   onChange={handleChange}
                 />
@@ -80,10 +82,10 @@ const QuestionCard = ({
             </Row>
             <div className="d-flex gap-2">
               <Button variant="primary" onClick={handleSave}>
-                Save
+                {t("save")}
               </Button>
               <Button variant="secondary" onClick={onCancelEdit}>
-                Cancel
+                {t("cancel")}
               </Button>
             </div>
           </div>
@@ -107,7 +109,9 @@ const QuestionCard = ({
               </button>
               <span className="me-2">{index + 1}.</span>
               <h5 className="ml-1">{question.title}</h5>
-              <span className="badge bg-secondary ms-2">{question.type}</span>
+              <span className="badge bg-secondary ms-2">
+                {t(question.type.toLowerCase())}
+              </span>
             </div>
             <p className="text-muted">{question.description}</p>
           </Col>
@@ -117,10 +121,10 @@ const QuestionCard = ({
               size="sm"
               onClick={() => onUpdate(editedQuestion)}
             >
-              Update
+              {t("update")}
             </Button>
             <Button variant="outline-danger" size="sm" onClick={onDelete}>
-              Delete
+              {t("delete")}
             </Button>
           </Col>
         </Row>
