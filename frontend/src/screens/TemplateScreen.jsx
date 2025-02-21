@@ -117,10 +117,8 @@ const TemplateScreen = () => {
   const handleSubmittingForm = async (e) => {
     e.preventDefault();
     const currentFormAnswers = answerMap[templateId] || {};
-    // Create answer array with all template questions, using defaults where missing
     const answerArray = template.Questions.map((question) => {
       const currentValue = currentFormAnswers[question.id];
-      // Set default values based on question type if no answer exists
       if (currentValue === undefined) {
         switch (question.type) {
           case "CHECKBOX":
