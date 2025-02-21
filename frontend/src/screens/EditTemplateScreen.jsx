@@ -250,9 +250,11 @@ const EditTemplateScreen = () => {
   };
 
   return (
-    <Container className="py-4" style={{ maxWidth: "800px" }}>
-      <Link className="btn btn-light my-3" to="/profile">
-        {t("goBack")}
+    <Container className="py-4 max-w-[800px]">
+      <Link to="/profile">
+        <div className="my-3">
+          <Button variant="secondary">{t("goBack")}</Button>
+        </div>
       </Link>
       <h1 className="text-center mb-4 text-5xl dark:text-gray-300">
         {t("editTemplate")}
