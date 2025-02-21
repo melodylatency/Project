@@ -30,6 +30,9 @@ const ProfileScreen = () => {
   const [sortOrderTemplates, setSortOrderTemplates] = useState("desc");
   const [selectedTemplates, setSelectedTemplates] = useState([]);
   const [selectedForms, setSelectedForms] = useState([]);
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const {
     data: forms,
@@ -63,6 +66,19 @@ const ProfileScreen = () => {
     refetchForms();
     refetchTemplates();
   }, [userInfo, refetchForms, refetchTemplates]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -175,10 +191,13 @@ const ProfileScreen = () => {
   return (
     <Row>
       <Col md={3}>
-        <h2 className="text-5xl py-5">{t("userProfile")}</h2>
-        <Form onSubmit={submitHandler}>
+        <h2 className="text-5xl py-5 dark:text-gray-300">{t("userProfile")}</h2>
+        <Form
+          onSubmit={submitHandler}
+          data-bs-theme={isDark ? "dark" : "light"}
+        >
           <Form.Group controlId="name" className="my-3">
-            <Form.Label>{t("name")}</Form.Label>
+            <Form.Label className="dark:text-gray-300">{t("name")}</Form.Label>
             <Form.Control
               type="name"
               placeholder={t("name")}
@@ -187,7 +206,7 @@ const ProfileScreen = () => {
             ></Form.Control>
           </Form.Group>
           <Form.Group controlId="email" className="my-3">
-            <Form.Label>{t("email")}</Form.Label>
+            <Form.Label className="dark:text-gray-300">{t("email")}</Form.Label>
             <Form.Control
               type="email"
               placeholder={t("email")}
@@ -196,7 +215,9 @@ const ProfileScreen = () => {
             ></Form.Control>
           </Form.Group>
           <Form.Group controlId="password" className="my-3">
-            <Form.Label>{t("password")}</Form.Label>
+            <Form.Label className="dark:text-gray-300">
+              {t("password")}
+            </Form.Label>
             <Form.Control
               type="password"
               placeholder={t("password")}
@@ -205,7 +226,9 @@ const ProfileScreen = () => {
             ></Form.Control>
           </Form.Group>
           <Form.Group controlId="confirmPassword" className="my-3">
-            <Form.Label>{t("confirmPassword")}</Form.Label>
+            <Form.Label className="dark:text-gray-300">
+              {t("confirmPassword")}
+            </Form.Label>
             <Form.Control
               type="password"
               placeholder={t("confirmPassword")}
@@ -220,7 +243,12 @@ const ProfileScreen = () => {
         </Form>
       </Col>
       <Col md={9}>
-        <Tabs defaultActiveKey="forms" id="dashboard" className="pt-5">
+        <Tabs
+          defaultActiveKey="forms"
+          id="dashboard"
+          className="pt-5"
+          data-bs-theme={isDark ? "dark" : "light"}
+        >
           <Tab eventKey="forms" title={t("forms")}>
             {loadingForms || loadingDeleteForm ? (
               <Loader />
@@ -230,7 +258,12 @@ const ProfileScreen = () => {
               <Message>{t("noFormsFound")}</Message>
             ) : (
               <>
-                <Table striped hover responsive className="table-sm">
+                <Table
+                  striped
+                  hover
+                  responsive
+                  variant={isDark ? "dark" : "light"}
+                >
                   <thead>
                     <tr>
                       <th></th>
@@ -326,7 +359,12 @@ const ProfileScreen = () => {
               <Message>{t("noTemplatesFound")}</Message>
             ) : (
               <>
-                <Table striped hover responsive className="table-sm">
+                <Table
+                  striped
+                  hover
+                  responsive
+                  variant={isDark ? "dark" : "light"}
+                >
                   <thead>
                     <tr>
                       <th></th>

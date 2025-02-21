@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { BiLike } from "react-icons/bi";
 import { RegExpMatcher, englishDataset } from "obscenity";
@@ -35,6 +35,9 @@ const TemplateScreen = () => {
   const [isLiked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const { id: templateId } = useParams();
 
@@ -57,6 +60,19 @@ const TemplateScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const matcher = useMemo(() => new RegExpMatcher(englishDataset.build()), []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -149,8 +165,10 @@ const TemplateScreen = () => {
 
   return (
     <>
-      <Link className="btn btn-light my-3" to="/">
-        {t("goBack")}
+      <Link to="/">
+        <div className="my-3">
+          <Button variant="secondary">{t("goBack")}</Button>
+        </div>
       </Link>
 
       {isLoading ? (
@@ -181,7 +199,9 @@ const TemplateScreen = () => {
                   <p>{template.likes}</p>
                   <BiLike />
                 </ListGroup.Item>
-                <h2 className="text-3xl my-3">{t("reviews")}</h2>
+                <h2 className="text-3xl my-3 dark:text-gray-300">
+                  {t("reviews")}
+                </h2>
                 {template.Reviews.length === 0 && (
                   <Message>{t("noReviews")}</Message>
                 )}
@@ -203,14 +223,20 @@ const TemplateScreen = () => {
             <Col md={6}>
               <ListGroup variant="flush">
                 <ListGroupItem className="bg-transparent">
-                  <h2 className="text-3xl mb-3">{t("leaveReview")}</h2>
+                  <h2 className="text-3xl mb-3 dark:text-gray-300">
+                    {t("leaveReview")}
+                  </h2>
 
                   {loadingReview && <Loader />}
 
                   {userInfo ? (
-                    <Form onSubmit={submitHandler}>
+                    <Form
+                      onSubmit={submitHandler}
+                      data-bs-theme={isDark ? "dark" : "light"}
+                    >
                       <Form.Group controlId="like" className="my-2">
                         <Form.Check
+                          className="dark:text-gray-400"
                           type="checkbox"
                           checked={isLiked}
                           label={t("like")}
@@ -218,7 +244,9 @@ const TemplateScreen = () => {
                         />
                       </Form.Group>
                       <Form.Group controlId="comment" className="my-2">
-                        <Form.Label>{t("comment")}</Form.Label>
+                        <Form.Label className="dark:text-gray-400">
+                          {t("comment")}
+                        </Form.Label>
                         <Form.Control
                           as="textarea"
                           rows={3}
@@ -255,7 +283,11 @@ const TemplateScreen = () => {
                 {template.Questions.map((question) => {
                   const currentTemplateAnswers = answerMap[templateId] || {};
                   return (
-                    <Card key={question.id} className="mb-3">
+                    <Card
+                      key={question.id}
+                      className="mb-3"
+                      data-bs-theme={isDark ? "dark" : "light"}
+                    >
                       <Card.Body>
                         <Card.Title>{question.title}</Card.Title>
                         {question.description && (

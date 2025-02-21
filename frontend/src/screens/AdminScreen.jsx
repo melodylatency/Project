@@ -38,6 +38,9 @@ const AdminScreen = () => {
 
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -143,9 +146,22 @@ const AdminScreen = () => {
     setSortOrder((prevOrder) => (prevOrder === "desc" ? "asc" : "desc"));
   };
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
+
   return (
     <>
-      <h1 className="flex justify-center text-7xl text-stroke py-5">
+      <h1 className="flex justify-center text-7xl text-stroke py-5 dark:text-gray-300">
         {t("adminPanel")}
       </h1>
       {loadingDelete ||
@@ -211,7 +227,13 @@ const AdminScreen = () => {
               </Col>
             </Row>
           </div>
-          <Table striped hover responsive className="table-sm">
+          <Table
+            striped
+            hover
+            responsive
+            className="table-sm"
+            variant={isDark ? "dark" : "light"}
+          >
             <thead>
               <tr>
                 <th>{t("select")}</th>

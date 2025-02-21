@@ -53,7 +53,9 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
-          <h1 className="text-center text-6xl py-5">{t("topTemplates")}</h1>
+          <h1 className="text-center text-6xl py-5 dark:text-gray-400">
+            {t("topTemplates")}
+          </h1>
           {templates.length > 0 ? (
             <Row>
               {top5.map((template) => (
@@ -68,7 +70,9 @@ const HomeScreen = () => {
             </h1>
           )}
 
-          <h1 className="text-center text-6xl py-5">{t("allTemplates")}</h1>
+          <h1 className="text-center text-6xl py-5 dark:text-gray-400">
+            {t("allTemplates")}
+          </h1>
 
           {templates.length > 5 ? (
             <Row>
@@ -79,7 +83,7 @@ const HomeScreen = () => {
               ))}
             </Row>
           ) : (
-            <h1 className="flex justify-center text-3xl text-gray-500">
+            <h1 className="flex justify-center text-3xl text-gray-600">
               {t("nothingToSee")}
             </h1>
           )}
