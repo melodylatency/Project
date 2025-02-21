@@ -16,6 +16,9 @@ const FormScreen = () => {
   const { id: formId } = useParams();
   const [errorMessage, setErrorMessage] = useState("");
   const [answerMap, setAnswerMap] = useState({});
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const { userInfo } = useSelector((state) => state.auth);
   const { data: form, refetch, isLoading, error } = useGetFormByIdQuery(formId);
@@ -40,6 +43,19 @@ const FormScreen = () => {
       }
     }
   }, [setAnswerMap, form, userInfo, navigate]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const handleInputChange = (questionId, value, type) => {
     let newValue;
@@ -100,12 +116,17 @@ const FormScreen = () => {
         </Message>
       ) : (
         <div>
-          <Link className="btn btn-light my-3" to={`/profile`}>
-            {t("goBack")}
+          <Link to={`/profile`}>
+            <div className="my-3">
+              <Button variant="secondary">{t("goBack")}</Button>
+            </div>
           </Link>
           <Row className="mt-4">
             <Col md={12}>
-              <Form onSubmit={handleResubmittingForm}>
+              <Form
+                onSubmit={handleResubmittingForm}
+                data-bs-theme={isDark ? "dark" : "light"}
+              >
                 {form.questionList.map((question) => {
                   return (
                     <Card key={question.id} className="mb-3">

@@ -1,13 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import { Row, Col, Form, Card } from "react-bootstrap";
+import { Row, Col, Form, Card, Button } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useGetFormByIdQuery } from "../redux/slices/formsApiSlice";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 const FormScreen = () => {
   const { t } = useTranslation();
   const { id: formId } = useParams();
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
 
@@ -15,6 +19,19 @@ const FormScreen = () => {
     acc[answer.question_id] = answer.value;
     return acc;
   }, {});
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   return (
     <>
@@ -26,15 +43,14 @@ const FormScreen = () => {
         </Message>
       ) : (
         <div>
-          <Link
-            className="btn btn-light my-3"
-            to={`/template/edit/${form.template_id}`}
-          >
-            {t("goBack")}
+          <Link to={`/template/edit/${form.template_id}`}>
+            <div className="my-3">
+              <Button variant="secondary">{t("goBack")}</Button>
+            </div>
           </Link>
           <Row className="mt-4">
             <Col md={12}>
-              <Form>
+              <Form data-bs-theme={isDark ? "dark" : "light"}>
                 {form.questionList.map((question) => {
                   // Retrieve current answers for this form
                   const currentAnswer = answerMap[question.id];
