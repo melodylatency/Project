@@ -74,6 +74,7 @@ const FormScreen = () => {
       })
     );
     try {
+      console.log(answerArray);
       await updateForm({
         answerMap: answerArray,
         formId,
