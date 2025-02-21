@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -29,10 +29,10 @@ import {
   useGetTagCloudQuery,
   useGetTagsQuery,
 } from "../redux/slices/tagsApiSlice";
-import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useTranslation } from "react-i18next";
 
 const CreateTemplateScreen = () => {
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t } = useTranslation();
   const [title, setTitle] = useState(t("untitledTemplate"));
   const [description, setDescription] = useState("");
   const [newQuestion, setNewQuestion] = useState({
@@ -42,6 +42,9 @@ const CreateTemplateScreen = () => {
     show_in_results: true,
   });
   const [editingQuestionId, setEditingQuestionId] = useState(null);
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const { tagList } = useSelector((state) => state.tag);
   const { questionList } = useSelector((state) => state.question);
@@ -54,6 +57,19 @@ const CreateTemplateScreen = () => {
   const { refetch } = useGetTemplatesQuery();
   const { refetch: refetchTags } = useGetTagsQuery();
   const { refetch: refetchTagCloud } = useGetTagCloudQuery();
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const addQuestion = () => {
     const countOfType = questionList.filter(
@@ -140,16 +156,26 @@ const CreateTemplateScreen = () => {
   };
 
   return (
-    <Container className="py-4" style={{ maxWidth: "800px" }}>
-      <Link className="btn btn-light my-3" to="/profile">
-        {t("goBack")}
+    <Container
+      className="py-4"
+      style={{ maxWidth: "800px" }}
+      data-bs-theme={isDark ? "dark" : "light"}
+    >
+      <Link to="/profile">
+        <div className="my-3">
+          <Button variant="secondary">{t("goBack")}</Button>
+        </div>
       </Link>
-      <h1 className="text-center mb-4 text-5xl">{t("createNewTemplate")}</h1>
+      <h1 className="text-center mb-4 text-5xl dark:text-gray-300">
+        {t("createNewTemplate")}
+      </h1>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
           {/* Form Title */}
           <Form.Group className="mb-3" controlId="formTitle">
-            <Form.Label className="fs-4">{t("templateTitle")}</Form.Label>
+            <Form.Label className="fs-4 dark:text-gray-400">
+              {t("templateTitle")}
+            </Form.Label>
             <Form.Control
               type="text"
               placeholder={t("enterFormTitle")}
@@ -161,7 +187,9 @@ const CreateTemplateScreen = () => {
 
           {/* Form Description with Markdown Support */}
           <Form.Group className="mb-4" controlId="formDescription">
-            <Form.Label className="fs-5">{t("templateDescription")}</Form.Label>
+            <Form.Label className="fs-5 dark:text-gray-400">
+              {t("templateDescription")}
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -175,7 +203,7 @@ const CreateTemplateScreen = () => {
           <Card className="mb-4">
             <Card.Header>{t("markdownPreview")}</Card.Header>
             <Card.Body>
-              <div className="markdown-body">
+              <div className={`markdown-body ${isDark ? "dark-mode" : ""}`}>
                 <ReactMarkdown>{description}</ReactMarkdown>
               </div>
             </Card.Body>
@@ -189,7 +217,7 @@ const CreateTemplateScreen = () => {
           </Form.Group>
 
           {/* Questions List */}
-          <h4 className="mb-3">{t("questions")}</h4>
+          <h4 className="mb-3 dark:text-gray-400">{t("questions")}</h4>
           <SortableContext
             items={questionList.map((q) => q.id)}
             strategy={verticalListSortingStrategy}
@@ -212,9 +240,7 @@ const CreateTemplateScreen = () => {
 
           {/* Add New Question */}
           <Card className="mt-4 mb-4 shadow-sm">
-            <Card.Header className="bg-light">
-              {t("addNewQuestion")}
-            </Card.Header>
+            <Card.Header>{t("addNewQuestion")}</Card.Header>
             <Card.Body>
               <Row className="g-3 align-items-center">
                 <Col md={6}>

@@ -35,7 +35,6 @@ import { useGetTemplateFormsQuery } from "../redux/slices/formsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
-import "github-markdown-css/github-markdown.css";
 import moment from "moment";
 import Message from "../components/Message";
 import Tags from "../components/Tags";
@@ -300,7 +299,7 @@ const EditTemplateScreen = () => {
             <Card className="my-2">
               <Card.Header>{t("markdownPreview")}</Card.Header>
               <Card.Body>
-                <div className="markdown-body">
+                <div className={`markdown-body ${isDark ? "dark-mode" : ""}`}>
                   <ReactMarkdown>{description}</ReactMarkdown>
                 </div>
               </Card.Body>

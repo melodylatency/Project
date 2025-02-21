@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className="bg-teal-400 dark:bg-gray-800">
       <div className="flex justify-center py-3">
-        <p className="dark:text-gray-400 text-lg">
+        <p className="dark:text-gray-300 text-lg opacity-70">
           {t("brand")} &copy; {currentYear}
         </p>
       </div>

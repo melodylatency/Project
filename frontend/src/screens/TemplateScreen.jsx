@@ -25,7 +25,6 @@ import { useCreateFormMutation } from "../redux/slices/formsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import ReactMarkdown from "react-markdown";
-import "github-markdown-css/github-markdown.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -193,7 +192,9 @@ const TemplateScreen = () => {
                 </ListGroup.Item>
                 {template.description.length > 0 && (
                   <ListGroup.Item>
-                    <div className="markdown-body">
+                    <div
+                      className={`markdown-body ${isDark ? "dark-mode" : ""}`}
+                    >
                       <ReactMarkdown>{template.description}</ReactMarkdown>
                     </div>
                   </ListGroup.Item>
