@@ -25,7 +25,7 @@ import { useCreateFormMutation } from "../redux/slices/formsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import ReactMarkdown from "react-markdown";
-import "github-markdown-css/github-markdown-light.css";
+import "github-markdown-css/github-markdown.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -184,7 +184,10 @@ const TemplateScreen = () => {
               <Image src={template.image} fluid alt={template.title} />
             </Col>
             <Col md={8}>
-              <ListGroup variant="flush">
+              <ListGroup
+                variant="flush"
+                data-bs-theme={isDark ? "dark" : "light"}
+              >
                 <ListGroup.Item>
                   <h3 className="text-3xl">{template.title}</h3>
                 </ListGroup.Item>

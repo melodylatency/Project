@@ -35,7 +35,7 @@ import { useGetTemplateFormsQuery } from "../redux/slices/formsApiSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import ReactMarkdown from "react-markdown";
-import "github-markdown-css/github-markdown-light.css";
+import "github-markdown-css/github-markdown.css";
 import moment from "moment";
 import Message from "../components/Message";
 import Tags from "../components/Tags";
