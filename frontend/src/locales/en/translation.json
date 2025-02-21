@@ -100,5 +100,19 @@
   "userId": "User ID",
   "aggregationContent": "Aggregation analytics will be available soon",
   "questionCreatedSuccess": "Question created successfully",
-  "templateUpdatedSuccess": "Template updated successfully!"
+  "templateUpdatedSuccess": "Template updated successfully!",
+  "pleaseSelectUsers": "Please select users to proceed",
+  "confirmAction": "Are you sure you want to {{action}} these users?",
+  "actionSuccess": "{{count}} user{{s}} {{action}}ed successfully.",
+  "actionFailed": "Action failed.",
+  "notAdmin": "Not admin",
+  "anErrorOccurred": "An error occurred.",
+  "admin": "Admin",
+  "block": "Block",
+  "unblock": "Unblock",
+  "sortByLastLogin": "Sort by Last Login",
+  "select": "Select",
+  "email": "Email",
+  "blocked": "Blocked",
+  "lastLogin": "Last Login"
 }

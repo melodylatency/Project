@@ -6,7 +6,7 @@ import {
   FaLock,
   FaLockOpen,
   FaSort,
-} from "react-icons/fa"; // Added FaSort for sort icon
+} from "react-icons/fa";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import {
@@ -23,11 +23,13 @@ import { useLogoutMutation } from "../redux/slices/usersApiSlice";
 import { logout } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Added
 
 const AdminScreen = () => {
+  const { t } = useTranslation(); // Added
   const { userInfo } = useSelector((state) => state.auth);
 
-  const { data: users = [], refetch, isLoading, error } = useGetUsersQuery(); // Default users to an empty array if undefined
+  const { data: users = [], refetch, isLoading, error } = useGetUsersQuery();
 
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
   const [adminUser, { isLoading: loadingAdmin }] = useAdminUserMutation();
@@ -35,7 +37,7 @@ const AdminScreen = () => {
   const [unblockUser, { isLoading: loadingUnblock }] = useUnblockUserMutation();
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [sortOrder, setSortOrder] = useState("desc"); // Track the sorting index
+  const [sortOrder, setSortOrder] = useState("desc");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -57,9 +59,9 @@ const AdminScreen = () => {
       if (error.data?.message === "Account blocked.") {
         logoutHandler();
       }
-      toast.error(error.data?.message || "An error occurred.");
+      toast.error(error.data?.message || t("anErrorOccurred"));
     }
-  }, [error, logoutHandler]);
+  }, [error, logoutHandler, t]);
 
   const handleSelectUser = (userId) => {
     setSelectedUsers((prevSelected) =>
@@ -71,26 +73,25 @@ const AdminScreen = () => {
 
   const handleSelectAll = () => {
     if (selectedUsers.length === users.length) {
-      setSelectedUsers([]); // Deselect all if all are selected
+      setSelectedUsers([]);
     } else {
-      setSelectedUsers(users.map((user) => user.id)); // Select all users
+      setSelectedUsers(users.map((user) => user.id));
     }
   };
 
   const handleAction = async (action) => {
     if (selectedUsers.length === 0) {
-      toast.error("Please select users to proceed");
+      toast.error(t("pleaseSelectUsers"));
       return;
     }
 
-    if (window.confirm(`Are you sure you want to ${action} these users?`)) {
+    if (window.confirm(t("confirmAction", { action }))) {
       let actionCount = 0;
 
       try {
-        // Rearrange selectedUsers to process userInfo.id last
         const reorderedUsers = [
-          ...selectedUsers.filter((id) => id !== userInfo.id), // Other users
-          ...selectedUsers.filter((id) => id === userInfo.id), // Current user
+          ...selectedUsers.filter((id) => id !== userInfo.id),
+          ...selectedUsers.filter((id) => id === userInfo.id),
         ];
 
         for (const userId of reorderedUsers) {
@@ -98,7 +99,7 @@ const AdminScreen = () => {
 
           switch (action) {
             case "delete":
-              await deleteUser(userId).unwrap(); // `unwrap` to throw errors
+              await deleteUser(userId).unwrap();
               actionCount++;
               break;
             case "admin":
@@ -116,34 +117,28 @@ const AdminScreen = () => {
               actionCount++;
               break;
             default:
-              toast.error("Unknown action");
+              toast.error(t("unknownAction"));
           }
         }
 
         if (actionCount > 0) {
-          toast.success(
-            `${actionCount} user${
-              actionCount > 1 ? "s" : ""
-            } ${action}ed successfully.`
-          );
+          toast.success(t("actionSuccess", { count: actionCount, action }));
         }
 
-        setSelectedUsers([]); // Reset selection after action
+        setSelectedUsers([]);
         refetch();
       } catch (err) {
-        toast.error("Action failed.");
+        toast.error(t("actionFailed"));
       }
     }
   };
 
-  // Sort users by last login
   const sortedUsers = [...users].sort((a, b) => {
     const dateA = moment(a.lastLogin);
     const dateB = moment(b.lastLogin);
     return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
   });
 
-  // Toggle sort index
   const handleSort = () => {
     setSortOrder((prevOrder) => (prevOrder === "desc" ? "asc" : "desc"));
   };
@@ -151,7 +146,7 @@ const AdminScreen = () => {
   return (
     <>
       <h1 className="flex justify-center text-7xl text-stroke py-5">
-        Admin Panel
+        {t("adminPanel")}
       </h1>
       {loadingDelete ||
         loadingAdmin ||
@@ -160,12 +155,11 @@ const AdminScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant="danger">{error.message || "Not admin"}</Message>
+        <Message variant="danger">{error.message || t("notAdmin")}</Message>
       ) : (
         <>
           <div className="py-3 pl-1">
             <Row className="align-items-center justify-content-between">
-              {/* Left section */}
               <Col
                 xs={12}
                 sm="auto"
@@ -182,38 +176,37 @@ const AdminScreen = () => {
                   variant="primary"
                   onClick={() => handleAction("delete")}
                 >
-                  <FaTrash /> Delete
+                  <FaTrash /> {t("delete")}
                 </Button>
                 <Button
                   className="d-flex align-items-center gap-2"
                   variant="primary"
                   onClick={() => handleAction("admin")}
                 >
-                  <FaLock /> Admin
+                  <FaLock /> {t("admin")}
                 </Button>
                 <Button
                   className="d-flex align-items-center gap-2"
                   variant="primary"
                   onClick={() => handleAction("block")}
                 >
-                  <FaLock /> Block
+                  <FaLock /> {t("block")}
                 </Button>
                 <Button
                   className="d-flex align-items-center gap-2"
                   variant="primary"
                   onClick={() => handleAction("unblock")}
                 >
-                  <FaLockOpen /> Unblock
+                  <FaLockOpen /> {t("unblock")}
                 </Button>
               </Col>
 
-              {/* Right section */}
               <Col xs={12} sm="auto" className="text-sm-end">
                 <Button
                   className="d-flex align-items-center"
                   onClick={handleSort}
                 >
-                  <FaSort /> Sort by Last Login
+                  <FaSort /> {t("sortByLastLogin")}
                 </Button>
               </Col>
             </Row>
@@ -221,12 +214,12 @@ const AdminScreen = () => {
           <Table striped hover responsive className="table-sm">
             <thead>
               <tr>
-                <th>Select</th>
-                <th>NAME</th>
-                <th>EMAIL</th>
-                <th>ADMIN</th>
-                <th>BLOCKED</th>
-                <th>LAST LOGIN</th>
+                <th>{t("select")}</th>
+                <th>{t("name")}</th>
+                <th>{t("email")}</th>
+                <th>{t("admin")}</th>
+                <th>{t("blocked")}</th>
+                <th>{t("lastLogin")}</th>
               </tr>
             </thead>
             <tbody>
@@ -252,9 +245,7 @@ const AdminScreen = () => {
                   <td>{user.isBlocked ? <FaCheck /> : <FaTimes />}</td>
                   <td
                     className="font-thin overflow-hidden text-ellipsis whitespace-nowrap"
-                    style={{
-                      maxWidth: "200px", // Adjust this value as needed
-                    }}
+                    style={{ maxWidth: "200px" }}
                   >
                     {moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a")}
                   </td>
