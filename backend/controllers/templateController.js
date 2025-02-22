@@ -29,7 +29,7 @@ const getTemplateById = asyncHandler(async (req, res) => {
       {
         model: User,
         as: "AllowedUsers",
-        attributes: ["email"],
+        attributes: [["id", "value"], ["name", "label"], "email"],
         through: { attributes: [] },
       },
       {
@@ -172,7 +172,7 @@ const updateTemplateById = asyncHandler(async (req, res) => {
       {
         model: User,
         as: "AllowedUsers",
-        attributes: ["email"],
+        attributes: ["id", "name", "email"],
         through: { attributes: [] },
       },
     ],
@@ -193,9 +193,7 @@ const updateTemplateById = asyncHandler(async (req, res) => {
 
   if (tagList) {
     const existingTags = template.Tags.map((tag) => tag.label);
-
     const newTagNames = tagList.map((tag) => tag.label);
-
     const tagsToRemove = existingTags.filter(
       (tag) => !newTagNames.includes(tag)
     );
@@ -217,23 +215,14 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     await template.setTags(tagInstances);
   }
 
-  console.log(userAccess);
-
   if (userAccess) {
-    // Ensure userAccess is an array
     const userAccessArray = Array.isArray(userAccess) ? userAccess : [];
-
-    // Extract emails from valid objects
-    const userAccessEmails = userAccessArray
-      .filter((user) => user && user.email)
-      .map((user) => user.email);
-
     const existingUsers = template.AllowedUsers.map((user) => user.email);
+    const newUsers = userAccessArray.map((user) => user.email);
     const usersToRemove = existingUsers.filter(
-      (email) => !userAccessEmails.includes(email)
+      (email) => !newUsers.includes(email)
     );
 
-    // Remove users logic...
     if (usersToRemove.length > 0) {
       const usersToRemoveInstances = await User.findAll({
         where: { email: usersToRemove },
@@ -241,19 +230,19 @@ const updateTemplateById = asyncHandler(async (req, res) => {
       await template.removeAllowedUsers(usersToRemoveInstances);
     }
 
-    // Add users logic...
-    const usersToAdd = await User.findAll({
-      where: { email: userAccessEmails },
-    });
+    const userInstances = await Promise.all(
+      newUsers.map(async (email) => {
+        const user = await User.findOne({ where: { email } });
+        return user;
+      })
+    );
 
-    await template.setAllowedUsers(usersToAdd);
+    await template.setAllowedUsers(userInstances);
   }
 
   await template.update(updateData);
 
-  res.status(200).json({
-    ...template.toJSON(),
-  });
+  res.status(200).json(template);
 });
 
 // @desc    Create template review
