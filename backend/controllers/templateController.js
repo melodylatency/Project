@@ -27,6 +27,12 @@ const getTemplateById = asyncHandler(async (req, res) => {
         through: { attributes: [] },
       },
       {
+        model: User,
+        as: "AllowedUsers",
+        attributes: ["email"],
+        through: { attributes: [] },
+      },
+      {
         model: Question,
         attributes: [
           "id",
@@ -163,6 +169,12 @@ const updateTemplateById = asyncHandler(async (req, res) => {
         attributes: ["id", "label"],
         through: { attributes: [] },
       },
+      {
+        model: User,
+        as: "AllowedUsers",
+        attributes: ["email"],
+        through: { attributes: [] },
+      },
     ],
   });
 
@@ -171,7 +183,6 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     throw new Error("Template not found");
   }
 
-  // Update template fields
   const updateData = {
     title: title !== undefined ? title : template.title,
     description: description !== undefined ? description : template.description,
@@ -206,12 +217,36 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     await template.setTags(tagInstances);
   }
 
-  if (userAccess !== undefined) {
-    const users = await User.findAll({
-      where: { email: userAccess },
+  console.log(userAccess);
+
+  if (userAccess) {
+    // Ensure userAccess is an array
+    const userAccessArray = Array.isArray(userAccess) ? userAccess : [];
+
+    // Extract emails from valid objects
+    const userAccessEmails = userAccessArray
+      .filter((user) => user && user.email)
+      .map((user) => user.email);
+
+    const existingUsers = template.AllowedUsers.map((user) => user.email);
+    const usersToRemove = existingUsers.filter(
+      (email) => !userAccessEmails.includes(email)
+    );
+
+    // Remove users logic...
+    if (usersToRemove.length > 0) {
+      const usersToRemoveInstances = await User.findAll({
+        where: { email: usersToRemove },
+      });
+      await template.removeAllowedUsers(usersToRemoveInstances);
+    }
+
+    // Add users logic...
+    const usersToAdd = await User.findAll({
+      where: { email: userAccessEmails },
     });
 
-    await template.setUsers(users);
+    await template.setAllowedUsers(usersToAdd);
   }
 
   await template.update(updateData);

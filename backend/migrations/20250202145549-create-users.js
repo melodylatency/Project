@@ -6,6 +6,7 @@ export default {
         defaultValue: Sequelize.literal("uuid_generate_v4()"),
         allowNull: false,
         primaryKey: true,
+        onDelete: "CASCADE",
       },
       name: {
         type: Sequelize.STRING,
