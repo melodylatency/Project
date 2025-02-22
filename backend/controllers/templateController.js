@@ -121,14 +121,13 @@ const createTemplate = asyncHandler(async (req, res) => {
     type: q.type,
     title: q.title,
     description: q.description || "",
-    index: index, // Use array index as index
+    index: index,
     show_in_results: q.displayOnTable,
     template_id: template.id,
   }));
 
   await Question.bulkCreate(questionsData);
 
-  // belongs to many needs different approach
   const tagInstances = await Promise.all(
     tagList.map(async (tag) => {
       const [foundTag] = await Tag.findOrCreate({
@@ -139,7 +138,6 @@ const createTemplate = asyncHandler(async (req, res) => {
     })
   );
 
-  // Associate all found/created tags with the template
   await template.addTags(tagInstances);
 
   res.status(201).json({
@@ -172,7 +170,6 @@ const updateTemplateById = asyncHandler(async (req, res) => {
       {
         model: User,
         as: "AllowedUsers",
-        // Retrieve id, name and email so we can work with them
         attributes: ["id", "name", "email"],
         through: { attributes: [] },
       },
@@ -192,7 +189,6 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     access: access !== undefined ? access : template.access,
   };
 
-  // Process tagList update
   if (tagList) {
     const existingTags = template.Tags.map((tag) => tag.label);
     const newTagNames = tagList.map((tag) => tag.label);
@@ -217,12 +213,8 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     await template.setTags(tagInstances);
   }
 
-  // Process userAccess update
-  // Expecting userAccess to be an array of objects like:
-  // { label: user.name, value: user_id, email: user.email }
   if (userAccess) {
     const userAccessArray = Array.isArray(userAccess) ? userAccess : [];
-    // Use user ids (from the provided 'value') to compute differences.
     const existingUserIds = template.AllowedUsers.map((user) => user.id);
     const newUserIds = userAccessArray.map((user) => user.value);
     const usersToRemove = existingUserIds.filter(
@@ -236,7 +228,6 @@ const updateTemplateById = asyncHandler(async (req, res) => {
       await template.removeAllowedUsers(usersToRemoveInstances);
     }
 
-    // Fetch each user by their id (value) instead of by email.
     const userInstances = await Promise.all(
       newUserIds.map(async (id) => {
         const user = await User.findByPk(id);

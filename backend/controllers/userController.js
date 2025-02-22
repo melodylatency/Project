@@ -103,6 +103,7 @@ const getAccessUsers = asyncHandler(async (req, res) => {
       isAdmin: false,
     },
     attributes: ["id", "name", "email"],
+    order: [["name", "ASC"]],
   });
 
   const options = users.map((user) => ({
