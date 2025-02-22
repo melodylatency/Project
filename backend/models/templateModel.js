@@ -39,6 +39,10 @@ Template.init(
       allowNull: false,
       defaultValue: "public",
     },
+    userAccess: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    },
     authorId: {
       type: DataTypes.UUID,
       allowNull: false,

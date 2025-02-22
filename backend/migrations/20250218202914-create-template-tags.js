@@ -4,10 +4,12 @@ export default {
       tag_id: {
         type: Sequelize.UUID,
         references: { model: "tags", key: "id" },
+        onDelete: "CASCADE",
       },
       template_id: {
         type: Sequelize.UUID,
         references: { model: "templates", key: "id" },
+        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,
