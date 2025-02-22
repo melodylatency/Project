@@ -1,5 +1,5 @@
 import { readdirSync } from "fs";
-import { dirname, basename } from "path";
+import { dirname } from "path";
 import { fileURLToPath } from "url";
 import sequelize from "../config/db.js";
 
