@@ -7,10 +7,13 @@ import Message from "../components/Message";
 import { TagCloud } from "react-tagcloud";
 import { useGetTagCloudQuery } from "../redux/slices/tagsApiSlice";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
   const { t } = useTranslation();
   const [tags, setTags] = useState([]);
+
+  const { userInfo } = useSelector((state) => state.auth);
 
   const { data: templates, isLoading, error } = useGetTemplatesQuery();
   const { data } = useGetTagCloudQuery(undefined, {
@@ -28,20 +31,49 @@ const HomeScreen = () => {
     hue: "purple",
   };
 
+  const filteredTemplates = useMemo(() => {
+    if (!Array.isArray(templates)) return [];
+
+    if (userInfo?.isAdmin) return templates;
+
+    return templates.filter((template) => {
+      if (!userInfo) return template.access === "public";
+
+      if (
+        template.access === "restricted" &&
+        Array.isArray(template.userAccess)
+      ) {
+        return !template.userAccess.some(
+          (user) => user.email === userInfo.email
+        );
+      } else if (
+        template.access === "restricted" &&
+        !Array.isArray(template.userAccess)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [templates, userInfo]);
+
   const top5 = useMemo(() => {
-    if (!Array.isArray(templates) || templates.length === 0) return [];
-    return [...templates]
+    if (!Array.isArray(filteredTemplates) || filteredTemplates.length === 0)
+      return [];
+    return [...filteredTemplates]
       .filter((template) => template?.likes != null)
       .sort((a, b) => b.likes - a.likes)
       .slice(0, 5);
-  }, [templates]);
+  }, [filteredTemplates]);
 
   const top5Ids = useMemo(() => top5.map((template) => template.id), [top5]);
 
   const restTemplates = useMemo(() => {
-    if (!Array.isArray(templates)) return [];
-    return templates.filter((template) => !top5Ids.includes(template.id));
-  }, [templates, top5Ids]);
+    if (!Array.isArray(filteredTemplates)) return [];
+    return filteredTemplates.filter(
+      (template) => !top5Ids.includes(template.id)
+    );
+  }, [filteredTemplates, top5Ids]);
 
   return (
     <div>
@@ -56,7 +88,7 @@ const HomeScreen = () => {
           <h1 className="text-center text-6xl py-5 dark:text-gray-400">
             {t("topTemplates")}
           </h1>
-          {templates.length > 0 ? (
+          {filteredTemplates.length > 0 ? (
             <Row>
               {top5.map((template) => (
                 <Col key={template.id} sm={12} md={6} lg={4} xl={4}>
@@ -74,7 +106,7 @@ const HomeScreen = () => {
             {t("allTemplates")}
           </h1>
 
-          {templates.length > 5 ? (
+          {filteredTemplates.length > 5 ? (
             <Row>
               {restTemplates.map((template) => (
                 <Col key={template.id} sm={12} md={6} lg={4} xl={3}>
