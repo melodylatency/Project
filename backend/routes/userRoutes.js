@@ -13,6 +13,7 @@ import {
   updateUserProfile,
   getUserProfile,
   adminUser,
+  getAccessUsers,
 } from "../controllers/userController.js";
 import { admin, protect } from "../middleware/authMiddleware.js";
 
@@ -28,6 +29,8 @@ router
   .route("/profile")
   .get(protect, getUserProfile)
   .put(protect, updateUserProfile);
+
+router.route("/access").get(protect, getAccessUsers);
 
 router
   .route("/:id")
