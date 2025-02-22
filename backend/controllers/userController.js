@@ -102,13 +102,12 @@ const getAccessUsers = asyncHandler(async (req, res) => {
       },
       isAdmin: false,
     },
-    attributes: ["name", "email"],
+    attributes: ["id", "name", "email"],
   });
 
   const options = users.map((user) => ({
     label: user.name,
-    // Create a slug from the user's name (all lowercase, spaces replaced by hyphens).
-    value: user.name.toLowerCase().replace(/\s+/g, "-"),
+    value: user.id,
     email: user.email,
   }));
 
