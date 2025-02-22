@@ -78,6 +78,7 @@ const EditTemplateScreen = () => {
   const [topic, setTopic] = useState("Other");
   const [topicList] = useState(["Other", "Education", "Poll"]);
   const [selected, setSelected] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [questionList, setQuestionList] = useState([]);
   const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [sortOrderForms, setSortOrderForms] = useState("desc");
@@ -107,6 +108,10 @@ const EditTemplateScreen = () => {
       setSelected(template.Tags);
     }
   }, [template]);
+
+  useEffect(() => {
+    console.log(selectedUsers);
+  }, [selectedUsers]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -366,6 +371,10 @@ const EditTemplateScreen = () => {
                   isMulti
                   options={options}
                   maxMenuHeight={130}
+                  value={selectedUsers}
+                  onChange={(selectedOptions) =>
+                    setSelectedUsers(selectedOptions)
+                  }
                   filterOption={customFilterOption}
                   formatOptionLabel={formatOptionLabel}
                   placeholder="Select a user..."
