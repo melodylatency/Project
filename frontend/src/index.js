@@ -23,11 +23,13 @@ import EditFormScreen from "./screens/EditFormScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import CreateTemplateScreen from "./screens/CreateTemplateScreen";
 import FormScreen from "./screens/FormScreen";
+import AutoCompleteSelect from "./screens/Test";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" index={true} element={<HomeScreen />} />
+      <Route path="/test" element={<AutoCompleteSelect />} />
       <Route path="/template/:id" element={<TemplateScreen />} />
       <Route path="/form/:id" element={<FormScreen />} />
       <Route path="/template/edit/:id" element={<EditTemplateScreen />} />
