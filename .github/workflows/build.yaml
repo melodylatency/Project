@@ -30,9 +30,9 @@ jobs:
             git pull origin main &&
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh 
-            npm install &&
+            npm install --legacy-peer-deps &&
             cd frontend &&
-            npm install &&
+            npm install --legacy-peer-deps &&
             NODE_OPTIONS='--max-old-space-size=2048' npm run build &&
             cd ../backend &&
             npx sequelize-cli db:migrate:undo:all &&
