@@ -79,7 +79,6 @@ User.associate = (models) => {
     through: "template_access",
     foreignKey: "user_id",
   });
-  User.hasOne(models.UserPreference, { foreignKey: "user_id" });
 };
 
 export default User;

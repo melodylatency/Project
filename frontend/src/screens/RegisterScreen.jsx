@@ -16,6 +16,9 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isDark, setIsDark] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,6 +35,19 @@ const RegisterScreen = () => {
       navigate(redirect);
     }
   }, [userInfo, redirect, navigate]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDark(mediaQuery.matches);
+
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [isDark]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -52,12 +68,14 @@ const RegisterScreen = () => {
   return (
     <FormContainer>
       <div className="my-5">
-        <h1 className="text-5xl font-sans text-gray-600">{t("register")}</h1>
+        <h1 className="text-5xl font-sans text-gray-600 dark:text-gray-300">
+          {t("register")}
+        </h1>
       </div>
 
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={submitHandler} data-bs-theme={isDark ? "dark" : "light"}>
         <Form.Group controlId="name" className="my-3">
-          <Form.Label>{t("name")}</Form.Label>
+          <Form.Label className="dark:text-gray-400">{t("name")}</Form.Label>
           <Form.Control
             type="text"
             placeholder={t("enterName")}
@@ -67,7 +85,9 @@ const RegisterScreen = () => {
         </Form.Group>
 
         <Form.Group controlId="email" className="my-3">
-          <Form.Label>{t("emailAddress")}</Form.Label>
+          <Form.Label className="dark:text-gray-400">
+            {t("emailAddress")}
+          </Form.Label>
           <Form.Control
             type="email"
             placeholder={t("enterEmail")}
@@ -77,7 +97,9 @@ const RegisterScreen = () => {
         </Form.Group>
 
         <Form.Group controlId="password" className="my-3">
-          <Form.Label>{t("password")}</Form.Label>
+          <Form.Label className="dark:text-gray-400">
+            {t("password")}
+          </Form.Label>
           <Form.Control
             type="password"
             placeholder={t("enterPassword")}
@@ -87,7 +109,9 @@ const RegisterScreen = () => {
         </Form.Group>
 
         <Form.Group controlId="confirmPassword" className="my-3">
-          <Form.Label>{t("confirmPassword")}</Form.Label>
+          <Form.Label className="dark:text-gray-400">
+            {t("confirmPassword")}
+          </Form.Label>
           <Form.Control
             type="password"
             placeholder={t("enterPasswordAgain")}
@@ -111,11 +135,11 @@ const RegisterScreen = () => {
 
       <Row className="py-3">
         <Col>
-          <h1 className="font-serif text-black">
+          <h1 className="font-serif dark:text-gray-400">
             {t("alreadyHaveAccount")}{" "}
             <Link
               to={redirect ? `/login?redirect=${redirect}` : "/login"}
-              className="underline text-blue-900"
+              className="underline text-blue-900 dark:text-blue-500"
             >
               {t("signIn")}
             </Link>
