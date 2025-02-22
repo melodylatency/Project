@@ -55,7 +55,6 @@ User.init(
         if (user.changed("email")) {
           const existingUser = await User.findOne({
             where: { email: user.email },
-            paranoid: false, // Include soft-deleted records if using
           });
           if (existingUser && existingUser.isBlocked) {
             throw new Error("This email is blocked.");

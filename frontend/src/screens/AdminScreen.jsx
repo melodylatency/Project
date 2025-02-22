@@ -23,10 +23,10 @@ import { useLogoutMutation } from "../redux/slices/usersApiSlice";
 import { logout } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // Added
+import { useTranslation } from "react-i18next";
 
 const AdminScreen = () => {
-  const { t } = useTranslation(); // Added
+  const { t } = useTranslation();
   const { userInfo } = useSelector((state) => state.auth);
 
   const { data: users = [], refetch, isLoading, error } = useGetUsersQuery();

@@ -76,7 +76,6 @@ const getTemplateById = asyncHandler(async (req, res) => {
     throw new Error("Template not found");
   }
 
-  // Sort tags alphabetically by label
   if (template.Tags) {
     template.Tags.sort((a, b) => a.label.localeCompare(b.label));
   }
@@ -119,7 +118,6 @@ const createTemplate = asyncHandler(async (req, res) => {
     throw new Error("Missing required fields: title, questions, or authorId");
   }
 
-  // Create the Template
   const template = await Template.create({
     title,
     description: description || "",

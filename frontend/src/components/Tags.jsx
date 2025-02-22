@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { ReactTags } from "react-tag-autocomplete";
-import { v4 as uuidv4 } from "uuid"; // Import uuidv4
+import { v4 as uuidv4 } from "uuid";
 import "../css/tagStyles.css";
 import { useGetTagsQuery } from "../redux/slices/tagsApiSlice";
 import { useTranslation } from "react-i18next";

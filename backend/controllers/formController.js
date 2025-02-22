@@ -86,7 +86,6 @@ const createForm = asyncHandler(async (req, res) => {
     };
   });
 
-  // Bulk create answers
   await Answer.bulkCreate(answersData);
 
   res.status(201).json({
@@ -107,12 +106,10 @@ const updateForm = asyncHandler(async (req, res) => {
     throw new Error("Missing required fields: answerMap or formId");
   }
 
-  // Fetch the existing answers for the form
   const existingAnswers = await Answer.findAll({
     where: { form_id: formId },
   });
 
-  // Convert the array of existing answers to a map for easy lookup
   const existingAnswersMap = existingAnswers.reduce((acc, answer) => {
     acc[answer.question_id] = answer;
     return acc;
@@ -120,7 +117,6 @@ const updateForm = asyncHandler(async (req, res) => {
 
   const updatedAnswers = [];
 
-  // Iterate over the provided answerMap to check for updates
   for (const { questionId, value } of answerMap) {
     let processedValue;
 
@@ -132,12 +128,10 @@ const updateForm = asyncHandler(async (req, res) => {
       processedValue = String(value);
     }
 
-    // Check if the value has changed
     if (
       existingAnswersMap[questionId] &&
       existingAnswersMap[questionId].value !== processedValue
     ) {
-      // If value has changed, update the answer
       await existingAnswersMap[questionId].update({ value: processedValue });
       updatedAnswers.push({ questionId, value: processedValue });
     }
