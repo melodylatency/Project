@@ -10,6 +10,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       providesTags: ["User"],
       keepUnusedDataFor: 5,
     }),
+    getAccessUsers: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/access`,
+      }),
+      providesTags: ["User"],
+      keepUnusedDataFor: 5,
+    }),
     login: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth`,
@@ -67,6 +74,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetUsersQuery,
+  useGetAccessUsersQuery,
   useLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
@@ -75,4 +83,4 @@ export const {
   useBlockUserMutation,
   useUnblockUserMutation,
   useProfileMutation,
-} = usersApiSlice; // custom hook that calls the code block above
+} = usersApiSlice;

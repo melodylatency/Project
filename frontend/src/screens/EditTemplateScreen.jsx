@@ -39,6 +39,8 @@ import moment from "moment";
 import Message from "../components/Message";
 import Tags from "../components/Tags";
 import { useTranslation } from "react-i18next";
+import Select from "react-select";
+import { useGetAccessUsersQuery } from "../redux/slices/usersApiSlice";
 
 const EditTemplateScreen = () => {
   const { t } = useTranslation();
@@ -47,8 +49,12 @@ const EditTemplateScreen = () => {
   const {
     data: template,
     isLoading: isLoadingTemplate,
+    error,
     refetch: refetchTemplate,
   } = useGetTemplateByIdQuery(templateId);
+
+  const { data: options, isLoading: isLoadingOptions } =
+    useGetAccessUsersQuery();
 
   const {
     data: forms,
@@ -72,6 +78,7 @@ const EditTemplateScreen = () => {
   const [topic, setTopic] = useState("Other");
   const [topicList] = useState(["Other", "Education", "Poll"]);
   const [selected, setSelected] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [questionList, setQuestionList] = useState([]);
   const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [sortOrderForms, setSortOrderForms] = useState("desc");
@@ -103,6 +110,10 @@ const EditTemplateScreen = () => {
   }, [template]);
 
   useEffect(() => {
+    console.log(selectedUsers);
+  }, [selectedUsers]);
+
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDark(mediaQuery.matches);
 
@@ -114,6 +125,20 @@ const EditTemplateScreen = () => {
 
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [isDark]);
+
+  const customFilterOption = (option, inputValue) => {
+    const searchTerm = inputValue.trim().toLowerCase();
+    const label = option.data.label.toLowerCase();
+    const email = option.data.email?.toLowerCase() || "";
+    return label.includes(searchTerm) || email.includes(searchTerm);
+  };
+
+  const formatOptionLabel = ({ label, email }) => (
+    <div>
+      <div>{label}</div>
+      {email && <div style={{ fontSize: "12px", color: "#666" }}>{email}</div>}
+    </div>
+  );
 
   const addQuestion = async () => {
     const countOfType = questionList.filter(
@@ -236,6 +261,7 @@ const EditTemplateScreen = () => {
         topic,
         templateId,
         tagList: selected,
+        userAccess: selectedUsers,
       }).unwrap();
       refetch();
       refetchTemplate();
@@ -266,79 +292,107 @@ const EditTemplateScreen = () => {
         data-bs-theme={isDark ? "dark" : "light"}
       >
         <Tab eventKey="general" title={t("generalSettings")}>
-          <Form
-            onSubmit={handleSubmit}
-            data-bs-theme={isDark ? "dark" : "light"}
-          >
-            <Form.Group className="mb-3" controlId="formTitle">
-              <Form.Label className="fs-4 dark:text-gray-400">
-                {t("templateTitle")}
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder={t("enterTitle")}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                size="lg"
-              />
-            </Form.Group>
+          {isLoading || isLoadingOptions ? (
+            <Loader />
+          ) : error ? (
+            <Message variant="danger">
+              {error?.data?.message || error.error}
+            </Message>
+          ) : (
+            <Form
+              onSubmit={handleSubmit}
+              data-bs-theme={isDark ? "dark" : "light"}
+            >
+              <Form.Group className="mb-3" controlId="formTitle">
+                <Form.Label className="fs-4 dark:text-gray-400">
+                  {t("templateTitle")}
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder={t("enterTitle")}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  size="lg"
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-4" controlId="formDescription">
-              <Form.Label className="fs-5 dark:text-gray-400">
-                {t("templateDescription")}
-              </Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={10}
-                placeholder={t("enterDescriptionOptional")}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </Form.Group>
+              <Form.Group className="mb-4" controlId="formDescription">
+                <Form.Label className="fs-5 dark:text-gray-400">
+                  {t("templateDescription")}
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={10}
+                  placeholder={t("enterDescriptionOptional")}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Form.Group>
 
-            <Card className="my-2">
-              <Card.Header>{t("markdownPreview")}</Card.Header>
-              <Card.Body>
-                <div className={`markdown-body ${isDark ? "dark-mode" : ""}`}>
-                  <ReactMarkdown>{description}</ReactMarkdown>
-                </div>
-              </Card.Body>
-            </Card>
+              <Card className="my-2">
+                <Card.Header>{t("markdownPreview")}</Card.Header>
+                <Card.Body>
+                  <div className={`markdown-body ${isDark ? "dark-mode" : ""}`}>
+                    <ReactMarkdown>{description}</ReactMarkdown>
+                  </div>
+                </Card.Body>
+              </Card>
 
-            <Form.Group className="my-3">
-              <Tags selected={selected} setSelected={setSelected} />
-            </Form.Group>
+              <Form.Group className="my-3">
+                <Tags selected={selected} setSelected={setSelected} />
+              </Form.Group>
 
-            <Form.Group className="flex flex-row justify-between">
-              <Form.Select
-                name="access"
-                value={access}
-                onChange={(e) => setAcess(e.target.value)}
-                className="w-1/3"
-              >
-                <option value="public">{t("public")}</option>
-                <option value="restricted">{t("restricted")}</option>
-              </Form.Select>
+              <Form.Group className="flex flex-row justify-between">
+                <Form.Select
+                  name="access"
+                  value={access}
+                  onChange={(e) => setAcess(e.target.value)}
+                  className="w-1/3"
+                >
+                  <option value="public">{t("public")}</option>
+                  <option value="restricted">{t("restricted")}</option>
+                </Form.Select>
 
-              <Form.Select
-                name="topic"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                className="w-1/3"
-              >
-                {topicList.map((topic, index) => (
-                  <option key={index} value={topic}>
-                    {t(topic.toLowerCase())}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-            <div className="text-center mt-2">
-              <Button variant="primary" type="submit" size="lg">
-                {t("saveForm")}
-              </Button>
-            </div>
-          </Form>
+                <Form.Select
+                  name="topic"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className="w-1/3"
+                >
+                  {topicList.map((topic, index) => (
+                    <option key={index} value={topic}>
+                      {t(topic.toLowerCase())}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+
+              <Form.Group className="my-3" hidden={access !== "restricted"}>
+                <Select
+                  isMulti
+                  options={options}
+                  maxMenuHeight={130}
+                  value={selectedUsers}
+                  onChange={(selectedOptions) =>
+                    setSelectedUsers(selectedOptions)
+                  }
+                  filterOption={customFilterOption}
+                  formatOptionLabel={formatOptionLabel}
+                  placeholder="Select a user..."
+                  isClearable
+                  isSearchable
+                  menuPortalTarget={document.body}
+                  menuPlacement="auto"
+                />
+              </Form.Group>
+
+              <div className="text-center mt-2">
+                <Button variant="primary" type="submit" size="lg">
+                  {t("saveForm")}
+                </Button>
+              </div>
+            </Form>
+          )}
         </Tab>
 
         <Tab eventKey="questions" title={t("questions")}>

@@ -36,6 +36,10 @@ export default {
         allowNull: false,
         defaultValue: "public",
       },
+      userAccess: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
+      },
       authorId: {
         type: Sequelize.UUID,
         allowNull: false,

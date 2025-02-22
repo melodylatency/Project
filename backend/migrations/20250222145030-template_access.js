@@ -1,9 +1,9 @@
 export default {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("template_tags", {
-      tag_id: {
+    await queryInterface.createTable("template_access", {
+      user_id: {
         type: Sequelize.UUID,
-        references: { model: "tags", key: "id" },
+        references: { model: "users", key: "id" },
         onDelete: "CASCADE",
       },
       template_id: {
@@ -24,6 +24,6 @@ export default {
     });
   },
   down: async (queryInterface) => {
-    await queryInterface.dropTable("template_tags");
+    await queryInterface.dropTable("template_access");
   },
 };

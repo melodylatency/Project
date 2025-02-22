@@ -1,6 +1,7 @@
 import generateToken from "../utils/generateToken.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
+import { Op } from "sequelize";
 
 // @desc    Auth user and get token
 // @route   POST /api/users/auth
@@ -86,6 +87,32 @@ const getUsers = asyncHandler(async (req, res) => {
     attributes: { exclude: ["password"] },
   });
   res.status(200).json(users);
+});
+
+// @desc    Get all users except the requesting user
+// @route   GET /api/users/access
+// @access  Private
+const getAccessUsers = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const users = await User.findAll({
+    where: {
+      id: {
+        [Op.ne]: userId,
+      },
+      isAdmin: false,
+    },
+    attributes: ["name", "email"],
+  });
+
+  const options = users.map((user) => ({
+    label: user.name,
+    // Create a slug from the user's name (all lowercase, spaces replaced by hyphens).
+    value: user.name.toLowerCase().replace(/\s+/g, "-"),
+    email: user.email,
+  }));
+
+  res.status(200).json(options);
 });
 
 // @desc    Get user by ID
@@ -244,6 +271,7 @@ export {
   registerUser,
   logoutUser,
   getUsers,
+  getAccessUsers,
   getUserById,
   adminUser,
   blockUser,
