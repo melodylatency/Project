@@ -78,6 +78,8 @@ User.associate = (models) => {
   User.belongsToMany(models.Template, {
     through: "template_access",
     foreignKey: "user_id",
+    otherKey: "template_id",
+    as: "AccessibleTemplates",
   });
 };
 

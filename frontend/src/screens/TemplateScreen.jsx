@@ -61,6 +61,19 @@ const TemplateScreen = () => {
   const matcher = useMemo(() => new RegExpMatcher(englishDataset.build()), []);
 
   useEffect(() => {
+    if (userInfo && template) {
+      const isAllowedUser = template.AllowedUsers?.some(
+        (user) => user.value === userInfo.id
+      );
+
+      if (template.access !== "public" && !userInfo.isAdmin && !isAllowedUser) {
+        navigate("/");
+        toast.error("Unauthorized!");
+      }
+    }
+  }, [userInfo, template, navigate]);
+
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDark(mediaQuery.matches);
 

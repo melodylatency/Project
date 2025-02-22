@@ -39,10 +39,6 @@ Template.init(
       allowNull: false,
       defaultValue: "public",
     },
-    userAccess: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: [],
-    },
     authorId: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -67,6 +63,8 @@ Template.associate = (models) => {
   Template.belongsToMany(models.User, {
     through: "template_access",
     foreignKey: "template_id",
+    otherKey: "user_id",
+    as: "AllowedUsers",
   });
   Template.belongsToMany(models.Tag, {
     through: "template_tags",

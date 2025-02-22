@@ -9,7 +9,21 @@ import User from "../models/userModel.js";
 // @route   /api/templates
 // @access  Public
 const getTemplates = asyncHandler(async (req, res) => {
-  const templates = await Template.findAll({});
+  const templates = await Template.findAll({
+    include: [
+      {
+        model: Tag,
+        attributes: [["id", "value"], "label"],
+        through: { attributes: [] },
+      },
+      {
+        model: User,
+        as: "AllowedUsers",
+        attributes: [["id", "value"], ["name", "label"], "email"],
+        through: { attributes: [] },
+      },
+    ],
+  });
   res.status(200).json(templates);
 });
 
@@ -24,6 +38,12 @@ const getTemplateById = asyncHandler(async (req, res) => {
       {
         model: Tag,
         attributes: [["id", "value"], "label"],
+        through: { attributes: [] },
+      },
+      {
+        model: User,
+        as: "AllowedUsers",
+        attributes: [["id", "value"], ["name", "label"], "email"],
         through: { attributes: [] },
       },
       {
@@ -115,14 +135,13 @@ const createTemplate = asyncHandler(async (req, res) => {
     type: q.type,
     title: q.title,
     description: q.description || "",
-    index: index, // Use array index as index
+    index: index,
     show_in_results: q.displayOnTable,
     template_id: template.id,
   }));
 
   await Question.bulkCreate(questionsData);
 
-  // belongs to many needs different approach
   const tagInstances = await Promise.all(
     tagList.map(async (tag) => {
       const [foundTag] = await Tag.findOrCreate({
@@ -133,7 +152,6 @@ const createTemplate = asyncHandler(async (req, res) => {
     })
   );
 
-  // Associate all found/created tags with the template
   await template.addTags(tagInstances);
 
   res.status(201).json({
@@ -163,6 +181,12 @@ const updateTemplateById = asyncHandler(async (req, res) => {
         attributes: ["id", "label"],
         through: { attributes: [] },
       },
+      {
+        model: User,
+        as: "AllowedUsers",
+        attributes: ["id", "name", "email"],
+        through: { attributes: [] },
+      },
     ],
   });
 
@@ -171,7 +195,6 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     throw new Error("Template not found");
   }
 
-  // Update template fields
   const updateData = {
     title: title !== undefined ? title : template.title,
     description: description !== undefined ? description : template.description,
@@ -182,9 +205,7 @@ const updateTemplateById = asyncHandler(async (req, res) => {
 
   if (tagList) {
     const existingTags = template.Tags.map((tag) => tag.label);
-
     const newTagNames = tagList.map((tag) => tag.label);
-
     const tagsToRemove = existingTags.filter(
       (tag) => !newTagNames.includes(tag)
     );
@@ -206,19 +227,34 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     await template.setTags(tagInstances);
   }
 
-  if (userAccess !== undefined) {
-    const users = await User.findAll({
-      where: { email: userAccess },
-    });
+  if (userAccess) {
+    const userAccessArray = Array.isArray(userAccess) ? userAccess : [];
+    const existingUserIds = template.AllowedUsers.map((user) => user.id);
+    const newUserIds = userAccessArray.map((user) => user.value);
+    const usersToRemove = existingUserIds.filter(
+      (id) => !newUserIds.includes(id)
+    );
 
-    await template.setUsers(users);
+    if (usersToRemove.length > 0) {
+      const usersToRemoveInstances = await User.findAll({
+        where: { id: usersToRemove },
+      });
+      await template.removeAllowedUsers(usersToRemoveInstances);
+    }
+
+    const userInstances = await Promise.all(
+      newUserIds.map(async (id) => {
+        const user = await User.findByPk(id);
+        return user;
+      })
+    );
+
+    await template.setAllowedUsers(userInstances);
   }
 
   await template.update(updateData);
 
-  res.status(200).json({
-    ...template.toJSON(),
-  });
+  res.status(200).json(template);
 });
 
 // @desc    Create template review

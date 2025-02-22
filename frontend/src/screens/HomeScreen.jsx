@@ -41,14 +41,14 @@ const HomeScreen = () => {
 
       if (
         template.access === "restricted" &&
-        Array.isArray(template.userAccess)
+        Array.isArray(template.AllowedUsers)
       ) {
-        return !template.userAccess.some(
+        return template.AllowedUsers.some(
           (user) => user.email === userInfo.email
         );
       } else if (
         template.access === "restricted" &&
-        !Array.isArray(template.userAccess)
+        !Array.isArray(template.AllowedUsers)
       ) {
         return false;
       }

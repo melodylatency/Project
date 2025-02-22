@@ -106,12 +106,9 @@ const EditTemplateScreen = () => {
       setAcess(template.access);
       setTopic(template.topic);
       setSelected(template.Tags);
+      setSelectedUsers(template.AllowedUsers);
     }
   }, [template]);
-
-  useEffect(() => {
-    console.log(selectedUsers);
-  }, [selectedUsers]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
