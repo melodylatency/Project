@@ -9,7 +9,21 @@ import User from "../models/userModel.js";
 // @route   /api/templates
 // @access  Public
 const getTemplates = asyncHandler(async (req, res) => {
-  const templates = await Template.findAll({});
+  const templates = await Template.findAll({
+    include: [
+      {
+        model: Tag,
+        attributes: [["id", "value"], "label"],
+        through: { attributes: [] },
+      },
+      {
+        model: User,
+        as: "AllowedUsers",
+        attributes: [["id", "value"], ["name", "label"], "email"],
+        through: { attributes: [] },
+      },
+    ],
+  });
   res.status(200).json(templates);
 });
 
