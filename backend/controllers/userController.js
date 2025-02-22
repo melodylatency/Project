@@ -90,15 +90,13 @@ const getUsers = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all users except the requesting user
-// @route   GET /api/users/access
+// @route   GET /api/users/access/:id
 // @access  Private
 const getAccessUsers = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-
   const users = await User.findAll({
     where: {
       id: {
-        [Op.ne]: userId,
+        [Op.ne]: req.user.id,
       },
       isAdmin: false,
     },
