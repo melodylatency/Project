@@ -34,11 +34,8 @@ jobs:
             cd frontend &&
             npm install --legacy-peer-deps &&
             NODE_OPTIONS='--max-old-space-size=2048' npm run build &&
-            psql -U postgres -c "DROP DATABASE users;" &&
-            psql -U postgres -c "CREATE DATABASE users;" &&
-            psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE users TO overlord;" &&
-            psql -U postgres -c "ALTER DATABASE users OWNER TO overlord;" &&
             cd ../backend &&
+            npx sequelize-cli db:migrate:undo:all &&
             npx sequelize-cli db:migrate &&
             npx sequelize-cli db:seed:all &&
             pm2 restart server &&
