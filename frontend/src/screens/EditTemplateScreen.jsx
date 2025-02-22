@@ -40,6 +40,7 @@ import Message from "../components/Message";
 import Tags from "../components/Tags";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
+import { useGetAccessUsersQuery } from "../redux/slices/usersApiSlice";
 
 const EditTemplateScreen = () => {
   const { t } = useTranslation();
@@ -48,8 +49,12 @@ const EditTemplateScreen = () => {
   const {
     data: template,
     isLoading: isLoadingTemplate,
+    error,
     refetch: refetchTemplate,
   } = useGetTemplateByIdQuery(templateId);
+
+  const { data: options, isLoading: isLoadingOptions } =
+    useGetAccessUsersQuery();
 
   const {
     data: forms,
@@ -66,24 +71,6 @@ const EditTemplateScreen = () => {
     useDeleteQuestionMutation();
 
   const [updateTemplate, { isLoading }] = useUpdateTemplateMutation();
-
-  const options = [
-    {
-      label: "John Doe",
-      value: "john-doe",
-      email: "caterpillar@example.com",
-    },
-    {
-      label: "Jane Smith",
-      value: "jane-smith",
-      email: "jane.smith@example.com",
-    },
-    {
-      label: "Alice Johnson",
-      value: "alice-johnson",
-      email: "alice.johnson@example.com",
-    },
-  ];
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -299,95 +286,103 @@ const EditTemplateScreen = () => {
         data-bs-theme={isDark ? "dark" : "light"}
       >
         <Tab eventKey="general" title={t("generalSettings")}>
-          <Form
-            onSubmit={handleSubmit}
-            data-bs-theme={isDark ? "dark" : "light"}
-          >
-            <Form.Group className="mb-3" controlId="formTitle">
-              <Form.Label className="fs-4 dark:text-gray-400">
-                {t("templateTitle")}
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder={t("enterTitle")}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                size="lg"
-              />
-            </Form.Group>
+          {isLoading || isLoadingOptions ? (
+            <Loader />
+          ) : error ? (
+            <Message variant="danger">
+              {error?.data?.message || error.error}
+            </Message>
+          ) : (
+            <Form
+              onSubmit={handleSubmit}
+              data-bs-theme={isDark ? "dark" : "light"}
+            >
+              <Form.Group className="mb-3" controlId="formTitle">
+                <Form.Label className="fs-4 dark:text-gray-400">
+                  {t("templateTitle")}
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder={t("enterTitle")}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  size="lg"
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-4" controlId="formDescription">
-              <Form.Label className="fs-5 dark:text-gray-400">
-                {t("templateDescription")}
-              </Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={10}
-                placeholder={t("enterDescriptionOptional")}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </Form.Group>
+              <Form.Group className="mb-4" controlId="formDescription">
+                <Form.Label className="fs-5 dark:text-gray-400">
+                  {t("templateDescription")}
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={10}
+                  placeholder={t("enterDescriptionOptional")}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Form.Group>
 
-            <Card className="my-2">
-              <Card.Header>{t("markdownPreview")}</Card.Header>
-              <Card.Body>
-                <div className={`markdown-body ${isDark ? "dark-mode" : ""}`}>
-                  <ReactMarkdown>{description}</ReactMarkdown>
-                </div>
-              </Card.Body>
-            </Card>
+              <Card className="my-2">
+                <Card.Header>{t("markdownPreview")}</Card.Header>
+                <Card.Body>
+                  <div className={`markdown-body ${isDark ? "dark-mode" : ""}`}>
+                    <ReactMarkdown>{description}</ReactMarkdown>
+                  </div>
+                </Card.Body>
+              </Card>
 
-            <Form.Group className="my-3">
-              <Tags selected={selected} setSelected={setSelected} />
-            </Form.Group>
+              <Form.Group className="my-3">
+                <Tags selected={selected} setSelected={setSelected} />
+              </Form.Group>
 
-            <Form.Group className="flex flex-row justify-between">
-              <Form.Select
-                name="access"
-                value={access}
-                onChange={(e) => setAcess(e.target.value)}
-                className="w-1/3"
-              >
-                <option value="public">{t("public")}</option>
-                <option value="restricted">{t("restricted")}</option>
-              </Form.Select>
+              <Form.Group className="flex flex-row justify-between">
+                <Form.Select
+                  name="access"
+                  value={access}
+                  onChange={(e) => setAcess(e.target.value)}
+                  className="w-1/3"
+                >
+                  <option value="public">{t("public")}</option>
+                  <option value="restricted">{t("restricted")}</option>
+                </Form.Select>
 
-              <Form.Select
-                name="topic"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                className="w-1/3"
-              >
-                {topicList.map((topic, index) => (
-                  <option key={index} value={topic}>
-                    {t(topic.toLowerCase())}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+                <Form.Select
+                  name="topic"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className="w-1/3"
+                >
+                  {topicList.map((topic, index) => (
+                    <option key={index} value={topic}>
+                      {t(topic.toLowerCase())}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
 
-            <Form.Group className="my-3" hidden={access !== "restricted"}>
-              <Select
-                isMulti
-                options={options}
-                maxMenuHeight={130}
-                filterOption={customFilterOption}
-                formatOptionLabel={formatOptionLabel}
-                placeholder="Select a user..."
-                isClearable
-                isSearchable
-                menuPortalTarget={document.body}
-                menuPlacement="auto"
-              />
-            </Form.Group>
+              <Form.Group className="my-3" hidden={access !== "restricted"}>
+                <Select
+                  isMulti
+                  options={options}
+                  maxMenuHeight={130}
+                  filterOption={customFilterOption}
+                  formatOptionLabel={formatOptionLabel}
+                  placeholder="Select a user..."
+                  isClearable
+                  isSearchable
+                  menuPortalTarget={document.body}
+                  menuPlacement="auto"
+                />
+              </Form.Group>
 
-            <div className="text-center mt-2">
-              <Button variant="primary" type="submit" size="lg">
-                {t("saveForm")}
-              </Button>
-            </div>
-          </Form>
+              <div className="text-center mt-2">
+                <Button variant="primary" type="submit" size="lg">
+                  {t("saveForm")}
+                </Button>
+              </div>
+            </Form>
+          )}
         </Tab>
 
         <Tab eventKey="questions" title={t("questions")}>
