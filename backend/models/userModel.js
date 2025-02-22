@@ -48,7 +48,7 @@ User.init(
   {
     sequelize,
     modelName: "User",
-    tableName: "users", // Explicit table name
+    tableName: "users",
     timestamps: true,
     hooks: {
       beforeSave: async (user) => {
