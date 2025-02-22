@@ -44,9 +44,7 @@ const Template = ({ template }) => {
         <Card.Text as="h3" className="my-2">
           likes: {template.likes}
         </Card.Text>
-        <Tag>
-          <Link to={`/${template.topic}`}>{template.topic}</Link>
-        </Tag>
+        <Tag>{template.topic}</Tag>
       </Card.Body>
     </Card>
   );

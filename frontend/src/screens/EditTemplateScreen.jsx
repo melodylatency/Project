@@ -123,6 +123,52 @@ const EditTemplateScreen = () => {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [isDark]);
 
+  const customStyles = (isDark) => ({
+    control: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#212529" : "#fff",
+      color: isDark ? "#fff" : "#000",
+      borderColor: isDark ? "#555" : "#ccc",
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#222" : "#fff",
+    }),
+    option: (base, { isFocused, isSelected }) => ({
+      ...base,
+      backgroundColor: isSelected
+        ? isDark
+          ? "#444"
+          : "#ddd"
+        : isFocused
+        ? isDark
+          ? "#333"
+          : "#eee"
+        : "transparent",
+      color: isSelected ? (isDark ? "#fff" : "#000") : isDark ? "#fff" : "#000",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: isDark ? "#fff" : "#000",
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#333" : "#EAEEF2",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: isDark ? "#fff" : "#000",
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: isDark ? "#fff" : "#000",
+      ":hover": {
+        backgroundColor: isDark ? "#555" : "#ccc",
+        color: isDark ? "#fff" : "#000",
+      },
+    }),
+  });
+
   const customFilterOption = (option, inputValue) => {
     const searchTerm = inputValue.trim().toLowerCase();
     const label = option.data.label.toLowerCase();
@@ -133,7 +179,9 @@ const EditTemplateScreen = () => {
   const formatOptionLabel = ({ label, email }) => (
     <div>
       <div>{label}</div>
-      {email && <div style={{ fontSize: "12px", color: "#666" }}>{email}</div>}
+      {email && (
+        <div className="text-sm text-gray-700 dark:text-gray-400">{email}</div>
+      )}
     </div>
   );
 
@@ -375,6 +423,7 @@ const EditTemplateScreen = () => {
                   }
                   filterOption={customFilterOption}
                   formatOptionLabel={formatOptionLabel}
+                  styles={customStyles(isDark)}
                   placeholder="Select a user..."
                   isClearable
                   isSearchable
