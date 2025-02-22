@@ -261,6 +261,7 @@ const EditTemplateScreen = () => {
         topic,
         templateId,
         tagList: selected,
+        userAccess: selectedUsers,
       }).unwrap();
       refetch();
       refetchTemplate();

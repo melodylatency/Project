@@ -145,8 +145,16 @@ const createTemplate = asyncHandler(async (req, res) => {
 // @route   PUT /api/templates
 // @access  Private
 const updateTemplateById = asyncHandler(async (req, res) => {
-  const { title, description, topic, image, access, templateId, tagList } =
-    req.body;
+  const {
+    title,
+    description,
+    topic,
+    image,
+    access,
+    templateId,
+    tagList,
+    userAccess,
+  } = req.body;
 
   const template = await Template.findByPk(templateId, {
     include: [
@@ -196,6 +204,14 @@ const updateTemplateById = asyncHandler(async (req, res) => {
     );
 
     await template.setTags(tagInstances);
+  }
+
+  if (userAccess !== undefined) {
+    const users = await User.findAll({
+      where: { email: userAccess },
+    });
+
+    await template.setUsers(users);
   }
 
   await template.update(updateData);
