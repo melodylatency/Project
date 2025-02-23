@@ -244,7 +244,7 @@ const EditTemplateScreen = () => {
 
       await refetchTemplate();
     } catch (err) {
-      toast.error(err?.data?.message || "Failed to reorder questionList");
+      toast.error(err?.data?.message || t("reorderFail"));
     }
   };
 
@@ -269,7 +269,7 @@ const EditTemplateScreen = () => {
       }
 
       refetchTemplate();
-      toast.success("Question deleted successfully");
+      toast.success(t("questionDeletedSuccess"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -281,7 +281,7 @@ const EditTemplateScreen = () => {
         ...editedQuestion,
       }).unwrap();
       refetchTemplate();
-      toast.success("Question updated successfully");
+      toast.success(t("questionUpdatedSuccess"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }

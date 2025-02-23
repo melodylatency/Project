@@ -104,6 +104,8 @@
   "userId": "ID карыстальніка",
   "aggregationContent": "Аналітыка агрэгацыі будзе даступная ў бліжэйшы час",
   "questionCreatedSuccess": "Пытанне паспяхова створана",
+  "questionDeletedSuccess": "Пытанне паспяхова выдалена",
+  "questionUpdatedSuccess": "Пытанне паспяхова абноўлена",
   "templateUpdatedSuccess": "Шаблон паспяхова абноўлены!",
   "pleaseSelectUsers": "Калі ласка, выберыце карыстальнікаў для працягу",
   "confirmAction": "Вы ўпэўнены, што жадаеце {{action}} гэтых карыстальнікаў?",
@@ -119,5 +121,6 @@
   "email": "Электронная пошта",
   "blocked": "Заблакаваны",
   "lastLogin": "Апошні ўваход",
-  "unauthorized": "Неаўтарызаваны"
+  "unauthorized": "Неаўтарызаваны",
+  "reorderFail": "Не ўдалося змяніць парадак пытанняў"
 }

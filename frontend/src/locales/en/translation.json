@@ -105,6 +105,8 @@
   "userId": "User ID",
   "aggregationContent": "Aggregation analytics will be available soon",
   "questionCreatedSuccess": "Question created successfully",
+  "questionDeletedSuccess": "Question deleted successfully",
+  "questionUpdatedSuccess": "Question updated successfully",
   "templateUpdatedSuccess": "Template updated successfully!",
   "pleaseSelectUsers": "Please select users to proceed",
   "confirmAction": "Are you sure you want to {{action}} these users?",
@@ -120,5 +122,6 @@
   "email": "Email",
   "blocked": "Blocked",
   "lastLogin": "Last Login",
-  "unauthorized": "Unauthorized"
+  "unauthorized": "Unauthorized",
+  "reorderFail": "Failed to reorder questions"
 }

@@ -31,7 +31,7 @@ const FormScreen = () => {
     if (userInfo && form) {
       if (userInfo.id !== form.user_id && userInfo.isAdmin === false) {
         navigate("/");
-        toast.error("Unauthorized!");
+        toast.error(t("unauthorized"));
       }
 
       if (form?.answerList) {
@@ -42,7 +42,7 @@ const FormScreen = () => {
         setAnswerMap(initialAnswers);
       }
     }
-  }, [setAnswerMap, form, userInfo, navigate]);
+  }, [setAnswerMap, form, userInfo, navigate, t]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -129,7 +129,7 @@ const FormScreen = () => {
       refetch();
       setAnswerMap({});
       navigate("/profile");
-      toast.success("Form updated successfully!");
+      toast.success(t("update"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }

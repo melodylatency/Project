@@ -104,6 +104,8 @@
   "userId": "ID пользователя",
   "aggregationContent": "Аналитика агрегации будет доступна в ближайшее время",
   "questionCreatedSuccess": "Вопрос успешно создан",
+  "questionDeletedSuccess": "Вопрос успешно удален",
+  "questionUpdatedSuccess": "Вопрос успешно обновлен",
   "templateUpdatedSuccess": "Шаблон успешно обновлен!",
   "pleaseSelectUsers": "Пожалуйста, выберите пользователей для продолжения",
   "confirmAction": "Вы уверены, что хотите {{action}} этих пользователей?",
@@ -119,5 +121,6 @@
   "email": "Электронная почта",
   "blocked": "Заблокирован",
   "lastLogin": "Последний вход",
-  "unauthorized": "Запрещено"
+  "unauthorized": "Запрещено",
+  "reorderFail": "Не удалось изменить порядок вопросов"
 }
