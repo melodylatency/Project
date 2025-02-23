@@ -35,7 +35,6 @@ jobs:
             npm install --legacy-peer-deps &&
             NODE_OPTIONS='--max-old-space-size=2048' npm run build &&
             cd ../backend &&
-            npx sequelize-cli db:migrate:undo:all &&
             npx sequelize-cli db:migrate &&
             npx sequelize-cli db:seed:all &&
             pm2 restart server &&
