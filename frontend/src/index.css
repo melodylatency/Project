@@ -32,7 +32,7 @@ code {
   padding-left: 0.5rem;
 }
 
-Dark mode overrides */ .markdown-body.dark-mode {
+.markdown-body.dark-mode {
   color: #e0e0e0;
   background-color: #212529;
 }
