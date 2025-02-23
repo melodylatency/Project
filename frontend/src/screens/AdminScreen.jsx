@@ -161,9 +161,13 @@ const AdminScreen = () => {
 
   return (
     <>
-      <h1 className="flex justify-center text-7xl text-stroke py-5 dark:text-gray-300">
-        {t("adminPanel")}
-      </h1>
+      <Row>
+        <Col sm={12}>
+          <h1 className="text-center fs-1 dark:text-gray-300 py-5">
+            {t("adminPanel")}
+          </h1>
+        </Col>
+      </Row>
       {loadingDelete ||
         loadingAdmin ||
         loadingBlock ||
