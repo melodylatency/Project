@@ -76,7 +76,7 @@ const EditTemplateScreen = () => {
   const [description, setDescription] = useState("");
   const [access, setAcess] = useState("public");
   const [topic, setTopic] = useState("Other");
-  const [topicList] = useState(["Other", "Education", "Poll"]);
+  const [topicList] = useState(["Other", "Education", "Poll", "Quiz", "Job"]);
   const [selected, setSelected] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [questionList, setQuestionList] = useState([]);
@@ -621,8 +621,12 @@ const EditTemplateScreen = () => {
             </>
           )}
         </Tab>
-        <Tab eventKey="aggregation" title="Aggregation">
-          {t("aggregationContent")}
+        <Tab
+          eventKey="aggregation"
+          title="Aggregation"
+          className="dark:text-gray-400"
+        >
+          {t("aggregationContent")}...
         </Tab>
       </Tabs>
     </Container>
