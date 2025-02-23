@@ -42,8 +42,6 @@ export default {
         defaultValue: Sequelize.literal("NOW()"),
       },
     });
-
-    await queryInterface.addIndex("answers", ["form_id"]);
   },
 
   down: async (queryInterface) => {

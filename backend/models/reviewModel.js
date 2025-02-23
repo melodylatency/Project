@@ -44,12 +44,6 @@ Review.init(
     modelName: "Review",
     tableName: "reviews",
     timestamps: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ["user_id", "template_id"],
-      },
-    ],
   }
 );
 

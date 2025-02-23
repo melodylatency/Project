@@ -71,7 +71,7 @@ const TemplateScreen = () => {
         toast.error(t("unauthorized"));
       }
     }
-  }, [userInfo, template, navigate]);
+  }, [userInfo, template, navigate, t]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");

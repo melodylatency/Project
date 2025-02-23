@@ -75,7 +75,7 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto px-2 gap-2">
-            <NavDropdown title={t("language")} id="language-picker">
+            <NavDropdown title={t("language")} id="language-picker" align="end">
               <NavDropdown.Item onClick={() => changeLanguage("en")}>
                 English
               </NavDropdown.Item>
@@ -87,12 +87,7 @@ const Header = () => {
               </NavDropdown.Item>
             </NavDropdown>
             {userInfo ? (
-              <NavDropdown
-                className="w-full"
-                title={userInfo.name}
-                id="username"
-                align="end"
-              >
+              <NavDropdown title={userInfo.name} id="username" align="end">
                 <NavDropdown.Item
                   onClick={adminHandler}
                   hidden={!userInfo.isAdmin}

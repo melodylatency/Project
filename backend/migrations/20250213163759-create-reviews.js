@@ -50,8 +50,6 @@ export default {
         defaultValue: Sequelize.literal("NOW()"),
       },
     });
-
-    await queryInterface.addIndex("reviews", ["template_id"]);
   },
 
   down: async (queryInterface) => {

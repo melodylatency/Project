@@ -55,8 +55,6 @@ export default {
         defaultValue: Sequelize.literal("NOW()"),
       },
     });
-
-    await queryInterface.addIndex("questions", ["template_id"]);
   },
 
   down: async (queryInterface) => {

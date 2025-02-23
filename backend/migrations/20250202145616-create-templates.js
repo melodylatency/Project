@@ -57,25 +57,6 @@ export default {
         defaultValue: Sequelize.literal("NOW()"),
       },
     });
-    await queryInterface.sequelize.query(`
-      CREATE INDEX templates_search_idx ON templates USING GIN(search_vector);
-      
-      CREATE OR REPLACE FUNCTION templates_search_vector_trigger() RETURNS trigger AS $$
-      BEGIN
-        NEW.search_vector :=
-          setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
-          setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B');
-        RETURN NEW;
-      END
-      $$ LANGUAGE plpgsql;
-
-      CREATE TRIGGER templates_search_vector_update
-      BEFORE INSERT OR UPDATE OF title, description ON templates
-      FOR EACH ROW EXECUTE PROCEDURE templates_search_vector_trigger();
-
-      -- Initial population of search vectors for existing data
-      UPDATE templates SET search_vector = NULL;
-    `);
   },
 
   down: async (queryInterface) => {
