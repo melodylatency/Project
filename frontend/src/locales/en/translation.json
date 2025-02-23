@@ -119,5 +119,6 @@
   "select": "Select",
   "email": "Email",
   "blocked": "Blocked",
-  "lastLogin": "Last Login"
+  "lastLogin": "Last Login",
+  "unauthorized": "Unauthorized"
 }

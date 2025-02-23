@@ -68,7 +68,7 @@ const TemplateScreen = () => {
 
       if (template.access !== "public" && !userInfo.isAdmin && !isAllowedUser) {
         navigate("/");
-        toast.error("Unauthorized!");
+        toast.error(t("unauthorized"));
       }
     }
   }, [userInfo, template, navigate]);
@@ -90,13 +90,13 @@ const TemplateScreen = () => {
     e.preventDefault();
 
     if (comment.length < 1) {
-      toast.error("The comment can't be empty");
+      toast.error(t("emptyCommentError"));
       return;
     }
 
     const matches = matcher.getAllMatches(comment);
     if (matches.length > 0) {
-      toast.error("Please remove inappropriate language from your comment");
+      toast.error(t("removeInappropriateLanguage"));
       return;
     }
 
@@ -111,7 +111,7 @@ const TemplateScreen = () => {
       refetchTemplates();
       setLiked(false);
       setComment("");
-      toast.success("Review submitted");
+      toast.success(t("reviewSubmitted"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -169,7 +169,7 @@ const TemplateScreen = () => {
       }).unwrap();
       dispatch(clearTemplateAnswers(templateId));
       navigate("/");
-      toast.success("Form submitted successfully!");
+      toast.success(t("formSubmitted"));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
