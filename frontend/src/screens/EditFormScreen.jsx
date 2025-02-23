@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 const FormScreen = () => {
   const { t } = useTranslation();
   const { id: formId } = useParams();
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessages, setErrorMessages] = useState({});
   const [answerMap, setAnswerMap] = useState({});
   const [isDark, setIsDark] = useState(
     window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -57,34 +57,63 @@ const FormScreen = () => {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [isDark]);
 
+  useEffect(() => {
+    const newErrorMessages = {};
+    Object.keys(answerMap).forEach((questionId) => {
+      const value = answerMap[questionId];
+      if (typeof value === "number" && value < 0) {
+        newErrorMessages[questionId] = t("positiveIntegerOnly");
+      }
+    });
+    setErrorMessages(newErrorMessages);
+  }, [t, answerMap]);
+
   const handleInputChange = (questionId, value, type) => {
     let newValue;
-
     switch (type) {
       case "INTEGER":
-        if (value < 0) {
-          setErrorMessage("Integer values must be positive.");
-          return;
+        newValue = value === "" ? "" : Number(value);
+        setAnswerMap((prevMap) => ({
+          ...prevMap,
+          [questionId]: newValue,
+        }));
+        if (newValue !== "" && newValue < 0) {
+          setErrorMessages((prev) => ({
+            ...prev,
+            [questionId]: t("positiveIntegerOnly"),
+          }));
         } else {
-          setErrorMessage("");
-          newValue = value === "" ? "" : Number(value);
+          setErrorMessages((prev) => {
+            const updated = { ...prev };
+            delete updated[questionId];
+            return updated;
+          });
         }
         break;
       case "CHECKBOX":
         newValue = !answerMap[questionId];
+        setAnswerMap((prevMap) => ({
+          ...prevMap,
+          [questionId]: newValue,
+        }));
         break;
       default:
         newValue = value;
+        setAnswerMap((prevMap) => ({
+          ...prevMap,
+          [questionId]: newValue,
+        }));
     }
-
-    setAnswerMap((prevMap) => ({
-      ...prevMap,
-      [questionId]: newValue,
-    }));
   };
 
   const handleResubmittingForm = async (e) => {
     e.preventDefault();
+
+    if (Object.keys(errorMessages).length > 0) {
+      toast.error(t("negativeError"));
+      return;
+    }
+
     const answerArray = Object.entries(answerMap).map(
       ([questionId, value]) => ({
         questionId,
@@ -127,101 +156,102 @@ const FormScreen = () => {
                 onSubmit={handleResubmittingForm}
                 data-bs-theme={isDark ? "dark" : "light"}
               >
-                {form.questionList.map((question) => {
-                  return (
-                    <Card key={question.id} className="mb-3">
-                      <Card.Body>
-                        <Card.Title>{question.title}</Card.Title>
-                        {question.description && (
-                          <Card.Text className="text-muted">
-                            {question.description}
-                          </Card.Text>
-                        )}
+                {form.questionList.map((question) => (
+                  <Card key={question.id} className="mb-3">
+                    <Card.Body>
+                      <Card.Title>{question.title}</Card.Title>
+                      {question.description && (
+                        <Card.Text className="text-muted">
+                          {question.description}
+                        </Card.Text>
+                      )}
+                      {question.type === "SINGLE_LINE" && (
+                        <Form.Control
+                          type="text"
+                          value={answerMap[question.id] ?? ""}
+                          disabled={
+                            !(
+                              userInfo.id === form.user_id ||
+                              userInfo.isAdmin === true
+                            )
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              question.id,
+                              e.target.value,
+                              "SINGLE_LINE"
+                            )
+                          }
+                          placeholder={t("enterYourAnswer")}
+                        />
+                      )}
 
-                        {question.type === "SINGLE_LINE" && (
+                      {question.type === "MULTI_LINE" && (
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          value={answerMap[question.id] ?? ""}
+                          disabled={
+                            !(
+                              userInfo.id === form.user_id ||
+                              userInfo.isAdmin === true
+                            )
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              question.id,
+                              e.target.value,
+                              "MULTI_LINE"
+                            )
+                          }
+                          placeholder={t("enterYourAnswer")}
+                        />
+                      )}
+
+                      {question.type === "INTEGER" && (
+                        <>
                           <Form.Control
-                            type="text"
+                            type="number"
                             value={answerMap[question.id] ?? ""}
-                            disabled={
-                              !(
-                                userInfo.id === form.user_id ||
-                                userInfo.isAdmin === true
-                              )
-                            }
                             onChange={(e) =>
                               handleInputChange(
                                 question.id,
                                 e.target.value,
-                                "SINGLE_LINE"
+                                "INTEGER"
                               )
                             }
                             placeholder={t("enterYourAnswer")}
                           />
-                        )}
+                          {errorMessages[question.id] && (
+                            <div className="mt-2">
+                              <Message variant="danger">
+                                {errorMessages[question.id]}
+                              </Message>
+                            </div>
+                          )}
+                        </>
+                      )}
 
-                        {question.type === "MULTI_LINE" && (
-                          <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={answerMap[question.id] ?? ""}
-                            disabled={
-                              !(
-                                userInfo.id === form.user_id ||
-                                userInfo.isAdmin === true
-                              )
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                question.id,
-                                e.target.value,
-                                "MULTI_LINE"
-                              )
-                            }
-                            placeholder="Enter your answer"
-                          />
-                        )}
-
-                        {question.type === "INTEGER" && (
-                          <>
-                            <Form.Control
-                              type="number"
-                              value={answerMap[question.id] ?? ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  question.id,
-                                  e.target.value,
-                                  "INTEGER"
-                                )
-                              }
-                              placeholder="Enter a positive number"
-                            />
-                            {errorMessage && (
-                              <Message variant="danger">{errorMessage}</Message>
-                            )}
-                          </>
-                        )}
-
-                        {question.type === "CHECKBOX" && (
-                          <Form.Check
-                            type="checkbox"
-                            id={question.id}
-                            label="Check this box"
-                            disabled={
-                              !(
-                                userInfo.id === form.user_id ||
-                                userInfo.isAdmin === true
-                              )
-                            }
-                            onChange={() =>
-                              handleInputChange(question.id, null, "CHECKBOX")
-                            }
-                            checked={answerMap[question.id] ?? false}
-                          />
-                        )}
-                      </Card.Body>
-                    </Card>
-                  );
-                })}
+                      {question.type === "CHECKBOX" && (
+                        <Form.Check
+                          type="checkbox"
+                          id={question.id}
+                          label={t("checkboxLabel")}
+                          disabled={
+                            !(
+                              userInfo.id === form.user_id ||
+                              userInfo.isAdmin === true
+                            )
+                          }
+                          onChange={() =>
+                            handleInputChange(question.id, null, "CHECKBOX")
+                          }
+                          checked={answerMap[question.id] ?? false}
+                        />
+                      )}
+                    </Card.Body>
+                  </Card>
+                ))}
                 <div className="flex justify-center">
                   <Button
                     type="submit"

@@ -171,7 +171,6 @@ const CreateTemplateScreen = () => {
       </h1>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Form onSubmit={handleSubmit}>
-          {/* Form Title */}
           <Form.Group className="mb-3" controlId="formTitle">
             <Form.Label className="fs-4 dark:text-gray-400">
               {t("templateTitle")}
@@ -185,7 +184,6 @@ const CreateTemplateScreen = () => {
             />
           </Form.Group>
 
-          {/* Form Description with Markdown Support */}
           <Form.Group className="mb-4" controlId="formDescription">
             <Form.Label className="fs-5 dark:text-gray-400">
               {t("templateDescription")}
@@ -199,7 +197,6 @@ const CreateTemplateScreen = () => {
             />
           </Form.Group>
 
-          {/* Markdown Preview */}
           <Card className="mb-4">
             <Card.Header>{t("markdownPreview")}</Card.Header>
             <Card.Body>
@@ -216,7 +213,6 @@ const CreateTemplateScreen = () => {
             />
           </Form.Group>
 
-          {/* Questions List */}
           <h4 className="mb-3 dark:text-gray-400">{t("questions")}</h4>
           <SortableContext
             items={questionList.map((q) => q.id)}
@@ -238,7 +234,6 @@ const CreateTemplateScreen = () => {
             ))}
           </SortableContext>
 
-          {/* Add New Question */}
           <Card className="mt-4 mb-4 shadow-sm">
             <Card.Header>{t("addNewQuestion")}</Card.Header>
             <Card.Body>
