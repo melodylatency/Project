@@ -1,11 +1,10 @@
 const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode; // let isolates the variable
+  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
 
-  // Check for bad Mongoose ObjectId
   if (err.name === "Cast Error" && err.kind === "ObjectId") {
     message = `Resource not found`;
-    statusCode = 404; // if we request a nonexistant templateId
+    statusCode = 404;
   }
 
   res.status(statusCode).json({

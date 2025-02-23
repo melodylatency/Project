@@ -23,11 +23,9 @@ const __dirname = path.resolve();
 
 const app = express();
 
-// Bode parser of req obj
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Cookie parser middleware
 app.use(cookieParser());
 
 app.use("/api/users", userRoutes);

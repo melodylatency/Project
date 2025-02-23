@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Row, Col, Card, Form } from "react-bootstrap";
-import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useTranslation } from "react-i18next";
 
 const QuestionCard = ({
   question,
@@ -12,7 +12,7 @@ const QuestionCard = ({
   onSave,
   onCancelEdit,
 }) => {
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t } = useTranslation();
   const [editedQuestion, setEditedQuestion] = useState({});
   const [isDark, setIsDark] = useState(
     window.matchMedia("(prefers-color-scheme: dark)").matches

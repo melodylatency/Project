@@ -38,7 +38,7 @@ export default {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: "templates", // Ensure this matches the Template table name
+          model: "templates",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -56,7 +56,6 @@ export default {
       },
     });
 
-    // Add index for template_id for better query performance
     await queryInterface.addIndex("questions", ["template_id"]);
   },
 

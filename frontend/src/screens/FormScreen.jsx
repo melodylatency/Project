@@ -52,7 +52,6 @@ const FormScreen = () => {
             <Col md={12}>
               <Form data-bs-theme={isDark ? "dark" : "light"}>
                 {form.questionList.map((question) => {
-                  // Retrieve current answers for this form
                   const currentAnswer = answerMap[question.id];
                   return (
                     <Card key={question.id} className="mb-3">

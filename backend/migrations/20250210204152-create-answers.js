@@ -43,7 +43,6 @@ export default {
       },
     });
 
-    // Add index for form_id for better query performance
     await queryInterface.addIndex("answers", ["form_id"]);
   },
 

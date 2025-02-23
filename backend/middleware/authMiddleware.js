@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "./asyncHandler.js";
 import User from "../models/userModel.js";
 
-// authMiddleware.js (server)
 const protect = asyncHandler(async (req, res, next) => {
   let token = req.cookies.operation;
 
@@ -33,7 +32,7 @@ const protect = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    error.statusCode = 401; // Default to 401 for token issues
+    error.statusCode = 401;
     next(error);
   }
 });

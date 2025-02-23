@@ -175,7 +175,6 @@ const ProfileScreen = () => {
           );
         }
 
-        // Clear selection and refetch data
         if (action === "deleteTemplate") {
           setSelectedTemplates([]);
         } else {

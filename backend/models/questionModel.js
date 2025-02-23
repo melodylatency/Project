@@ -28,11 +28,11 @@ Question.init(
       defaultValue: true,
     },
     template_id: {
-      type: DataTypes.UUID, // Ensure this matches the type of Template's primary key
-      allowNull: false, // A question must belong to a template
+      type: DataTypes.UUID,
+      allowNull: false,
       references: {
-        model: "templates", // Reference the Template table
-        key: "id", // Reference the primary key of Template
+        model: "templates",
+        key: "id",
       },
     },
   },
