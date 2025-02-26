@@ -1,9 +1,6 @@
 import dotenv from "dotenv";
-import path from "path";
 
-const __dirname = path.resolve();
-
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config();
 
 const config = {
   username: process.env.DB_USER,

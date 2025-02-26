@@ -1,4 +1,3 @@
-import { Sequelize } from "sequelize";
 import templates from "../data/templates.js";
 
 export default {
