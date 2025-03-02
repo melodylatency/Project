@@ -1,22 +1,21 @@
 import asyncHandler from "../middleware/asyncHandler.js";
-import { getAccessToken } from "../utils/salesforce.js";
+import { getSalesforceConfig } from "../utils/salesforce.js";
 import axios from "axios";
 
-// @desc    Test Salesforce connection
-// @route   GET /api/salesforce/test-auth
-// @access  Public (for testing only)
-const testSalesforceAuth = asyncHandler(async (req, res) => {
+// @desc    Verify Salesforce configuration
+// @route   GET /api/salesforce/verify-config
+// @access  Private/Admin
+const verifySalesforceConfig = asyncHandler(async (req, res) => {
   try {
-    const { accessToken, instanceUrl } = await getAccessToken();
+    const { accessToken, instanceUrl } = getSalesforceConfig();
     res.json({
       status: "Success",
-      accessToken: accessToken.slice(0, 20) + "...", // Partial token for security
       instanceUrl,
+      tokenExists: !!accessToken,
     });
   } catch (error) {
-    console.error("Salesforce Auth Test Failed:", error.message);
-    res.status(500).json({
-      error: "Salesforce connection failed",
+    res.status(400).json({
+      error: "Invalid Salesforce configuration",
       details: error.message,
     });
   }
@@ -26,19 +25,18 @@ const testSalesforceAuth = asyncHandler(async (req, res) => {
 // @route   POST /api/salesforce/create-account
 // @access  Private
 const createSalesforceAccount = asyncHandler(async (req, res) => {
+  const { companyName, industry, phone, jobTitle } = req.body;
+  const user = req.user;
+
+  if (!companyName || !industry) {
+    res.status(400);
+    throw new Error("Company name and industry are required");
+  }
+
   try {
-    const { companyName, industry, phone, jobTitle } = req.body;
-    const user = req.user;
+    const { accessToken, instanceUrl } = getSalesforceConfig();
 
-    // Validate required fields
-    if (!companyName || !industry) {
-      res.status(400);
-      throw new Error("Company name and industry are required");
-    }
-
-    const { accessToken, instanceUrl } = await getAccessToken();
-
-    // Create records
+    // Create Account and Contact using composite API
     const response = await axios.post(
       `${instanceUrl}/services/data/v58.0/composite/sobjects`,
       {
@@ -48,6 +46,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
             attributes: { type: "Account" },
             Name: companyName,
             Industry: industry,
+            // Add more account fields as needed
           },
           {
             attributes: { type: "Contact" },
@@ -56,7 +55,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
             Email: user.email,
             Phone: phone,
             Title: jobTitle,
-            AccountId: "@{Account.id}",
+            AccountId: "@{Account.id}", // Reference the created Account
           },
         ],
       },
@@ -75,11 +74,12 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     console.error("Salesforce Error:", error.response?.data || error.message);
-    res.status(500).json({
+    const statusCode = error.response?.status || 500;
+    res.status(statusCode).json({
       error: "Salesforce operation failed",
-      details: error.response?.data?.message || error.message,
+      details: error.response?.data || error.message,
     });
   }
 });
 
-export { testSalesforceAuth, createSalesforceAccount };
+export { verifySalesforceConfig, createSalesforceAccount };
