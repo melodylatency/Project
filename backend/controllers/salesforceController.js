@@ -8,15 +8,26 @@ import axios from "axios";
 const verifySalesforceConfig = asyncHandler(async (req, res) => {
   try {
     const { accessToken, instanceUrl } = getSalesforceConfig();
+
+    // Simple query to verify token
+    const response = await axios.get(
+      `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id+FROM+Account+LIMIT+1`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
     res.json({
-      status: "Success",
-      instanceUrl,
-      tokenExists: !!accessToken,
+      valid: true,
+      apiVersion: "v58.0",
+      recordCount: response.data.totalSize,
     });
   } catch (error) {
-    res.status(400).json({
-      error: "Invalid Salesforce configuration",
-      details: error.message,
+    res.status(401).json({
+      valid: false,
+      details: error.response?.data || error.message,
     });
   }
 });
@@ -34,9 +45,12 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
   }
 
   try {
+    // Split user name
+    const [firstName, ...rest] = user.name.split(" ");
+    const lastName = rest.join(" ") || "Unknown";
+
     const { accessToken, instanceUrl } = getSalesforceConfig();
 
-    // Create Account and Contact using composite API
     const response = await axios.post(
       `${instanceUrl}/services/data/v58.0/composite/sobjects`,
       {
@@ -46,16 +60,15 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
             attributes: { type: "Account" },
             Name: companyName,
             Industry: industry,
-            // Add more account fields as needed
           },
           {
             attributes: { type: "Contact" },
-            FirstName: user.firstName,
-            LastName: user.lastName,
+            FirstName: firstName,
+            LastName: lastName,
             Email: user.email,
             Phone: phone,
             Title: jobTitle,
-            AccountId: "@{Account.id}", // Reference the created Account
+            AccountId: "@{Account.id}",
           },
         ],
       },
@@ -74,8 +87,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     console.error("Salesforce Error:", error.response?.data || error.message);
-    const statusCode = error.response?.status || 500;
-    res.status(statusCode).json({
+    res.status(500).json({
       error: "Salesforce operation failed",
       details: error.response?.data || error.message,
     });
