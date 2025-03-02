@@ -222,7 +222,7 @@ const ProfileScreen = () => {
             ></Form.Control>
           </Form.Group>
           <Button type="submit" variant="primary" className="my-3">
-            {t("update")}
+            {t("updateButton")}
           </Button>
           {isLoading && <Loader />}
         </Form>
