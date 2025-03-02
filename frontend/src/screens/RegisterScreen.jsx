@@ -8,17 +8,16 @@ import { useRegisterMutation } from "../redux/slices/usersApiSlice";
 import { setCredentials } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const RegisterScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,19 +34,6 @@ const RegisterScreen = () => {
       navigate(redirect);
     }
   }, [userInfo, redirect, navigate]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

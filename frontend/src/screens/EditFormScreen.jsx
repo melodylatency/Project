@@ -10,15 +10,14 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const FormScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const { id: formId } = useParams();
   const [errorMessages, setErrorMessages] = useState({});
   const [answerMap, setAnswerMap] = useState({});
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const { userInfo } = useSelector((state) => state.auth);
   const { data: form, refetch, isLoading, error } = useGetFormByIdQuery(formId);
@@ -43,19 +42,6 @@ const FormScreen = () => {
       }
     }
   }, [setAnswerMap, form, userInfo, navigate, t]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   useEffect(() => {
     const newErrorMessages = {};
@@ -135,6 +121,66 @@ const FormScreen = () => {
     }
   };
 
+  const ShowTitle = ({ question }) => <Card.Title>{question.title}</Card.Title>;
+
+  const ShowDescription = ({ question }) => (
+    <Card.Text className="text-muted">{question.description}</Card.Text>
+  );
+
+  const ShowFieldSingle = ({ question }) => (
+    <Form.Control
+      type="text"
+      value={answerMap[question.id] ?? ""}
+      disabled={!(userInfo.id === form.user_id || userInfo.isAdmin === true)}
+      onChange={(e) =>
+        handleInputChange(question.id, e.target.value, "SINGLE_LINE")
+      }
+      placeholder={t("enterYourAnswer")}
+    />
+  );
+
+  const ShowFieldMulti = ({ question }) => (
+    <Form.Control
+      as="textarea"
+      rows={3}
+      value={answerMap[question.id] ?? ""}
+      disabled={!(userInfo.id === form.user_id || userInfo.isAdmin === true)}
+      onChange={(e) =>
+        handleInputChange(question.id, e.target.value, "MULTI_LINE")
+      }
+      placeholder={t("enterYourAnswer")}
+    />
+  );
+
+  const ShowFieldInt = ({ question }) => (
+    <>
+      <Form.Control
+        type="number"
+        value={answerMap[question.id] ?? ""}
+        onChange={(e) =>
+          handleInputChange(question.id, e.target.value, "INTEGER")
+        }
+        placeholder={t("enterYourAnswer")}
+      />
+      {errorMessages[question.id] && (
+        <div className="mt-2">
+          <Message variant="danger">{errorMessages[question.id]}</Message>
+        </div>
+      )}
+    </>
+  );
+
+  const ShowFieldCheck = ({ question }) => (
+    <Form.Check
+      type="checkbox"
+      id={question.id}
+      label={t("checkboxLabel")}
+      disabled={!(userInfo.id === form.user_id || userInfo.isAdmin === true)}
+      onChange={() => handleInputChange(question.id, null, "CHECKBOX")}
+      checked={answerMap[question.id] ?? false}
+    />
+  );
+
   return (
     <>
       {isLoading ? (
@@ -159,99 +205,26 @@ const FormScreen = () => {
                 {form.questionList.map((question) => (
                   <Card key={question.id} className="mb-3">
                     <Card.Body>
-                      <Card.Title>{question.title}</Card.Title>
+                      <ShowTitle question={question} />
                       {question.description && (
-                        <Card.Text className="text-muted">
-                          {question.description}
-                        </Card.Text>
+                        <ShowDescription question={question} />
                       )}
                       {question.type === "SINGLE_LINE" && (
-                        <Form.Control
-                          type="text"
-                          value={answerMap[question.id] ?? ""}
-                          disabled={
-                            !(
-                              userInfo.id === form.user_id ||
-                              userInfo.isAdmin === true
-                            )
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              question.id,
-                              e.target.value,
-                              "SINGLE_LINE"
-                            )
-                          }
-                          placeholder={t("enterYourAnswer")}
-                        />
+                        <ShowFieldSingle question={question} />
                       )}
-
                       {question.type === "MULTI_LINE" && (
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          value={answerMap[question.id] ?? ""}
-                          disabled={
-                            !(
-                              userInfo.id === form.user_id ||
-                              userInfo.isAdmin === true
-                            )
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              question.id,
-                              e.target.value,
-                              "MULTI_LINE"
-                            )
-                          }
-                          placeholder={t("enterYourAnswer")}
-                        />
+                        <ShowFieldMulti question={question} />
                       )}
-
                       {question.type === "INTEGER" && (
-                        <>
-                          <Form.Control
-                            type="number"
-                            value={answerMap[question.id] ?? ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                question.id,
-                                e.target.value,
-                                "INTEGER"
-                              )
-                            }
-                            placeholder={t("enterYourAnswer")}
-                          />
-                          {errorMessages[question.id] && (
-                            <div className="mt-2">
-                              <Message variant="danger">
-                                {errorMessages[question.id]}
-                              </Message>
-                            </div>
-                          )}
-                        </>
+                        <ShowFieldInt question={question} />
                       )}
-
                       {question.type === "CHECKBOX" && (
-                        <Form.Check
-                          type="checkbox"
-                          id={question.id}
-                          label={t("checkboxLabel")}
-                          disabled={
-                            !(
-                              userInfo.id === form.user_id ||
-                              userInfo.isAdmin === true
-                            )
-                          }
-                          onChange={() =>
-                            handleInputChange(question.id, null, "CHECKBOX")
-                          }
-                          checked={answerMap[question.id] ?? false}
-                        />
+                        <ShowFieldCheck question={question} />
                       )}
                     </Card.Body>
                   </Card>
                 ))}
+
                 <div className="flex justify-center">
                   <Button
                     type="submit"

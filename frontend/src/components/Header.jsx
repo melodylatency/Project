@@ -8,32 +8,18 @@ import { logout } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { setLanguage } from "../redux/slices/languageSlice";
-import { useEffect, useState } from "react";
+import useTheme from "../hooks/useTheme";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
+
+  const isDark = useTheme();
 
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [logoutApiCall] = useLogoutMutation();
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const adminHandler = () => {
     navigate("/admin");

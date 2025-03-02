@@ -41,9 +41,11 @@ import Tags from "../components/Tags";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { useGetAccessUsersQuery } from "../redux/slices/usersApiSlice";
+import useTheme from "../hooks/useTheme";
 
 const EditTemplateScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const { id: templateId } = useParams();
 
   const {
@@ -88,9 +90,6 @@ const EditTemplateScreen = () => {
     description: "",
     displayOnTable: true,
   });
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const navigate = useNavigate();
 
@@ -109,19 +108,6 @@ const EditTemplateScreen = () => {
       setSelectedUsers(template.AllowedUsers);
     }
   }, [template]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const customStyles = (isDark) => ({
     control: (base) => ({

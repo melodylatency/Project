@@ -24,9 +24,11 @@ import { logout } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const AdminScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const { userInfo } = useSelector((state) => state.auth);
 
   const { data: users = [], refetch, isLoading, error } = useGetUsersQuery();
@@ -38,9 +40,6 @@ const AdminScreen = () => {
 
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -145,19 +144,6 @@ const AdminScreen = () => {
   const handleSort = () => {
     setSortOrder((prevOrder) => (prevOrder === "desc" ? "asc" : "desc"));
   };
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   return (
     <>

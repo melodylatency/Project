@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Row, Col, Card, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const QuestionCard = ({
   question,
@@ -13,27 +14,12 @@ const QuestionCard = ({
   onCancelEdit,
 }) => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const [editedQuestion, setEditedQuestion] = useState({});
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   useEffect(() => {
     setEditedQuestion({ ...question });
   }, [question]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

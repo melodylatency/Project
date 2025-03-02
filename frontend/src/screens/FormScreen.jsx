@@ -4,14 +4,12 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useGetFormByIdQuery } from "../redux/slices/formsApiSlice";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import useTheme from "../hooks/useTheme";
 
 const FormScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const { id: formId } = useParams();
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const { data: form, isLoading, error } = useGetFormByIdQuery(formId);
 
@@ -19,19 +17,6 @@ const FormScreen = () => {
     acc[answer.question_id] = answer.value;
     return acc;
   }, {});
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   return (
     <>

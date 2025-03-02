@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -30,9 +30,11 @@ import {
   useGetTagsQuery,
 } from "../redux/slices/tagsApiSlice";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const CreateTemplateScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const [title, setTitle] = useState(t("untitledTemplate"));
   const [description, setDescription] = useState("");
   const [newQuestion, setNewQuestion] = useState({
@@ -42,9 +44,6 @@ const CreateTemplateScreen = () => {
     show_in_results: true,
   });
   const [editingQuestionId, setEditingQuestionId] = useState(null);
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const { tagList } = useSelector((state) => state.tag);
   const { questionList } = useSelector((state) => state.question);
@@ -57,19 +56,6 @@ const CreateTemplateScreen = () => {
   const { refetch } = useGetTemplatesQuery();
   const { refetch: refetchTags } = useGetTagsQuery();
   const { refetch: refetchTagCloud } = useGetTagCloudQuery();
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const addQuestion = () => {
     const countOfType = questionList.filter(

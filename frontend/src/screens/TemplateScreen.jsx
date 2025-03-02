@@ -28,15 +28,14 @@ import ReactMarkdown from "react-markdown";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const TemplateScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const [isLiked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const { id: templateId } = useParams();
 
@@ -72,19 +71,6 @@ const TemplateScreen = () => {
       }
     }
   }, [userInfo, template, navigate, t]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

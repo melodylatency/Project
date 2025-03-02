@@ -19,9 +19,11 @@ import { setCredentials } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
+import useTheme from "../hooks/useTheme";
 
 const ProfileScreen = () => {
   const { t } = useTranslation();
+  const isDark = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,9 +32,6 @@ const ProfileScreen = () => {
   const [sortOrderTemplates, setSortOrderTemplates] = useState("desc");
   const [selectedTemplates, setSelectedTemplates] = useState([]);
   const [selectedForms, setSelectedForms] = useState([]);
-  const [isDark, setIsDark] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
   const {
     data: forms,
@@ -66,19 +65,6 @@ const ProfileScreen = () => {
     refetchForms();
     refetchTemplates();
   }, [userInfo, refetchForms, refetchTemplates]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDark(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isDark]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
