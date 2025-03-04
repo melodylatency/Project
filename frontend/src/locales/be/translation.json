@@ -110,7 +110,7 @@
   "templateUpdatedSuccess": "Шаблон паспяхова абноўлены!",
   "pleaseSelectUsers": "Калі ласка, выберыце карыстальнікаў для працягу",
   "confirmAction": "Вы ўпэўнены, што жадаеце {{action}} гэтых карыстальнікаў?",
-  "actionSuccess": "{{count}} карыстальнік{{s}} паспяхова {{action}}.",
+  "actionSuccess": "{{count}} карыстальнік паспяхова {{action}}.",
   "actionFailed": "Дзеянне не атрымалася.",
   "notAdmin": "Не адміністратар",
   "anErrorOccurred": "Адбылася памылка.",
@@ -123,5 +123,13 @@
   "blocked": "Заблакаваны",
   "lastLogin": "Апошні ўваход",
   "unauthorized": "Неаўтарызаваны",
-  "reorderFail": "Не ўдалося змяніць парадак пытанняў"
+  "reorderFail": "Не ўдалося змяніць парадак пытанняў",
+  "company": "Назва кампаніі",
+  "enterCompany": "Увядзіце назву кампаніі",
+  "phone": "Тэлефон",
+  "jobTitle": "Пасада",
+  "enterJobTitle": "Увядзіце вашу пасаду",
+  "department": "Аддзел",
+  "enterDepartment": "Увядзіце ваш аддзел",
+  "companyNameRequired": "Назва кампаніі не можа быць пустой."
 }

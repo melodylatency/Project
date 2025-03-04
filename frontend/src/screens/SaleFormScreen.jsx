@@ -24,6 +24,11 @@ const SaleFormScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (companyName.trim() === "") {
+      alert(t("companyNameRequired"));
+      return;
+    }
+
     try {
       console.log("OK");
       await sendForm({
@@ -56,11 +61,11 @@ const SaleFormScreen = () => {
             >
               <Form.Group controlId="companyName" className="my-3">
                 <Form.Label className="dark:text-gray-400">
-                  Company Name
+                  {t("company")}
                 </Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="company"
+                  placeholder={t("enterCompany")}
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                 ></Form.Control>
@@ -77,10 +82,12 @@ const SaleFormScreen = () => {
               </Form.Group>
 
               <Form.Group controlId="phone" className="my-3">
-                <Form.Label className="dark:text-gray-400">Phone</Form.Label>
+                <Form.Label className="dark:text-gray-400">
+                  {t("phone")}
+                </Form.Label>
                 <Form.Control
                   type="tel"
-                  placeholder="phone"
+                  placeholder="123-456-7890"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 ></Form.Control>
@@ -88,11 +95,11 @@ const SaleFormScreen = () => {
 
               <Form.Group controlId="jobTitle" className="my-3">
                 <Form.Label className="dark:text-gray-400">
-                  Job Title
+                  {t("jobTitle")}
                 </Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="job"
+                  placeholder={t("enterJobTitle")}
                   value={jobTitle}
                   onChange={(e) => setJobTitle(e.target.value)}
                 ></Form.Control>
@@ -100,11 +107,11 @@ const SaleFormScreen = () => {
 
               <Form.Group controlId="companyName" className="my-3">
                 <Form.Label className="dark:text-gray-400">
-                  Department
+                  {t("department")}
                 </Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="department"
+                  placeholder={t("enterDepartment")}
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
                 ></Form.Control>

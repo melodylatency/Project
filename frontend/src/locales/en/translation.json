@@ -111,7 +111,7 @@
   "templateUpdatedSuccess": "Template updated successfully!",
   "pleaseSelectUsers": "Please select users to proceed",
   "confirmAction": "Are you sure you want to {{action}} these users?",
-  "actionSuccess": "{{count}} user{{s}} {{action}}ed successfully.",
+  "actionSuccess": "{{count}} users {{action}}ed successfully.",
   "actionFailed": "Action failed.",
   "notAdmin": "Not admin",
   "anErrorOccurred": "An error occurred.",
@@ -124,5 +124,13 @@
   "blocked": "Blocked",
   "lastLogin": "Last Login",
   "unauthorized": "Unauthorized",
-  "reorderFail": "Failed to reorder questions"
+  "reorderFail": "Failed to reorder questions",
+  "company": "Company Name",
+  "enterCompany": "Enter Company Name",
+  "phone": "Phone",
+  "jobTitle": "Job Title",
+  "enterJobTitle": "Enter your job title",
+  "department": "Department",
+  "enterDepartment": "Enter your department",
+  "companyNameRequired": "Company name cannot be empty."
 }

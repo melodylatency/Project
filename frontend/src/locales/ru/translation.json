@@ -110,7 +110,7 @@
   "templateUpdatedSuccess": "Шаблон успешно обновлен!",
   "pleaseSelectUsers": "Пожалуйста, выберите пользователей для продолжения",
   "confirmAction": "Вы уверены, что хотите {{action}} этих пользователей?",
-  "actionSuccess": "{{count}} пользователь{{s}} успешно {{action}}.",
+  "actionSuccess": "{{count}} пользователь успешно {{action}}.",
   "actionFailed": "Действие не удалось.",
   "notAdmin": "Не администратор",
   "anErrorOccurred": "Произошла ошибка.",
@@ -123,5 +123,13 @@
   "blocked": "Заблокирован",
   "lastLogin": "Последний вход",
   "unauthorized": "Запрещено",
-  "reorderFail": "Не удалось изменить порядок вопросов"
+  "reorderFail": "Не удалось изменить порядок вопросов",
+  "company": "Название компании",
+  "enterCompany": "Введите название компании",
+  "phone": "Телефон",
+  "jobTitle": "Должность",
+  "enterJobTitle": "Введите вашу должность",
+  "department": "Отдел",
+  "enterDepartment": "Введите ваш отдел",
+  "companyNameRequired": "Название компании не может быть пустым."
 }
