@@ -44,14 +44,27 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
     throw new Error("Company name and industry are required");
   }
 
+  const [firstName, ...rest] = user.name.split(" ");
+  const lastName = rest.join(" ") || "Unknown";
+
+  const { accessToken, instanceUrl } = getSalesforceConfig();
+
+  const escapedEmail = user.email.replace(/'/g, "''");
+  const contactCheck = await axios.get(
+    `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id,AccountId+FROM+Contact+WHERE+Email='${escapedEmail}'+LIMIT+1`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (contactCheck.data.totalSize > 0) {
+    res.status(400);
+    throw new Error("User already has an associated Salesforce account");
+  }
+
   try {
-    // Split user name
-    const [firstName, ...rest] = user.name.split(" ");
-    const lastName = rest.join(" ") || "Unknown";
-
-    const { accessToken, instanceUrl } = getSalesforceConfig();
-
-    // Create Account first
     const accountResponse = await axios.post(
       `${instanceUrl}/services/data/v58.0/sobjects/Account`,
       {
@@ -68,7 +81,6 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
 
     const accountId = accountResponse.data.id;
 
-    // Create linked Contact
     const contactResponse = await axios.post(
       `${instanceUrl}/services/data/v58.0/sobjects/Contact`,
       {
@@ -93,7 +105,10 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
       contactId: contactResponse.data.id,
     });
   } catch (error) {
-    console.error("Salesforce Error:", error.response?.data || error.message);
+    console.error(
+      "Salesforce Creation Error:",
+      error.response?.data || error.message
+    );
     const statusCode = error.response?.status || 500;
     res.status(statusCode).json({
       error: "Salesforce operation failed",
