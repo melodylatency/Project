@@ -9,7 +9,6 @@ const verifySalesforceConfig = asyncHandler(async (req, res) => {
   try {
     const { accessToken, instanceUrl } = getSalesforceConfig();
 
-    // Simple query to verify token
     const response = await axios.get(
       `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id+FROM+Account+LIMIT+1`,
       {
