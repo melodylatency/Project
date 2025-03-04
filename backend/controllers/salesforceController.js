@@ -35,12 +35,12 @@ const verifySalesforceConfig = asyncHandler(async (req, res) => {
 // @route   POST /api/salesforce/create-account
 // @access  Private
 const createSalesforceAccount = asyncHandler(async (req, res) => {
-  const { companyName, industry, phone, jobTitle } = req.body;
+  const { companyName, phone, jobTitle, website, department } = req.body;
   const user = req.user;
 
-  if (!companyName || !industry) {
+  if (!companyName) {
     res.status(400);
-    throw new Error("Company name and industry are required");
+    throw new Error("Company name is required");
   }
 
   const [firstName, ...rest] = user.name.split(" ");
@@ -64,21 +64,35 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
   }
 
   try {
-    const accountResponse = await axios.post(
-      `${instanceUrl}/services/data/v58.0/sobjects/Account`,
-      {
-        Name: companyName,
-        Industry: industry,
-      },
+    const escapedCompanyName = companyName.replace(/'/g, "''");
+    const accountCheck = await axios.get(
+      `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id+FROM+Account+WHERE+Name='${escapedCompanyName}'+LIMIT+1`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
         },
       }
     );
 
-    const accountId = accountResponse.data.id;
+    let accountId;
+    if (accountCheck.data.totalSize > 0) {
+      accountId = accountCheck.data.records[0].Id;
+    } else {
+      const accountResponse = await axios.post(
+        `${instanceUrl}/services/data/v58.0/sobjects/Account`,
+        {
+          Name: companyName,
+          Website: website,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      accountId = accountResponse.data.id;
+    }
 
     const contactResponse = await axios.post(
       `${instanceUrl}/services/data/v58.0/sobjects/Contact`,
@@ -88,6 +102,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
         Email: user.email,
         Phone: phone,
         Title: jobTitle,
+        Department: department,
         AccountId: accountId,
       },
       {
