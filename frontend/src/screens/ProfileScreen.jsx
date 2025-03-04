@@ -344,7 +344,14 @@ const ProfileScreen = () => {
                 {errorTemplate?.data?.message || errorTemplate.error}
               </Message>
             ) : templates.length === 0 ? (
-              <Message>{t("noTemplatesFound")}</Message>
+              <>
+                <Message>{t("noTemplatesFound")}</Message>
+                <Col xs={12} sm="auto" className="ms-sm-auto">
+                  <Link to={"/create"}>
+                    <Button>{t("create")}</Button>
+                  </Link>
+                </Col>
+              </>
             ) : (
               <>
                 <Table
