@@ -12,6 +12,14 @@ const SaleFormScreen = () => {
   const { t } = useTranslation();
   const isDark = useTheme();
 
+  //companyName, phone, jobTitle, website, department
+
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [phone, setPhone] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [department, setDepartment] = useState("");
+
   const { userInfo } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
@@ -34,66 +42,6 @@ const SaleFormScreen = () => {
     }
   };
 
-  const ShowTitle = ({ question }) => <Card.Title>{question.title}</Card.Title>;
-
-  const ShowDescription = ({ question }) => (
-    <Card.Text className="text-muted">{question.description}</Card.Text>
-  );
-
-  const ShowFieldSingle = ({ question }) => (
-    <Form.Control
-      type="text"
-      value={answerMap[question.id] ?? ""}
-      disabled={!(userInfo.id === form.user_id || userInfo.isAdmin === true)}
-      onChange={(e) =>
-        handleInputChange(question.id, e.target.value, "SINGLE_LINE")
-      }
-      placeholder={t("enterYourAnswer")}
-    />
-  );
-
-  const ShowFieldMulti = ({ question }) => (
-    <Form.Control
-      as="textarea"
-      rows={3}
-      value={answerMap[question.id] ?? ""}
-      disabled={!(userInfo.id === form.user_id || userInfo.isAdmin === true)}
-      onChange={(e) =>
-        handleInputChange(question.id, e.target.value, "MULTI_LINE")
-      }
-      placeholder={t("enterYourAnswer")}
-    />
-  );
-
-  const ShowFieldInt = ({ question }) => (
-    <>
-      <Form.Control
-        type="number"
-        value={answerMap[question.id] ?? ""}
-        onChange={(e) =>
-          handleInputChange(question.id, e.target.value, "INTEGER")
-        }
-        placeholder={t("enterYourAnswer")}
-      />
-      {errorMessages[question.id] && (
-        <div className="mt-2">
-          <Message variant="danger">{errorMessages[question.id]}</Message>
-        </div>
-      )}
-    </>
-  );
-
-  const ShowFieldCheck = ({ question }) => (
-    <Form.Check
-      type="checkbox"
-      id={question.id}
-      label={t("checkboxLabel")}
-      disabled={!(userInfo.id === form.user_id || userInfo.isAdmin === true)}
-      onChange={() => handleInputChange(question.id, null, "CHECKBOX")}
-      checked={answerMap[question.id] ?? false}
-    />
-  );
-
   return (
     <>
       {isLoading ? (
@@ -115,28 +63,29 @@ const SaleFormScreen = () => {
                 onSubmit={handleSubmit}
                 data-bs-theme={isDark ? "dark" : "light"}
               >
-                {form.questionList.map((question) => (
-                  <Card key={question.id} className="mb-3">
-                    <Card.Body>
-                      <ShowTitle question={question} />
-                      {question.description && (
-                        <ShowDescription question={question} />
-                      )}
-                      {question.type === "SINGLE_LINE" && (
-                        <ShowFieldSingle question={question} />
-                      )}
-                      {question.type === "MULTI_LINE" && (
-                        <ShowFieldMulti question={question} />
-                      )}
-                      {question.type === "INTEGER" && (
-                        <ShowFieldInt question={question} />
-                      )}
-                      {question.type === "CHECKBOX" && (
-                        <ShowFieldCheck question={question} />
-                      )}
-                    </Card.Body>
-                  </Card>
-                ))}
+                <Form.Group controlId="companyName" className="my-3">
+                  <Form.Label className="dark:text-gray-400">
+                    Company Name
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder={t("enterEmail")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  ></Form.Control>
+                </Form.Group>
+
+                <Form.Group controlId="website" className="my-3">
+                  <Form.Label className="dark:text-gray-400">
+                    Website
+                  </Form.Label>
+                  <Form.Control
+                    type="url"
+                    placeholder="https://example.com"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  ></Form.Control>
+                </Form.Group>
 
                 <div className="flex justify-center">
                   <Button
