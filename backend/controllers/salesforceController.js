@@ -51,26 +51,33 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
 
     const { accessToken, instanceUrl } = getSalesforceConfig();
 
-    const response = await axios.post(
-      `${instanceUrl}/services/data/v58.0/composite/sobjects`,
+    // Create Account first
+    const accountResponse = await axios.post(
+      `${instanceUrl}/services/data/v58.0/sobjects/Account`,
       {
-        allOrNone: true,
-        records: [
-          {
-            attributes: { type: "Account" },
-            Name: companyName,
-            Industry: industry,
-          },
-          {
-            attributes: { type: "Contact" },
-            FirstName: firstName,
-            LastName: lastName,
-            Email: user.email,
-            Phone: phone,
-            Title: jobTitle,
-            AccountId: "@{Account.id}",
-          },
-        ],
+        Name: companyName,
+        Industry: industry,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const accountId = accountResponse.data.id;
+
+    // Create linked Contact
+    const contactResponse = await axios.post(
+      `${instanceUrl}/services/data/v58.0/sobjects/Contact`,
+      {
+        FirstName: firstName,
+        LastName: lastName,
+        Email: user.email,
+        Phone: phone,
+        Title: jobTitle,
+        AccountId: accountId,
       },
       {
         headers: {
@@ -82,14 +89,16 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       success: true,
-      accountId: response.data[0].id,
-      contactId: response.data[1].id,
+      accountId: accountId,
+      contactId: contactResponse.data.id,
     });
   } catch (error) {
     console.error("Salesforce Error:", error.response?.data || error.message);
-    res.status(500).json({
+    const statusCode = error.response?.status || 500;
+    res.status(statusCode).json({
       error: "Salesforce operation failed",
       details: error.response?.data || error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 });
