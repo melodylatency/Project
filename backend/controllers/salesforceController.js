@@ -1,26 +1,24 @@
+// controllers/salesforceController.js
+
 import asyncHandler from "../middleware/asyncHandler.js";
 import { getSalesforceConfig } from "../utils/salesforce.js";
 import axios from "axios";
 
-// @desc    Verify Salesforce configuration
-// @route   GET /api/salesforce/verify-config
-// @access  Private/Admin
 const verifySalesforceConfig = asyncHandler(async (req, res) => {
   try {
-    const { accessToken, instanceUrl } = getSalesforceConfig();
+    const { accessToken, instanceUrl } = await getSalesforceConfig();
 
-    const response = await axios.get(
-      `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id+FROM+Account+LIMIT+1`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    // Correct URL construction using instanceUrl
+    const query = encodeURIComponent("SELECT Id FROM Account LIMIT 1");
+    const response = await axios.get(`${instanceUrl}/query?q=${query}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
     res.json({
       valid: true,
-      apiVersion: "v58.0",
+      apiVersion: instanceUrl.split("/v")[1], // Extract version from instanceUrl
       recordCount: response.data.totalSize,
     });
   } catch (error) {
@@ -31,9 +29,6 @@ const verifySalesforceConfig = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Create Salesforce Account+Contact
-// @route   POST /api/salesforce/create-account
-// @access  Private
 const createSalesforceAccount = asyncHandler(async (req, res) => {
   const { companyName, website, phone, jobTitle, department } = req.body;
   const user = req.user;
@@ -46,11 +41,17 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
   const [firstName, ...rest] = user.name.split(" ");
   const lastName = rest.join(" ") || "Unknown";
 
-  const { accessToken, instanceUrl } = getSalesforceConfig();
+  const { accessToken, instanceUrl } = await getSalesforceConfig();
 
-  const escapedEmail = user.email.replace(/'/g, "''");
+  // Safer SOQL query construction
+  const contactQuery = encodeURIComponent(
+    `SELECT Id,AccountId FROM Contact WHERE Email='${user.email.replace(
+      /'/g,
+      "''"
+    )}' LIMIT 1`
+  );
   const contactCheck = await axios.get(
-    `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id,AccountId+FROM+Contact+WHERE+Email='${escapedEmail}'+LIMIT+1`,
+    `${instanceUrl}/query?q=${contactQuery}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -64,9 +65,15 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
   }
 
   try {
-    const escapedCompanyName = companyName.replace(/'/g, "''");
+    // Safer account query
+    const accountQuery = encodeURIComponent(
+      `SELECT Id FROM Account WHERE Name='${companyName.replace(
+        /'/g,
+        "''"
+      )}' LIMIT 1`
+    );
     const accountCheck = await axios.get(
-      `${instanceUrl}/services/data/v58.0/query?q=SELECT+Id+FROM+Account+WHERE+Name='${escapedCompanyName}'+LIMIT+1`,
+      `${instanceUrl}/query?q=${accountQuery}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -79,7 +86,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
       accountId = accountCheck.data.records[0].Id;
     } else {
       const accountResponse = await axios.post(
-        `${instanceUrl}/services/data/v58.0/sobjects/Account`,
+        `${instanceUrl}/sobjects/Account`, // Correct URL
         {
           Name: companyName,
           Website: website,
@@ -95,7 +102,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
     }
 
     const contactResponse = await axios.post(
-      `${instanceUrl}/services/data/v58.0/sobjects/Contact`,
+      `${instanceUrl}/sobjects/Contact`, // Correct URL
       {
         FirstName: firstName,
         LastName: lastName,
