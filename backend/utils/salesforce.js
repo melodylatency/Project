@@ -27,20 +27,18 @@ const getAccessToken = async () => {
   try {
     const privateKey = fs
       .readFileSync(process.env.SALESFORCE_PRIVATE_KEY_PATH, "utf8")
-      .replace(/\\n/g, "\n"); // Critical for某些PEM格式
+      .replace(/\\n/g, "\n");
 
     const certificateContent = fs.readFileSync(
       process.env.SALESFORCE_CERTIFICATE_PATH,
       "utf8"
     );
 
-    // Validate certificate chain parsing
     const pemCertificates = parseCertificateChain(certificateContent);
     if (!pemCertificates.length) {
       throw new Error("No certificates found in chain");
     }
 
-    // Verify JWT claims
     const tokenPayload = {
       iss: process.env.SALESFORCE_CONSUMER_KEY,
       sub: process.env.SALESFORCE_USERNAME,
@@ -48,7 +46,6 @@ const getAccessToken = async () => {
       exp: Math.floor(Date.now() / 1000) + 300,
     };
 
-    // Double-check JWT header construction
     const assertion = jwt.sign(tokenPayload, privateKey, {
       algorithm: "RS256",
       header: {
@@ -82,7 +79,7 @@ const getAccessToken = async () => {
     tokenCache = {
       accessToken: response.data.access_token,
       instanceUrl: response.data.instance_url,
-      expires: Date.now() + response.data.expires_in * 900, // Safer buffer
+      expires: Date.now() + response.data.expires_in * 900,
     };
 
     return tokenCache;
@@ -91,7 +88,7 @@ const getAccessToken = async () => {
       message: error.message,
       code: error.code,
       responseData: error.response?.data,
-      config: error.config?.data, // Show the actual sent payload
+      config: error.config?.data,
       stack: error.stack,
     });
     throw error;

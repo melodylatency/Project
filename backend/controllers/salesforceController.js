@@ -1,5 +1,3 @@
-// controllers/salesforceController.js
-
 import asyncHandler from "../middleware/asyncHandler.js";
 import { getSalesforceConfig } from "../utils/salesforce.js";
 import axios from "axios";
@@ -8,7 +6,6 @@ const verifySalesforceConfig = asyncHandler(async (req, res) => {
   try {
     const { accessToken, instanceUrl } = await getSalesforceConfig();
 
-    // Correct URL construction using instanceUrl
     const query = encodeURIComponent("SELECT Id FROM Account LIMIT 1");
     const response = await axios.get(`${instanceUrl}/query?q=${query}`, {
       headers: {
@@ -18,7 +15,7 @@ const verifySalesforceConfig = asyncHandler(async (req, res) => {
 
     res.json({
       valid: true,
-      apiVersion: instanceUrl.split("/v")[1], // Extract version from instanceUrl
+      apiVersion: instanceUrl.split("/v")[1],
       recordCount: response.data.totalSize,
     });
   } catch (error) {
@@ -43,7 +40,6 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
 
   const { accessToken, instanceUrl } = await getSalesforceConfig();
 
-  // Safer SOQL query construction
   const contactQuery = encodeURIComponent(
     `SELECT Id,AccountId FROM Contact WHERE Email='${user.email.replace(
       /'/g,
@@ -65,7 +61,6 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Safer account query
     const accountQuery = encodeURIComponent(
       `SELECT Id FROM Account WHERE Name='${companyName.replace(
         /'/g,
@@ -86,7 +81,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
       accountId = accountCheck.data.records[0].Id;
     } else {
       const accountResponse = await axios.post(
-        `${instanceUrl}/sobjects/Account`, // Correct URL
+        `${instanceUrl}/sobjects/Account`,
         {
           Name: companyName,
           Website: website,
@@ -102,7 +97,7 @@ const createSalesforceAccount = asyncHandler(async (req, res) => {
     }
 
     const contactResponse = await axios.post(
-      `${instanceUrl}/sobjects/Contact`, // Correct URL
+      `${instanceUrl}/sobjects/Contact`,
       {
         FirstName: firstName,
         LastName: lastName,
