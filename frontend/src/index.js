@@ -22,6 +22,7 @@ import EditFormScreen from "./screens/EditFormScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import CreateTemplateScreen from "./screens/CreateTemplateScreen";
 import FormScreen from "./screens/FormScreen";
+import SaleFormScreen from "./screens/SaleFormScreen";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
       <Route path="/admin" element={<AdminScreen />} />
       <Route path="/profile" element={<ProfileScreen />} />
       <Route path="/create" element={<CreateTemplateScreen />} />
+      <Route path="/sales" element={<SaleFormScreen />} />
     </Route>
   )
 );

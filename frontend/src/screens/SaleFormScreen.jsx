@@ -1,9 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Row, Col, Button, Form, Card } from "react-bootstrap";
+import { Row, Col, Button, Form } from "react-bootstrap";
 import Loader from "../components/Loader";
-import Message from "../components/Message";
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useSendSalesFormMutation } from "../redux/slices/saleforceApiSlice";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import useTheme from "../hooks/useTheme";
@@ -12,7 +11,7 @@ const SaleFormScreen = () => {
   const { t } = useTranslation();
   const isDark = useTheme();
 
-  //companyName, phone, jobTitle, website, department
+  const [sendForm, { isLoading: sendingForm }] = useSendSalesFormMutation();
 
   const [companyName, setCompanyName] = useState("");
   const [website, setWebsite] = useState("");
@@ -20,23 +19,22 @@ const SaleFormScreen = () => {
   const [jobTitle, setJobTitle] = useState("");
   const [department, setDepartment] = useState("");
 
-  const { userInfo } = useSelector((state) => state.auth);
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      console.log(answerArray);
-      // await updateForm({
-      //   answerMap: answerArray,
-      //   formId,
-      // }).unwrap();
-      refetch();
-      setAnswerMap({});
+      console.log("OK");
+      await sendForm({
+        companyName,
+        website,
+        phone,
+        jobTitle,
+        department,
+      }).unwrap();
       navigate("/profile");
-      toast.success(t("update"));
+      toast.success("Sales force created!");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -44,70 +42,84 @@ const SaleFormScreen = () => {
 
   return (
     <>
-      {isLoading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant="danger">
-          {error?.data?.message || error.error}
-        </Message>
-      ) : (
-        <div>
-          <Link to={`/profile`}>
-            <div className="my-3">
-              <Button variant="secondary">{t("goBack")}</Button>
-            </div>
-          </Link>
-          <Row className="mt-4">
-            <Col md={12}>
-              <Form
-                onSubmit={handleSubmit}
-                data-bs-theme={isDark ? "dark" : "light"}
-              >
-                <Form.Group controlId="companyName" className="my-3">
-                  <Form.Label className="dark:text-gray-400">
-                    Company Name
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder={t("enterEmail")}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  ></Form.Control>
-                </Form.Group>
+      <div>
+        <Link to={`/profile`}>
+          <div className="my-3">
+            <Button variant="secondary">{t("goBack")}</Button>
+          </div>
+        </Link>
+        <Row className="mt-4 justify-content-center">
+          <Col md={12} lg={8} xl={6}>
+            <Form
+              onSubmit={handleSubmit}
+              data-bs-theme={isDark ? "dark" : "light"}
+            >
+              <Form.Group controlId="companyName" className="my-3">
+                <Form.Label className="dark:text-gray-400">
+                  Company Name
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="company"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-                <Form.Group controlId="website" className="my-3">
-                  <Form.Label className="dark:text-gray-400">
-                    Website
-                  </Form.Label>
-                  <Form.Control
-                    type="url"
-                    placeholder="https://example.com"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  ></Form.Control>
-                </Form.Group>
+              <Form.Group controlId="website" className="my-3">
+                <Form.Label className="dark:text-gray-400">Website</Form.Label>
+                <Form.Control
+                  type="url"
+                  placeholder="https://example.com"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-                <div className="flex justify-center">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    disabled={
-                      !(
-                        userInfo.id === form.user_id ||
-                        userInfo.isAdmin === true
-                      )
-                    }
-                  >
-                    {t("submitForm")}
-                  </Button>
-                </div>
-                {isLoading || (updatingForm && <Loader />)}
-              </Form>
-            </Col>
-          </Row>
-        </div>
-      )}
+              <Form.Group controlId="phone" className="my-3">
+                <Form.Label className="dark:text-gray-400">Phone</Form.Label>
+                <Form.Control
+                  type="tel"
+                  placeholder="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="jobTitle" className="my-3">
+                <Form.Label className="dark:text-gray-400">
+                  Job Title
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="job"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="companyName" className="my-3">
+                <Form.Label className="dark:text-gray-400">
+                  Department
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="department"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              <div className="flex justify-center">
+                <Button type="submit" variant="primary" size="lg">
+                  {t("submitForm")}
+                </Button>
+              </div>
+              {sendingForm && <Loader />}
+            </Form>
+          </Col>
+        </Row>
+      </div>
     </>
   );
 };

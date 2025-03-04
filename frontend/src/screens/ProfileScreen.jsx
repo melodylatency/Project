@@ -226,9 +226,11 @@ const ProfileScreen = () => {
           </Button>
           {isLoading && <Loader />}
         </Form>
-        <Button type="submit" variant="primary" size="lg" className="my-3">
-          SalesForce
-        </Button>
+        <Link to={"/sales"}>
+          <Button variant="primary" size="lg" className="my-3">
+            SalesForce
+          </Button>
+        </Link>
       </Col>
       <Col md={9}>
         <Tabs

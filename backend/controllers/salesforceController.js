@@ -35,7 +35,7 @@ const verifySalesforceConfig = asyncHandler(async (req, res) => {
 // @route   POST /api/salesforce/create-account
 // @access  Private
 const createSalesforceAccount = asyncHandler(async (req, res) => {
-  const { companyName, phone, jobTitle, website, department } = req.body;
+  const { companyName, website, phone, jobTitle, department } = req.body;
   const user = req.user;
 
   if (!companyName) {
