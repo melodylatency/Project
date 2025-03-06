@@ -43,33 +43,14 @@ const getUserTickets = asyncHandler(async (req, res) => {
     order: [["createdAt", "DESC"]],
   });
 
-  // Check statuses and identify deleted tickets
-  const ticketStatusResults = await Promise.all(
-    tickets.map(async (ticket) => ({
-      ticket,
-      status: await getJiraTicketStatus(ticket.jiraKey),
-    }))
+  const ticketsWithStatus = await Promise.all(
+    tickets.map(async (ticket) => {
+      const status = await getJiraTicketStatus(ticket.jiraKey);
+      return { ...ticket.toJSON(), status };
+    })
   );
 
-  const [deletedTickets, validTickets] = ticketStatusResults.reduce(
-    ([deleted, valid], result) => {
-      if (result.status === "DELETED") {
-        deleted.push(result.ticket.id);
-      } else {
-        valid.push({ ...result.ticket.toJSON(), status: result.status });
-      }
-      return [deleted, valid];
-    },
-    [[], []]
-  );
-
-  if (deletedTickets.length > 0) {
-    await Ticket.destroy({
-      where: { id: deletedTickets },
-    });
-  }
-
-  res.status(200).json(validTickets);
+  res.status(200).json(ticketsWithStatus);
 });
 
 const checkJiraUser = async (email) => {
@@ -200,16 +181,20 @@ const getJiraTicketStatus = async (jiraKey) => {
         },
       }
     );
+
+    // Return the current status name from Jira
     return response.data.fields.status.name;
   } catch (error) {
+    // Handle deleted tickets
     if (error.response?.status === 404) {
-      return "DELETED";
+      return "Deleted";
     }
+
     console.error(
       "Error fetching Jira ticket status:",
       error.response?.data || error.message
     );
-    return "UNKNOWN";
+    return "Unknown";
   }
 };
 

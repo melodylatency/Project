@@ -498,7 +498,19 @@ const ProfileScreen = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="badge bg-info">{ticket.status}</span>
+                        <span
+                          className={`badge ${
+                            ticket.status === "Deleted"
+                              ? "bg-danger"
+                              : ticket.status === "Done"
+                              ? "bg-success"
+                              : ticket.status === "In Progress"
+                              ? "bg-secondary"
+                              : "bg-info"
+                          }`}
+                        >
+                          {ticket.status}
+                        </span>
                       </td>
                       <td>
                         {moment(ticket.createdAt).format(
