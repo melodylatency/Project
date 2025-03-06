@@ -22,7 +22,7 @@ const createJiraTicket = asyncHandler(async (req, res) => {
   });
 
   const ticket = await Ticket.create({
-    userId: req.user.id,
+    user_id: req.user.id,
     jiraKey,
     summary,
     priority,
@@ -39,7 +39,7 @@ const createJiraTicket = asyncHandler(async (req, res) => {
 // @access  Private
 const getUserTickets = asyncHandler(async (req, res) => {
   const tickets = await Ticket.findAll({
-    where: { userId: req.user.id },
+    where: { user_id: req.user.id },
     order: [["createdAt", "DESC"]],
   });
 

@@ -50,10 +50,6 @@ export default {
       },
     });
 
-    await queryInterface.addIndex("tickets", ["user_id"], {
-      name: "tickets_user_id_index",
-    });
-
     await queryInterface.addIndex("tickets", ["jiraKey"], {
       name: "tickets_jira_key_index",
     });

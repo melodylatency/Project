@@ -31,6 +31,14 @@ Ticket.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
@@ -38,9 +46,6 @@ Ticket.init(
     tableName: "tickets",
     timestamps: true,
     indexes: [
-      {
-        fields: ["userId"], // For faster querying by user
-      },
       {
         fields: ["jiraKey"], // For quick lookups when syncing with Jira
       },
