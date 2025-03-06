@@ -47,7 +47,7 @@ Ticket.init(
     timestamps: true,
     indexes: [
       {
-        fields: ["jiraKey"], // For quick lookups when syncing with Jira
+        fields: ["jiraKey"],
       },
     ],
   }

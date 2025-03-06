@@ -52,7 +52,9 @@ const ProfileScreen = () => {
     data: tickets,
     isLoading: isLoadingTickets,
     error: errorTickets,
-  } = useGetUserTicketsQuery();
+  } = useGetUserTicketsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const [deleteTemplate, { isLoading: loadingDeleteTemplate }] =
     useDeleteTemplateMutation();

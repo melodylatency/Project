@@ -311,7 +311,7 @@ const deleteTemplate = asyncHandler(async (req, res) => {
     await template.destroy();
     res.status(200).json({ message: "Template deleted successfully" });
   } catch (error) {
-    console.error("Error deleting template:", error); // Log the error
+    console.error("Error deleting template:", error);
     res
       .status(404)
       .json({ message: "Failed to delete template", error: error.message });

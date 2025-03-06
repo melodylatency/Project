@@ -7,7 +7,6 @@ export const tagsApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: JIRA_URL,
         method: "GET",
-        providesTags: ["Ticket"],
       }),
     }),
     createTicket: builder.mutation({
@@ -15,7 +14,6 @@ export const tagsApiSlice = apiSlice.injectEndpoints({
         url: JIRA_URL,
         method: "POST",
         body: data,
-        invalidatesTags: ["Ticket"],
       }),
     }),
   }),

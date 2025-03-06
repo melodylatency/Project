@@ -33,10 +33,10 @@ const getTagCloud = asyncHandler(async (req, res) => {
       {
         model: Template,
         attributes: [],
-        through: { attributes: [] }, // Exclude join table columns
+        through: { attributes: [] },
       },
     ],
-    group: ["Tag.id", "Tag.label"], // Group by all non-aggregated Tag fields
+    group: ["Tag.id", "Tag.label"],
     order: [["value", "ASC"]],
   });
 
