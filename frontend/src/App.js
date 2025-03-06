@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./i18n";
 import "react-toastify/dist/ReactToastify.css";
+import TicketModal from "./components/TicketModal";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         </Container>
       </main>
       <Footer />
+      <TicketModal />
       <ToastContainer />
     </div>
   );

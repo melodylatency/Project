@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, Button } from "react-bootstrap";
 import { FaUser } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,9 @@ import { logout } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { setLanguage } from "../redux/slices/languageSlice";
+import { MdOutlineLiveHelp } from "react-icons/md";
 import useTheme from "../hooks/useTheme";
+import { openModal } from "../redux/slices/ticketModalSlice";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -94,6 +96,9 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
             )}
+            <Button variant="secondary" onClick={() => dispatch(openModal())}>
+              <MdOutlineLiveHelp size={24} />
+            </Button>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

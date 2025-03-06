@@ -5,3 +5,4 @@ export const FORMS_URL = "/api/forms";
 export const QUESTIONS_URL = "/api/questions";
 export const TAGS_URL = "/api/tags";
 export const SALES_URL = "/api/salesforce";
+export const JIRA_URL = "/api/jira/tickets";
