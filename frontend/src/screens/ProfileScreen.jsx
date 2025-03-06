@@ -13,6 +13,7 @@ import {
   useDeleteTemplateMutation,
   useGetUsersTemplatesQuery,
 } from "../redux/slices/templatesApiSlice";
+import { useGetUserTicketsQuery } from "../redux/slices/jiraApiSlice";
 import { FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
 import { setCredentials } from "../redux/slices/authSlice";
@@ -46,6 +47,12 @@ const ProfileScreen = () => {
     error: errorTemplate,
     refetch: refetchTemplates,
   } = useGetUsersTemplatesQuery();
+
+  const {
+    data: tickets,
+    isLoading: isLoadingTickets,
+    error: errorTickets,
+  } = useGetUserTicketsQuery();
 
   const [deleteTemplate, { isLoading: loadingDeleteTemplate }] =
     useDeleteTemplateMutation();
@@ -445,6 +452,61 @@ const ProfileScreen = () => {
                   </Col>
                 </Row>
               </>
+            )}
+          </Tab>
+          <Tab eventKey="tickets" title={t("tickets")}>
+            {isLoadingTickets ? (
+              <Loader />
+            ) : errorTickets ? (
+              <Message variant="danger">
+                {errorTickets?.data?.message || errorTickets.error}
+              </Message>
+            ) : tickets?.length === 0 ? (
+              <Message>{t("noTicketsFound")}</Message>
+            ) : (
+              <Table
+                striped
+                hover
+                responsive
+                variant={isDark ? "dark" : "light"}
+              >
+                <thead>
+                  <tr>
+                    <th>{t("summary")}</th>
+                    <th>{t("priority")}</th>
+                    <th>{t("status")}</th>
+                    <th>{t("createdDate")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tickets?.map((ticket) => (
+                    <tr key={ticket.id}>
+                      <td>{ticket.summary}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            ticket.priority === "High"
+                              ? "bg-danger"
+                              : ticket.priority === "Average"
+                              ? "bg-warning"
+                              : "bg-secondary"
+                          }`}
+                        >
+                          {ticket.priority}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge bg-info">{ticket.status}</span>
+                      </td>
+                      <td>
+                        {moment(ticket.createdAt).format(
+                          "MMMM Do YYYY, h:mm:ss a"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             )}
           </Tab>
         </Tabs>
