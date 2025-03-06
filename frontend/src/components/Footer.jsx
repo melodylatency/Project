@@ -1,9 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { openModal } from "../redux/slices/ticketModalSlice";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const currentYear = new Date().getFullYear();
   return (
     <footer className="bg-teal-400 dark:bg-gray-800">
@@ -14,8 +16,10 @@ const Footer = () => {
           </p>
         </div>
         <div className="flex">
-          <p className="dark:text-gray-300 text-sm underline opacity-70">
-            <Link to={"/ticket"}>Create support ticket</Link>
+          <p className="dark:text-gray-300 text-sm underline opacity-70 cursor-pointer">
+            <span onClick={() => dispatch(openModal())}>
+              Create support ticket
+            </span>
           </p>
         </div>
       </div>
