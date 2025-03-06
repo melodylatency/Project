@@ -491,7 +491,7 @@ const ProfileScreen = () => {
                               ? "bg-danger"
                               : ticket.priority === "Medium"
                               ? "bg-warning"
-                              : "bg-secondary"
+                              : "bg-info"
                           }`}
                         >
                           {ticket.priority}

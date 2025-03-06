@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Modal, Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useCreateTicketMutation } from "../redux/slices/jiraApiSlice";
@@ -75,16 +76,15 @@ const TicketModal = () => {
               <h4 className="text-green-600 mb-2">
                 Ticket Created Successfully!
               </h4>
-              <p className="text-sm">
-                View your ticket on{" "}
-                <a
-                  href={`https://${process.env.REACT_APP_JIRA_DOMAIN}/browse/${formData.jiraKey}`}
-                  className="text-blue-600 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <p className="text-sm dark:text-gray-400">
+                View in your{" "}
+                <Link
+                  to="/profile"
+                  className="text-blue-500 hover:underline"
+                  onClick={() => dispatch(closeModal())}
                 >
-                  Jira
-                </a>
+                  Profile
+                </Link>
               </p>
             </div>
           ) : (

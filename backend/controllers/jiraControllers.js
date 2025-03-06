@@ -181,11 +181,8 @@ const getJiraTicketStatus = async (jiraKey) => {
         },
       }
     );
-
-    // Return the current status name from Jira
     return response.data.fields.status.name;
   } catch (error) {
-    // Handle deleted tickets
     if (error.response?.status === 404) {
       return "Deleted";
     }
