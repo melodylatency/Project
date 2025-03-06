@@ -96,9 +96,11 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
             )}
-            <Button variant="secondary" onClick={() => dispatch(openModal())}>
-              <MdOutlineLiveHelp size={24} />
-            </Button>
+            {userInfo && (
+              <Button variant="secondary" onClick={() => dispatch(openModal())}>
+                <MdOutlineLiveHelp size={24} />
+              </Button>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Navbar>

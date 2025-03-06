@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCreateTicketMutation } from "../redux/slices/jiraApiSlice";
 import { closeModal } from "../redux/slices/ticketModalSlice";
 import useTheme from "../hooks/useTheme";
+import { toast } from "react-toastify";
 
 const TicketModal = () => {
   const dispatch = useDispatch();
@@ -14,24 +15,42 @@ const TicketModal = () => {
 
   const [formData, setFormData] = useState({
     summary: "",
-    priority: "Average",
+    priority: "Medium",
     url: currentUrl,
     template: document.title,
   });
 
   useEffect(() => {
     if (isOpen) {
-      setFormData((prev) => ({
-        ...prev,
-        url: window.location.href,
-        template: document.title,
-      }));
+      const url = new URL(currentUrl);
+      const isTemplatePage = url.pathname.startsWith("/template/");
+      const newFormData = {
+        summary: "",
+        priority: "Medium",
+        url: currentUrl,
+      };
+      if (isTemplatePage) {
+        newFormData.template = document.title;
+      }
+      setFormData(newFormData);
     }
-  }, [isOpen]);
+  }, [isOpen, currentUrl]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createTicket(formData);
+    try {
+      const dataToSend = {
+        summary: formData.summary,
+        priority: formData.priority,
+        url: formData.url,
+      };
+      if (formData.template) {
+        dataToSend.template = formData.template;
+      }
+      await createTicket(dataToSend).unwrap();
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -40,30 +59,27 @@ const TicketModal = () => {
       onHide={() => dispatch(closeModal())}
       centered
       backdrop="static"
-      className="tw-font-sans"
+      className="font-sans"
       data-bs-theme={isDark ? "dark" : "light"}
     >
-      <Modal.Header
-        closeButton
-        className="tw-bg-gray-100 tw-border-b tw-border-gray-200"
-      >
-        <Modal.Title className="tw-text-lg tw-font-semibold dark:text-gray-300">
+      <Modal.Header closeButton>
+        <Modal.Title className="dark:text-gray-300">
           Create Support Ticket
         </Modal.Title>
       </Modal.Header>
 
       <Form onSubmit={handleSubmit}>
-        <Modal.Body className="tw-space-y-4">
+        <Modal.Body className="space-y-4">
           {isSuccess ? (
-            <div className="tw-text-center tw-py-4">
-              <h4 className="tw-text-green-600 tw-mb-2">
+            <div className="text-center py-4">
+              <h4 className="text-green-600 mb-2">
                 Ticket Created Successfully!
               </h4>
-              <p className="tw-text-sm">
+              <p className="text-sm">
                 View your ticket on{" "}
                 <a
                   href={`https://${process.env.REACT_APP_JIRA_DOMAIN}/browse/${formData.jiraKey}`}
-                  className="tw-text-blue-600 hover:tw-underline"
+                  className="text-blue-600 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -94,13 +110,13 @@ const TicketModal = () => {
                   }
                 >
                   <option value="High">High</option>
-                  <option value="Average">Average</option>
+                  <option value="Medium">Medium</option>
                   <option value="Low">Low</option>
                 </Form.Select>
               </Form.Group>
 
               {error && (
-                <div className="tw-text-red-600 tw-text-sm tw-mt-2">
+                <div className="text-red-600 text-sm mt-2">
                   Error creating ticket:{" "}
                   {error.data?.message || "Unknown error"}
                 </div>
@@ -109,31 +125,21 @@ const TicketModal = () => {
           )}
         </Modal.Body>
 
-        <Modal.Footer className="tw-border-t tw-border-gray-200">
+        <Modal.Footer>
           {!isSuccess ? (
             <>
               <Button
                 variant="secondary"
                 onClick={() => dispatch(closeModal())}
-                className="tw-px-4 tw-py-2 tw-rounded-lg hover:tw-bg-gray-200"
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={isLoading}
-                className="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-rounded-lg hover:tw-bg-blue-700 disabled:tw-opacity-50"
-              >
+              <Button type="submit" variant="primary" disabled={isLoading}>
                 {isLoading ? "Creating..." : "Create Ticket"}
               </Button>
             </>
           ) : (
-            <Button
-              variant="success"
-              onClick={() => dispatch(closeModal())}
-              className="tw-px-4 tw-py-2 tw-bg-green-600 tw-text-white tw-rounded-lg hover:tw-bg-green-700"
-            >
+            <Button variant="success" onClick={() => dispatch(closeModal())}>
               Close
             </Button>
           )}

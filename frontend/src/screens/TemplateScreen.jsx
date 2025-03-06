@@ -72,6 +72,16 @@ const TemplateScreen = () => {
     }
   }, [userInfo, template, navigate, t]);
 
+  useEffect(() => {
+    const originalTitle = document.title;
+    if (template) {
+      document.title = template.title;
+    }
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [template]);
+
   const submitHandler = async (e) => {
     e.preventDefault();
 

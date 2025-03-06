@@ -17,7 +17,7 @@ export default {
         allowNull: false,
       },
       priority: {
-        type: Sequelize.ENUM("High", "Average", "Low"),
+        type: Sequelize.ENUM("High", "Medium", "Low"),
         allowNull: false,
       },
       url: {

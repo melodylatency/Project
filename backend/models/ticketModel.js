@@ -20,7 +20,7 @@ Ticket.init(
       allowNull: false,
     },
     priority: {
-      type: DataTypes.ENUM("High", "Average", "Low"),
+      type: DataTypes.ENUM("High", "Medium", "Low"),
       allowNull: false,
     },
     url: {
