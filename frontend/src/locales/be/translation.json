@@ -131,5 +131,12 @@
   "enterJobTitle": "Увядзіце вашу пасаду",
   "department": "Аддзел",
   "enterDepartment": "Увядзіце ваш аддзел",
-  "companyNameRequired": "Назва кампаніі не можа быць пустой."
+  "companyNameRequired": "Назва кампаніі не можа быць пустой.",
+  "tickets": "Квіткі",
+  "ticketKey": "Ключ квітка",
+  "summary": "Апісанне",
+  "priority": "Прыярытэт",
+  "status": "Статус",
+  "createdDate": "Дата стварэння",
+  "noTicketsFound": "Квіткі падтрымкі не знойдзены"
 }

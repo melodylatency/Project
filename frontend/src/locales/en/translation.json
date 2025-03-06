@@ -132,5 +132,12 @@
   "enterJobTitle": "Enter your job title",
   "department": "Department",
   "enterDepartment": "Enter your department",
-  "companyNameRequired": "Company name cannot be empty."
+  "companyNameRequired": "Company name cannot be empty.",
+  "tickets": "Tickets",
+  "ticketKey": "Ticket Key",
+  "summary": "Summary",
+  "priority": "Priority",
+  "status": "Status",
+  "createdDate": "Created Date",
+  "noTicketsFound": "No support tickets found"
 }

@@ -10,7 +10,7 @@ const TicketModal = () => {
   const dispatch = useDispatch();
   const isDark = useTheme();
   const { isOpen, currentUrl } = useSelector((state) => state.ticketModal);
-  const [createTicket, { isLoading, isSuccess, error }] =
+  const [createTicket, { isLoading, isSuccess, refetch, error }] =
     useCreateTicketMutation();
 
   const [formData, setFormData] = useState({
@@ -48,6 +48,7 @@ const TicketModal = () => {
         dataToSend.template = formData.template;
       }
       await createTicket(dataToSend).unwrap();
+      refetch();
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }

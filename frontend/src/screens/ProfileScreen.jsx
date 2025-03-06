@@ -487,7 +487,7 @@ const ProfileScreen = () => {
                           className={`badge ${
                             ticket.priority === "High"
                               ? "bg-danger"
-                              : ticket.priority === "Average"
+                              : ticket.priority === "Medium"
                               ? "bg-warning"
                               : "bg-secondary"
                           }`}
