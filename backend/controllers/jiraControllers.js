@@ -1,21 +1,19 @@
 import axios from "axios";
 import asyncHandler from "../middleware/asyncHandler.js";
-import Ticket from "../models/ticketModel.js"; // Assuming you have a Ticket model
+import Ticket from "../models/ticketModel.js";
 
 // @desc    Create a Jira ticket
 // @route   POST /api/jira/tickets
 // @access  Private
 const createJiraTicket = asyncHandler(async (req, res) => {
   const { summary, priority, url, template } = req.body;
-  const userEmail = req.user.email; // Assuming user email is available in req.user
+  const userEmail = req.user.email;
 
-  // Step 1: Check if the user exists in Jira or create them
   let userAccountId = await checkJiraUser(userEmail);
   if (!userAccountId) {
     userAccountId = await createJiraUser(userEmail);
   }
 
-  // Step 2: Create the Jira ticket
   const jiraKey = await createJiraIssue(userAccountId, {
     summary,
     priority,
@@ -23,7 +21,6 @@ const createJiraTicket = asyncHandler(async (req, res) => {
     template,
   });
 
-  // Step 3: Save the ticket to your database
   const ticket = await Ticket.create({
     userId: req.user.id,
     jiraKey,
@@ -33,7 +30,6 @@ const createJiraTicket = asyncHandler(async (req, res) => {
     template,
   });
 
-  // Step 4: Return the Jira ticket link to the user
   const jiraLink = `https://${process.env.JIRA_DOMAIN}/browse/${jiraKey}`;
   res.status(201).json({ jiraKey, jiraLink });
 });
@@ -47,7 +43,6 @@ const getUserTickets = asyncHandler(async (req, res) => {
     order: [["createdAt", "DESC"]],
   });
 
-  // Fetch the current status of each ticket from Jira
   const ticketsWithStatus = await Promise.all(
     tickets.map(async (ticket) => {
       const status = await getJiraTicketStatus(ticket.jiraKey);
@@ -58,7 +53,6 @@ const getUserTickets = asyncHandler(async (req, res) => {
   res.status(200).json(ticketsWithStatus);
 });
 
-// Helper function to check if a user exists in Jira
 const checkJiraUser = async (email) => {
   try {
     const response = await axios.get(
@@ -80,7 +74,6 @@ const checkJiraUser = async (email) => {
   }
 };
 
-// Helper function to create a user in Jira
 const createJiraUser = async (email) => {
   try {
     const response = await axios.post(
@@ -108,13 +101,11 @@ const createJiraUser = async (email) => {
   }
 };
 
-// Helper function to create a Jira issue
 const createJiraIssue = async (
   userAccountId,
   { summary, priority, url, template }
 ) => {
   try {
-    // Build Atlassian Document Format (ADF) for description
     const descriptionContent = [
       {
         type: "paragraph",
@@ -146,7 +137,7 @@ const createJiraIssue = async (
 
     const issueData = {
       fields: {
-        project: { key: "BTS" }, // Replace with your Jira project key
+        project: { key: "BTS" },
         issuetype: { name: "Task" },
         summary,
         description: {
@@ -179,7 +170,6 @@ const createJiraIssue = async (
   }
 };
 
-// Helper function to get the status of a Jira ticket
 const getJiraTicketStatus = async (jiraKey) => {
   try {
     const response = await axios.get(
