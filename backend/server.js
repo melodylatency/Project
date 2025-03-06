@@ -6,6 +6,7 @@ import formRoutes from "./routes/formRoutes.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import tagRoutes from "./routes/tagRoutes.js";
 import salesforceRoutes from "./routes/salesforceRoutes.js";
+import jiraRoutes from "./routes/jiraRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -35,6 +36,7 @@ app.use("/api/forms", formRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/salesforce", salesforceRoutes);
+app.use("/api/jira", jiraRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "frontend/build")));
